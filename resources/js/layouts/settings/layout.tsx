@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
@@ -7,12 +7,14 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
+import { edit as editClient } from '@/routes/clients';
 import { edit as editSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
+import type { Auth } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+const accountNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: 'Account',
         href: edit(),
         icon: null,
     },
@@ -30,6 +32,14 @@ const sidebarNavItems: NavItem[] = [
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { auth } = usePage<{ auth: Auth }>().props;
+    const sidebarNavItems = [
+        ...accountNavItems.slice(0, 1),
+        ...(auth.user.client
+            ? [{ title: 'Client profile', href: editClient(auth.user.client.id), icon: null }]
+            : []),
+        ...accountNavItems.slice(1),
+    ];
 
     return (
         <div className="px-4 py-6">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\ClientProfileController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -10,6 +11,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('clients/{client}', [ClientProfileController::class, 'edit'])
+        ->can('view', 'client')
+        ->name('clients.edit');
+    Route::patch('clients/{client}', [ClientProfileController::class, 'update'])
+        ->can('update', 'client')
+        ->name('clients.update');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
