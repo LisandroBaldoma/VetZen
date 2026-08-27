@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
@@ -41,5 +42,7 @@ class RegistrationTest extends TestCase
             'user_id' => auth()->id(),
             'phone' => '+54 11 5555 5555',
         ]);
+
+        $this->assertTrue(User::findOrFail(auth()->id())->hasRole('client'));
     }
 }

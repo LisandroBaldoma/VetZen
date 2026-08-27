@@ -1,5 +1,11 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    BookOpen,
+    FolderGit2,
+    LayoutGrid,
+    UserRound,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -14,15 +20,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import type { NavItem } from '@/types';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+import { index as clientsIndex } from '@/routes/admin/clients';
+import { edit as clientProfile } from '@/routes/clients';
+import type { Auth, NavItem } from '@/types';
 
 const footerNavItems: NavItem[] = [
     {
@@ -38,6 +38,33 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage<{ auth: Auth }>().props;
+    const isAdmin = auth.roles.includes('admin');
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        ...(isAdmin
+            ? [
+                  {
+                      title: 'Clients',
+                      href: clientsIndex(),
+                      icon: Users,
+                  },
+              ]
+            : auth.user.client
+              ? [
+                    {
+                        title: 'My details',
+                        href: clientProfile(auth.user.client.id),
+                        icon: UserRound,
+                    },
+                ]
+              : []),
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

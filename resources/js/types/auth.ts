@@ -25,6 +25,7 @@ export type Client = {
 
 export type Auth = {
     user: User;
+    roles: string[];
 };
 
 export type Passkey = {

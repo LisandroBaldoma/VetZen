@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Spatie\Permission\Models\Role;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -44,6 +45,8 @@ class CreateNewUser implements CreatesNewUsers
                 'document',
                 'birth_date',
             ]));
+
+            $user->assignRole(Role::findOrCreate('client', 'web'));
 
             return $user;
         });

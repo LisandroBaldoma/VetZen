@@ -14,9 +14,9 @@ class UpdateClientRequest extends FormRequest
     public function authorize(): bool
     {
         /** @var Client $client */
-        $client = $this->route('client');
+        $client = $this->route('client') ?? $this->user()->client;
 
-        return $this->user()->can('update', $client);
+        return $client instanceof Client && $this->user()->can('update', $client);
     }
 
     /**
