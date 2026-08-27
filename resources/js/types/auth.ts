@@ -7,7 +7,20 @@ export type User = {
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;
+    client?: Client;
     [key: string]: unknown;
+};
+
+export type Client = {
+    id: number;
+    user_id: number;
+    phone: string;
+    address: string | null;
+    city: string | null;
+    province: string | null;
+    postal_code: string | null;
+    document: string | null;
+    birth_date: string | null;
 };
 
 export type Auth = {
