@@ -29,9 +29,15 @@ export default function AdminClientsIndex({
                         <table className="w-full text-left text-sm">
                             <thead className="bg-muted/50 text-muted-foreground">
                                 <tr>
-                                    <th className="px-4 py-3 font-medium">Name</th>
-                                    <th className="px-4 py-3 font-medium">Email</th>
-                                    <th className="px-4 py-3 font-medium">Phone</th>
+                                    <th className="px-4 py-3 font-medium">
+                                        Name
+                                    </th>
+                                    <th className="px-4 py-3 font-medium">
+                                        Email
+                                    </th>
+                                    <th className="px-4 py-3 font-medium">
+                                        Phone
+                                    </th>
                                     <th className="px-4 py-3" />
                                 </tr>
                             </thead>
@@ -48,7 +54,11 @@ export default function AdminClientsIndex({
                                             {client.phone}
                                         </td>
                                         <td className="px-4 py-3 text-right">
-                                            <Button size="sm" variant="outline" asChild>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                asChild
+                                            >
                                                 <Link href={edit(client.id)}>
                                                     View details
                                                 </Link>

@@ -2,8 +2,8 @@ import { Form, Head } from '@inertiajs/react';
 import ClientProfileController from '@/actions/App/Http/Controllers/Client/ClientProfileController';
 import ClientProfileFields from '@/components/client-profile-fields';
 import Heading from '@/components/heading';
-import type { Client } from '@/types';
 import { dashboard } from '@/routes';
+import type { Client } from '@/types';
 
 export default function ClientDashboard({ client }: { client: Client }) {
     return (
