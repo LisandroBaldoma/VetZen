@@ -23,6 +23,20 @@ export type Client = {
     birth_date: string | null;
 };
 
+export type Pet = {
+    id: number;
+    client_id: number;
+    name: string;
+    species: string;
+    breed: string | null;
+    sex: string;
+    birth_date: string | null;
+    weight: string | null;
+    color: string | null;
+    notes: string | null;
+    photo: string | null;
+};
+
 export type Auth = {
     user: User;
     roles: string[];

@@ -3,6 +3,7 @@ import {
     BookOpen,
     FolderGit2,
     LayoutGrid,
+    PawPrint,
     UserRound,
     Users,
 } from 'lucide-react';
@@ -21,7 +22,9 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
+import { index as petsIndex } from '@/routes/admin/pets';
 import { edit as clientProfile } from '@/routes/clients';
+import { index as myPetsIndex } from '@/routes/pets';
 import type { Auth, NavItem } from '@/types';
 
 const footerNavItems: NavItem[] = [
@@ -53,6 +56,11 @@ export function AppSidebar() {
                       href: clientsIndex(),
                       icon: Users,
                   },
+                  {
+                      title: 'Pets',
+                      href: petsIndex(),
+                      icon: PawPrint,
+                  },
               ]
             : auth.user.client
               ? [
@@ -60,6 +68,11 @@ export function AppSidebar() {
                         title: 'My details',
                         href: clientProfile(auth.user.client.id),
                         icon: UserRound,
+                    },
+                    {
+                        title: 'My pets',
+                        href: myPetsIndex(),
+                        icon: PawPrint,
                     },
                 ]
               : []),

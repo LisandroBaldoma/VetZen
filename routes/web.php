@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\PetController as AdminPetController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Pet\PetController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +11,15 @@ Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('pets', [PetController::class, 'index'])->name('pets.index');
+    Route::get('pets/create', [PetController::class, 'create'])->name('pets.create');
+    Route::post('pets', [PetController::class, 'store'])->name('pets.store');
+    Route::get('pets/{pet}', [PetController::class, 'show'])->name('pets.show');
+    Route::get('pets/{pet}/edit', [PetController::class, 'edit'])->name('pets.edit');
+    Route::patch('pets/{pet}', [PetController::class, 'update'])->name('pets.update');
+    Route::get('pets/{pet}/photo', [PetController::class, 'photo'])->name('pets.photo');
+    Route::delete('pets/{pet}/photo', [PetController::class, 'destroyPhoto'])->name('pets.photo.destroy');
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('clients', [AdminClientController::class, 'index'])
@@ -20,6 +31,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('clients/{client}', [AdminClientController::class, 'update'])
             ->can('update', 'client')
             ->name('clients.update');
+        Route::get('pets', [AdminPetController::class, 'index'])->name('pets.index');
+        Route::get('pets/create', [AdminPetController::class, 'create'])->name('pets.create');
+        Route::post('pets', [AdminPetController::class, 'store'])->name('pets.store');
+        Route::get('pets/{pet}', [AdminPetController::class, 'show'])->name('pets.show');
+        Route::get('pets/{pet}/edit', [AdminPetController::class, 'edit'])->name('pets.edit');
+        Route::patch('pets/{pet}', [AdminPetController::class, 'update'])->name('pets.update');
     });
 });
 
