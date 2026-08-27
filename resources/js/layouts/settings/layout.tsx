@@ -36,7 +36,13 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     const sidebarNavItems = [
         ...accountNavItems.slice(0, 1),
         ...(auth.user.client
-            ? [{ title: 'Client profile', href: editClient(auth.user.client.id), icon: null }]
+            ? [
+                  {
+                      title: 'Client profile',
+                      href: editClient(auth.user.client.id),
+                      icon: null,
+                  },
+              ]
             : []),
         ...accountNavItems.slice(1),
     ];
