@@ -57,29 +57,19 @@ export default function ClientProfile({ client }: Props) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="city">City</Label>
-                                    <Input
-                                        id="city"
-                                        name="city"
-                                        defaultValue={client.city ?? ''}
-                                    />
+                                    <Input id="city" name="city" defaultValue={client.city ?? ''} />
                                     <InputError message={errors.city} />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="province">Province</Label>
-                                    <Input
-                                        id="province"
-                                        name="province"
-                                        defaultValue={client.province ?? ''}
-                                    />
+                                    <Input id="province" name="province" defaultValue={client.province ?? ''} />
                                     <InputError message={errors.province} />
                                 </div>
                             </div>
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="postal_code">
-                                        Postal code
-                                    </Label>
+                                    <Label htmlFor="postal_code">Postal code</Label>
                                     <Input
                                         id="postal_code"
                                         name="postal_code"
@@ -90,32 +80,18 @@ export default function ClientProfile({ client }: Props) {
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="document">Document</Label>
-                                    <Input
-                                        id="document"
-                                        name="document"
-                                        defaultValue={client.document ?? ''}
-                                    />
+                                    <Input id="document" name="document" defaultValue={client.document ?? ''} />
                                     <InputError message={errors.document} />
                                 </div>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="birth_date">
-                                    Date of birth
-                                </Label>
-                                <Input
-                                    id="birth_date"
-                                    name="birth_date"
-                                    type="date"
-                                    defaultValue={client.birth_date ?? ''}
-                                />
+                                <Label htmlFor="birth_date">Date of birth</Label>
+                                <Input id="birth_date" name="birth_date" type="date" defaultValue={client.birth_date ?? ''} />
                                 <InputError message={errors.birth_date} />
                             </div>
 
-                            <Button
-                                disabled={processing}
-                                data-test="update-client-profile-button"
-                            >
+                            <Button disabled={processing} data-test="update-client-profile-button">
                                 Save client profile
                             </Button>
                         </>
