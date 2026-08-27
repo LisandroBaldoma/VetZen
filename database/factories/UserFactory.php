@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends Factory<User>
@@ -16,6 +18,29 @@ class UserFactory extends Factory
      * The current password being used by the factory.
      */
     protected static ?string $password;
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->assignRole(Role::findOrCreate('client', 'web'));
+        });
+    }
+
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $permissions = collect([
+                'clients.viewAny',
+                'clients.view',
+                'clients.update',
+            ])->map(fn (string $name): Permission => Permission::findOrCreate($name, 'web'));
+
+            $admin = Role::findOrCreate('admin', 'web');
+            $admin->syncPermissions($permissions);
+
+            $user->syncRoles([$admin]);
+        });
+    }
 
     /**
      * Define the model's default state.

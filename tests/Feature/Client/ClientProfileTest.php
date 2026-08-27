@@ -93,11 +93,15 @@ class ClientProfileTest extends TestCase
         $this->actingAs($client->user)
             ->patch(route('clients.update', $client), [
                 'phone' => 'new-phone',
+                'client_id' => $otherUser->id,
                 'user_id' => $otherUser->id,
+                'role' => 'admin',
+                'permissions' => ['clients.viewAny'],
             ])
             ->assertSessionHasNoErrors();
 
         $this->assertSame($client->user_id, $client->fresh()->user_id);
         $this->assertSame('new-phone', $client->fresh()->phone);
+        $this->assertTrue($client->user->fresh()->hasRole('client'));
     }
 }
