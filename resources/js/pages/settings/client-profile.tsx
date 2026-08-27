@@ -70,7 +70,12 @@ export default function ClientProfile({ client }: Props) {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="grid gap-2">
                                     <Label htmlFor="postal_code">Postal code</Label>
-                                    <Input id="postal_code" name="postal_code" autoComplete="postal-code" defaultValue={client.postal_code ?? ''} />
+                                    <Input
+                                        id="postal_code"
+                                        name="postal_code"
+                                        autoComplete="postal-code"
+                                        defaultValue={client.postal_code ?? ''}
+                                    />
                                     <InputError message={errors.postal_code} />
                                 </div>
                                 <div className="grid gap-2">
