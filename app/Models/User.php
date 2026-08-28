@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -43,6 +44,30 @@ class User extends Authenticatable implements PasskeyUser
     public function client(): HasOne
     {
         return $this->hasOne(Client::class);
+    }
+
+    /**
+     * @return HasMany<ClinicalRecord, $this>
+     */
+    public function createdClinicalRecords(): HasMany
+    {
+        return $this->hasMany(ClinicalRecord::class, 'created_by');
+    }
+
+    /**
+     * @return HasMany<ClinicalRecord, $this>
+     */
+    public function updatedClinicalRecords(): HasMany
+    {
+        return $this->hasMany(ClinicalRecord::class, 'updated_by');
+    }
+
+    /**
+     * @return HasMany<ClinicalRecordAudit, $this>
+     */
+    public function clinicalRecordAudits(): HasMany
+    {
+        return $this->hasMany(ClinicalRecordAudit::class);
     }
 
     /**

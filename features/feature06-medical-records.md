@@ -46,8 +46,7 @@ sin reemplazar el ownership existente.
   Wayfinder y pruebas PHPUnit del proyecto.
 
 No existen actualmente tablas, modelos, rutas ni pantallas de historia clínica;
-esta feature los incorporará después de resolver las decisiones indicadas en el
-apartado 19.
+esta feature los incorporará según las decisiones aprobadas en el apartado 19.
 
 ## 5. Modelo de dominio
 
@@ -60,14 +59,33 @@ User
               └── hasMany Clinical Records
 ```
 
+El modelo clínico de esta versión es `ClinicalRecord`, con las relaciones
+`Pet hasMany ClinicalRecord` y `ClinicalRecord belongsTo Pet`. No se crean
+tablas separadas por tipo clínico.
+
 Un registro clínico debe pertenecer a una única `Pet`. La historia clínica es
 el conjunto cronológico de registros de esa mascota, no una fila única que se
 sobrescribe. Los datos de mascota, responsable y contacto se resuelven mediante
 relaciones; no deben copiarse como `pet_name`, `owner_name` o `client_email`.
 
-Todo registro creado o modificado debe poder asociarse conceptualmente al
-usuario responsable. Los nombres definitivos de columnas y relaciones quedan
-sujetos a la decisión de autoría y auditoría.
+`ClinicalRecord` tiene los siguientes campos conceptuales:
+
+* `id`
+* `pet_id`
+* `created_by`
+* `updated_by`
+* `type`
+* `title`
+* `content`
+* `occurred_at`
+* `is_visible_to_client`
+* `created_at`
+* `updated_at`
+
+`created_by` y `updated_by` deben referenciar usuarios válidos y son
+determinados por el backend desde el usuario autenticado. No se duplica
+`client_id`, el `user_id` propietario, el nombre de la mascota ni ningún dato
+derivable de relaciones existentes.
 
 ## 6. Alcance
 
@@ -78,9 +96,8 @@ La primera implementación deberá incluir:
 * Crear registros clínicos para una mascota por parte de un `admin`.
 * Editar registros clínicos existentes por parte de un `admin`.
 * Registrar consultas, evaluaciones, evolución e información relevante de
-  sesiones mediante la estructura de tipos que se apruebe.
-* Asociar los registros a su mascota y conservar trazabilidad conceptual de
-  creación y modificación.
+  sesiones mediante el modelo genérico y los tipos aprobados.
+* Asociar los registros a su mascota y auditar su creación y modificación.
 * Aplicar autorización, validación y protección contra mass assignment en
   backend.
 * Ofrecer UI React/Inertia contextualizada por mascota, con lectura para
@@ -96,8 +113,8 @@ No se implementan:
 * Turnos, agenda, notificaciones o solicitudes.
 * Roles profesionales, permisos clínicos granulares o panel de permisos.
 * Eliminación física, Soft Deletes, anulación o corrección formal de registros.
-* Auditoría mediante una librería o proveedor específico hasta definir su
-  estrategia global.
+* Paquetes externos de auditoría, incluidos Spatie Activitylog y OwenIt.
+* Event sourcing o un sistema global de auditoría para todo VetZen.
 * Asistente IA, RAG, embeddings, almacenamiento vectorial o acceso automático
   a información clínica.
 * Diagnóstico automático, prescripciones o campos clínicos no aprobados.
@@ -106,18 +123,24 @@ No se implementan:
 
 1. Todo registro clínico pertenece a una mascota existente.
 2. La historia clínica de una mascota es el historial de sus múltiples
-   registros, ordenado según la regla cronológica que se defina.
-3. Un `client` solo puede leer la historia y los registros de mascotas cuyo
-   `Pet → Client → User` corresponde al usuario autenticado.
+   registros, ordenado por `occurred_at DESC` y, como desempate,
+   `created_at DESC`.
+3. Un `client` solo puede leer registros con `is_visible_to_client = true` de
+   mascotas cuyo `Pet → Client → User` corresponde al usuario autenticado.
 4. Un `client` nunca puede crear, editar, eliminar ni reasignar registros
    clínicos, aunque envíe solicitudes HTTP manuales.
 5. Un `admin` puede crear, consultar y editar registros de cualquier mascota.
 6. El acceso debe decidirse en backend mediante autenticación, Policy y las
    relaciones de dominio; los IDs del navegador no determinan autorización.
-7. Todo registro debe conservar la posibilidad de identificar autor, momento y
-   recurso afectado para una futura auditoría clínica.
+7. Todo registro debe identificar al usuario que lo creó y al último usuario
+   que lo actualizó, y su creación y edición deben quedar en la auditoría
+   clínica específica de esta feature.
 8. No se agrega `delete` en esta versión debido a la sensibilidad y necesidad
    de trazabilidad de la información clínica.
+9. `occurred_at` representa cuándo ocurrió clínicamente el evento, admite
+   cargas tardías y no puede ser una fecha futura.
+10. El administrador debe elegir explícitamente `is_visible_to_client` al crear
+    o editar; la visibilidad no se infiere automáticamente desde `type`.
 
 ## 9. Autorización
 
@@ -126,8 +149,8 @@ el recurso concreto. La primera versión tiene el siguiente contrato cerrado:
 
 | Acción | `client` propietario | Otro `client` | `admin` |
 | --- | --- | --- | --- |
-| Ver historial de una Pet | Permitido | Denegado | Permitido |
-| Ver Clinical Record | Permitido | Denegado | Permitido |
+| Ver historial de una Pet | Permitido solo para registros visibles | Denegado | Permitido |
+| Ver Clinical Record | Permitido solo si es visible | Denegado | Permitido |
 | Crear Clinical Record | Denegado | Denegado | Permitido |
 | Editar Clinical Record | Denegado | Denegado | Permitido |
 | Eliminar Clinical Record | No incluido | No incluido | No incluido |
@@ -176,10 +199,11 @@ selección explícita de contenido por la veterinaria.
 
 1. Abre una mascota desde `/admin/pets/{pet}` o su ruta clínica contextual.
 2. El backend verifica que tiene rol `admin` y autoriza la mascota.
-3. Consulta el historial o registra una nueva entrada con el tipo y campos
-   aprobados.
-4. Laravel valida los datos, asocia la entrada a la mascota y registra al
-   administrador autenticado como autor según la estrategia definida.
+3. Consulta el historial o registra una nueva entrada con el tipo, campos y
+   visibilidad aprobados.
+4. Laravel valida los datos, asocia la entrada a la mascota, establece
+   `created_by` y `updated_by` con el administrador autenticado y registra la
+   creación en la auditoría clínica.
 
 ### Administrador: edición
 
@@ -187,7 +211,8 @@ selección explícita de contenido por la veterinaria.
 2. La Policy autoriza la edición.
 3. Laravel actualiza únicamente los atributos permitidos, sin cambiar la
    mascota ni los autores por datos enviados desde el navegador.
-4. La modificación queda preparada para la trazabilidad clínica.
+4. Laravel establece `updated_by` con el administrador autenticado y registra
+   la edición, con valores anteriores y nuevos, en la auditoría clínica.
 
 ## 12. Casos alternativos y seguridad
 
@@ -209,19 +234,34 @@ guardar se debe validar la existencia y autorización de la mascota, el tipo de
 registro, campos requeridos, formatos, fechas, longitudes y consistencia de los
 datos clínicos aprobados.
 
-Las reglas concretas no se pueden fijar hasta definir la estructura y los
-campos clínicos. El modelo deberá declarar explícitamente sus atributos
-asignables. La mascota, el cliente propietario y los autores se resolverán en
-backend desde el contexto autorizado, no mediante mass assignment.
+`type`, `title`, `content` y `occurred_at` son requeridos.
+`is_visible_to_client` debe ser booleano y debe ser elegido explícitamente por
+el administrador. `title` debe ser un string de hasta 255 caracteres y
+`content` debe ser texto. `occurred_at` no puede ser futuro.
+
+`type` es controlado por la aplicación, sin ENUM de base de datos, y admite
+inicialmente estos valores:
+
+* `consultation`
+* `evaluation`
+* `evolution`
+* `session`
+* `other`
+
+El modelo deberá declarar explícitamente sus atributos asignables. La mascota,
+el cliente propietario y los autores se resolverán en backend desde el contexto
+autorizado, no mediante mass assignment. No se admiten por ahora campos
+especializados como diagnóstico, síntomas, medicación, signos vitales o
+prescripción.
 
 ## 14. Frontend
 
 ### Cliente
 
 Desde el detalle de una mascota propia deberá acceder a una sección de Historia
-clínica. Verá listado cronológico, fecha, tipo y contenido autorizado de cada
-registro, además del detalle cuando corresponda. No tendrá controles de alta,
-edición ni eliminación.
+clínica. Verá únicamente los registros con `is_visible_to_client = true`, en
+orden cronológico, con fecha, tipo, título y contenido, además del detalle
+cuando corresponda. No tendrá controles de alta, edición ni eliminación.
 
 ### Administrador
 
@@ -236,29 +276,43 @@ frontend, Redux ni una librería UI nueva.
 
 ## 15. Auditoría
 
-La auditoría completa no se implementa ni se vincula a una librería en esta
-especificación. Como requisito mínimo, el diseño debe permitir identificar:
+Esta feature implementará una estrategia propia y específica para Historia
+Clínica mediante el modelo conceptual `ClinicalRecordAudit`, con estos campos:
 
-* Usuario responsable.
-* Acción de creación o modificación.
-* Momento de la acción.
-* Registro y mascota afectados.
+* `id`
+* `clinical_record_id`
+* `user_id`
+* `action`
+* `old_values`
+* `new_values`
+* `created_at`
 
-La solución concreta (Activitylog, OwenIt, tabla propia, eventos u otra) debe
-elegirse de forma global y quedar registrada antes de implementar la auditoría.
+Se registrarán al menos la creación y la edición de registros clínicos. Cada
+entrada debe permitir conocer quién realizó el cambio, cuándo lo realizó, qué
+acción ejecutó y los valores anterior y nuevo cuando corresponda.
+
+Esta decisión no introduce Spatie Activitylog, OwenIt, event sourcing ni otro
+paquete externo, y tampoco define un sistema global de auditoría para VetZen.
+Su alcance se limita a los recursos clínicos de esta feature.
 
 ## 16. Testing
 
 Las pruebas HTTP de la futura implementación deberán cubrir, como mínimo:
 
-* Cliente A puede consultar la historia y un registro de Pet A.
+* Cliente A puede consultar los registros visibles de Pet A y no puede
+  consultar sus registros no visibles.
 * Cliente A no puede crear ni editar registros de Pet A.
 * Con Client A → Pet A → Record A y Client B → Pet B → Record B, Client A no
   puede consultar ni editar Record B ni el historial de Pet B.
 * Admin puede consultar el historial de cualquier mascota, crear un registro y
   editar un registro existente.
 * Requests manipuladas no cambian `pet_id`, `client_id`, autores ni permisos.
-* Se validan los tipos, campos y fechas que se aprueben para el modelo clínico.
+* Se validan los tipos aprobados, los campos requeridos, sus formatos y límites,
+  el booleano de visibilidad y la prohibición de fechas clínicas futuras.
+* La cronología usa `occurred_at DESC` y `created_at DESC`, incluidas las cargas
+  tardías.
+* Creaciones y ediciones generan la auditoría clínica con usuario, acción y
+  valores correspondientes.
 * Se mantiene la regresión de autenticación, clientes y mascotas.
 
 ## 17. Criterios de aceptación
@@ -266,14 +320,15 @@ Las pruebas HTTP de la futura implementación deberán cubrir, como mínimo:
 La implementación estará completa cuando:
 
 * [ ] La historia clínica sea un historial de registros asociado a `Pet`.
-* [ ] Cliente pueda consultar solo los registros de sus propias mascotas.
+* [ ] Cliente pueda consultar solo los registros visibles de sus propias
+  mascotas.
 * [ ] Cliente no pueda crear ni editar registros, tampoco mediante requests
   directas.
 * [ ] Admin pueda crear, consultar y editar registros de cualquier mascota.
 * [ ] La autorización opere en backend y cubra URLs, bindings y payloads
   manipulados.
-* [ ] Los registros guarden o permitan guardar la autoría y la trazabilidad
-  mínima requerida.
+* [ ] Los registros guarden `created_by` y `updated_by` desde el usuario
+  autenticado, y sus creaciones y ediciones queden auditadas.
 * [ ] La UI clínica esté contextualizada por mascota y respete los roles.
 * [ ] No exista eliminación de registros en esta versión.
 * [ ] Validaciones, pruebas de autorización y controles de calidad del proyecto
@@ -290,61 +345,29 @@ El asistente virtual solo podrá usar información clínica seleccionada y
 autorizada en una feature futura, aplicando como mínimo las mismas reglas de
 ownership de esta especificación.
 
-## 19. Decisiones pendientes
+## 19. Decisiones resueltas
 
-### DECISIÓN PENDIENTE — Estructura del modelo clínico
+* **Modelo clínico:** modelo genérico `ClinicalRecord`, relacionado con `Pet`,
+  sin tablas separadas por tipo en esta versión.
+* **Tipos:** campo `type` controlado por aplicación, sin ENUM de base de datos,
+  con `consultation`, `evaluation`, `evolution`, `session` y `other` como
+  valores iniciales.
+* **Campos clínicos:** quedan aprobados los campos conceptuales y reglas de
+  validación definidos en los apartados 5 y 13, sin campos clínicos
+  especializados adicionales.
+* **Autoría:** `created_by` y `updated_by` referencian usuarios válidos y son
+  determinados exclusivamente por el backend desde el usuario autenticado.
+* **Auditoría clínica:** tabla/modelo conceptual propio
+  `ClinicalRecordAudit`, limitado a recursos clínicos y con registro mínimo de
+  creación y edición.
+* **Cronología:** `occurred_at DESC`, con `created_at DESC` como desempate; se
+  permiten cargas tardías y se prohíben fechas clínicas futuras.
+* **Visibilidad:** `is_visible_to_client` debe ser elegido explícitamente por el
+  administrador; el cliente solo accede a registros visibles de sus propias
+  mascotas.
+* **Eliminación:** no se implementan `delete`, Soft Deletes, invalidación,
+  anulación ni correcciones versionadas adicionales en esta versión.
 
-Debe confirmarse la entidad o entidades persistentes que representarán los
-eventos del historial. El requisito cerrado es un historial con entradas
-independientes; no está aprobada todavía la tabla exacta ni sus columnas.
-
-### DECISIÓN PENDIENTE — Tipos de registro clínico
-
-La documentación menciona consultas, evaluaciones, evolución y sesiones, pero
-no determina su representación. Alternativas a evaluar:
-
-1. **Modelo genérico:** `ClinicalRecord` con un campo `type`.
-2. **Modelos separados:** `Consultation`, `Evaluation`, `Evolution` y `Session`.
-3. **Modelo base y especializaciones:** entrada común más datos específicos por
-   tipo.
-
-Recomendación técnica inicial: comenzar con un modelo genérico tipado solo si
-los campos comunes son suficientes y los tipos están cerrados. Si cada tipo
-requiere datos obligatorios muy distintos, evaluar especializaciones. Esta no
-es una decisión tomada.
-
-### DECISIÓN PENDIENTE — Campos clínicos
-
-Antes de crear migraciones deben definirse campos, obligatoriedad, formatos y
-límites. No son requisitos confirmados diagnóstico, síntomas, medicación,
-temperatura, frecuencia cardíaca, prescripción ni diagnóstico diferencial.
-
-Como referencia no definitiva, cualquier registro probablemente necesitará un
-tipo, contenido, fecha clínica y autor; esto debe validarse con el producto
-antes de codificarlo.
-
-### DECISIÓN PENDIENTE — Autoría de registros
-
-Debe definirse la representación exacta de creación y modificación, por
-ejemplo `created_by` y `updated_by` o una estrategia equivalente acorde a las
-convenciones Laravel del proyecto. El requisito ya definido es poder
-identificar al administrador autenticado que realizó cada acción.
-
-### DECISIÓN PENDIENTE — Estrategia de auditoría clínica
-
-Debe definirse la estrategia global de auditoría sin seleccionar de forma
-anticipada Spatie Activitylog, OwenIt, tabla personalizada o event sourcing.
-La elección deberá cubrir usuario, acción, momento y recurso afectado.
-
-### DECISIÓN PENDIENTE — Fecha clínica y orden cronológico
-
-Debe decidirse si el historial se ordena por fecha del evento clínico, fecha de
-creación o ambas, y cómo se comportan los registros cargados de forma tardía.
-
-### DECISIÓN PENDIENTE — Exposición de contenido al cliente
-
-El producto indica que el cliente consulta la historia clínica disponible de
-sus mascotas. Debe confirmarse si todos los tipos y campos aprobados son
-visibles por defecto o si existirá una marca explícita de visibilidad. Hasta
-esa decisión, la implementación no debe ocultar ni inferir selectivamente
-contenido clínico por iniciativa propia.
+No quedan decisiones pendientes dentro del alcance de Feature 06 definido en
+este documento. Las decisiones globales de otras features o de la arquitectura
+general permanecen fuera de este alcance.
