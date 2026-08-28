@@ -1,5 +1,8 @@
 # Feature 05 — Pets / Mascotas
 
+> Estado: implementada. Este documento conserva la especificación y registra
+> abajo las decisiones resueltas y el alcance entregado.
+
 ## 1. Objetivo
 
 Permitir registrar y administrar mascotas como pacientes de la veterinaria. Toda mascota deberá asociarse a un cliente y su acceso se protegerá en backend según el usuario autenticado.
@@ -44,7 +47,10 @@ Pet
 * La mascota no duplica datos del responsable; estos siguen perteneciendo a `User`/`Client`.
 * El ownership se resuelve por `Pet → Client → User`, no por una relación directa con el usuario autenticado.
 
-Actualmente existen `Pet::client()`, `Client::pets()` y `pets.client_id`. La tabla solo contiene esa relación y timestamps.
+La implementación contiene `Pet::client()`, `Client::pets()` y los atributos
+`name`, `species`, `breed`, `sex`, `birth_date`, `weight`, `color`, `notes` y
+`photo`, además de `client_id` y timestamps. `birth_date` se trata como fecha y
+`weight` como decimal.
 
 ## 6. Alcance
 
@@ -56,13 +62,17 @@ La primera implementación deberá incluir:
 * Editar información general.
 * Asociar cada mascota a un cliente.
 * Aplicar autorización backend por rol y ownership.
+* Cargar, reemplazar, consultar y eliminar independientemente la foto de una
+  mascota, respetando el mismo control de acceso.
 * Mostrar estados vacíos, errores y confirmaciones con React/Inertia.
 
 Las operaciones de esta etapa son solamente **create, read y update**.
 
 ## 7. Fuera de alcance
 
-No se implementa historia clínica, tratamientos, seguimiento, turnos, agenda, notificaciones, asistente IA, RAG, profesionales, matriz avanzada de roles, tablas futuras vacías, archivos, fotos, eliminación, archivado ni Soft Deletes.
+No se implementa historia clínica, tratamientos, seguimiento, turnos, agenda,
+notificaciones, asistente IA, RAG, profesionales, matriz avanzada de roles,
+eliminación de mascotas, archivado ni Soft Deletes.
 
 ## 8. Reglas de negocio
 
@@ -87,7 +97,7 @@ Esta versión utiliza los roles actuales de Spatie como capacidades generales, s
 
 La `PetPolicy` deberá definir `viewAny`, `view`, `create` y `update`; no se define `delete`.
 
-Para alta de cliente, Laravel debe resolver el dueño desde el usuario autenticado: `request user → client → new pet`.
+Para alta de una mascota por un cliente, Laravel debe resolver el dueño desde el usuario autenticado: `request user → client → new pet`.
 
 Nunca se elegirá ownership con `client_id` enviado por el navegador. Para alta administrativa, el cliente objetivo se resolverá y autorizará en backend.
 
@@ -186,18 +196,18 @@ Las pruebas HTTP deberán comprobar:
 
 ## 15. Criterios de aceptación
 
-* [ ] `Client` conserva `hasMany Pets` y `Pet` conserva `belongsTo Client`.
-* [ ] Toda mascota creada se vincula a un cliente existente.
-* [ ] Un cliente solo administra sus propias mascotas.
-* [ ] Un admin puede administrar mascotas de cualquier cliente.
-* [ ] Ownership y rutas se protegen en backend.
-* [ ] Requests manipuladas no cambian `client_id`, `user_id`, roles ni permisos.
-* [ ] `name`, `species` y `sex` son obligatorios; los otros campos son
+* [x] `Client` conserva `hasMany Pets` y `Pet` conserva `belongsTo Client`.
+* [x] Toda mascota creada se vincula a un cliente existente.
+* [x] Un cliente solo administra sus propias mascotas.
+* [x] Un admin puede administrar mascotas de cualquier cliente.
+* [x] Ownership y rutas se protegen en backend.
+* [x] Requests manipuladas no cambian `client_id`, `user_id`, roles ni permisos.
+* [x] `name`, `species` y `sex` son obligatorios; los otros campos son
   opcionales y se validan en Laravel.
-* [ ] La foto se almacena como ruta mediante Laravel Storage y está protegida
+* [x] La foto se almacena como ruta mediante Laravel Storage y está protegida
   por ownership; su reemplazo no deja archivos anteriores innecesarios.
-* [ ] Cliente y admin cuentan con las pantallas especificadas.
-* [ ] No se implementa funcionalidad fuera de alcance.
+* [x] Cliente y admin cuentan con las pantallas especificadas.
+* [x] No se implementa funcionalidad fuera de alcance.
 
 ## 16. Dependencias futuras
 
@@ -209,11 +219,9 @@ La mascota será el paciente de futuras relaciones con historia clínica, tratam
 
 Debe definirse si una mascota podrá eliminarse, archivarse/desactivarse o usar Soft Deletes. Hasta entonces, la feature se limita a create, read y update.
 
-### DECISIÓN TÉCNICA PENDIENTE — Área administrativa
+### DECISIÓN RESUELTA — Área administrativa
 
-La documentación no define si la gestión administrativa será:
-
-1. Global en `/admin/pets`, consistente con el listado global actual de `/admin/clients`.
-2. Contextual desde `/admin/clients/{client}`.
-
-Ambas alternativas son válidas. Se deberá elegir al implementar la UI; ninguna modifica el modelo de ownership ni los controles backend.
+La gestión administrativa es global en `/admin/pets`, consistente con
+`/admin/clients`. La ruta y el controlador exigen el rol `admin`; un cliente no
+puede acceder al área administrativa aunque conozca la URL. La creación
+administrativa solicita un cliente existente y el backend conserva ese vínculo.
