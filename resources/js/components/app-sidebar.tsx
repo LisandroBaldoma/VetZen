@@ -4,6 +4,7 @@ import {
     FolderGit2,
     LayoutGrid,
     PawPrint,
+    Stethoscope,
     UserRound,
     Users,
 } from 'lucide-react';
@@ -23,8 +24,10 @@ import {
 import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
+import { index as adminServicesIndex } from '@/routes/admin/services';
 import { edit as clientProfile } from '@/routes/clients';
 import { index as myPetsIndex } from '@/routes/pets';
+import { index as servicesIndex } from '@/routes/services';
 import type { Auth, NavItem } from '@/types';
 
 const footerNavItems: NavItem[] = [
@@ -61,6 +64,11 @@ export function AppSidebar() {
                       href: petsIndex(),
                       icon: PawPrint,
                   },
+                  {
+                      title: 'Services',
+                      href: adminServicesIndex(),
+                      icon: Stethoscope,
+                  },
               ]
             : auth.user.client
               ? [
@@ -73,6 +81,11 @@ export function AppSidebar() {
                         title: 'My pets',
                         href: myPetsIndex(),
                         icon: PawPrint,
+                    },
+                    {
+                        title: 'Services',
+                        href: servicesIndex(),
+                        icon: Stethoscope,
                     },
                 ]
               : []),
