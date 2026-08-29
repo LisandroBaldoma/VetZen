@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\Client;
 use App\Models\ClinicalRecord;
 use App\Models\Pet;
+use App\Models\Service;
 use App\Policies\ClientPolicy;
 use App\Policies\ClinicalRecordPolicy;
 use App\Policies\PetPolicy;
+use App\Policies\ServicePolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Client::class, ClientPolicy::class);
         Gate::policy(ClinicalRecord::class, ClinicalRecordPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
+        Gate::policy(Service::class, ServicePolicy::class);
     }
 
     /**

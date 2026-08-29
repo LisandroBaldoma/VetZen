@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(ServiceSeeder::class);
 
         if (app()->environment('local')) {
             $admin = User::query()->firstOrCreate([

@@ -3,9 +3,11 @@
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
+use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
+use App\Http\Controllers\Service\ServiceController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +15,9 @@ Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('services', [ServiceController::class, 'index'])->name('services.index');
+    Route::get('services/{service}', [ServiceController::class, 'show'])->name('services.show');
 
     Route::get('pets', [PetController::class, 'index'])->name('pets.index');
     Route::get('pets/create', [PetController::class, 'create'])->name('pets.create');
@@ -28,6 +33,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('pets.medical-records.show');
 
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('services', [AdminServiceController::class, 'index'])->name('services.index');
+        Route::get('services/create', [AdminServiceController::class, 'create'])->name('services.create');
+        Route::post('services', [AdminServiceController::class, 'store'])->name('services.store');
+        Route::get('services/{service}', [AdminServiceController::class, 'show'])->name('services.show');
+        Route::get('services/{service}/edit', [AdminServiceController::class, 'edit'])->name('services.edit');
+        Route::patch('services/{service}', [AdminServiceController::class, 'update'])->name('services.update');
         Route::get('clients', [AdminClientController::class, 'index'])
             ->can('viewAny', Client::class)
             ->name('clients.index');

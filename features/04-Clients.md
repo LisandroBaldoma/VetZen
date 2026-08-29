@@ -1,13 +1,3 @@
-Vamos a implementar la Feature 04 — Clientes de VetZen.
-
-Antes de modificar código, lee y utiliza como contexto:
-
-\- spec.md  
-\- technical.md  
-\- features.md  
-\- features/01-authentication.md  
-\- features/04-clients.md
-
 Objetivo de la feature:
 
 Permitir gestionar la información de las personas responsables de las mascotas.
