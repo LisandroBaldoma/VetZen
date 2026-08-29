@@ -206,6 +206,9 @@ La implementación deberá garantizar que no se produzcan inconsistencias en la 
 
 # **11\. Tratamientos y seguimiento**
 
+La implementación de servicios y procedimientos corresponde a Feature 07. Los
+tratamientos de catálogo, asignaciones y sesiones corresponden a Feature 08.
+
 El dominio terapéutico se compone de servicios, procedimientos, tratamientos
 de catálogo, tratamientos asignados a mascotas y sesiones.
 

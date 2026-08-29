@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
+use App\Http\Controllers\Admin\ProcedureController as AdminProcedureController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
@@ -39,6 +40,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('services/{service}', [AdminServiceController::class, 'show'])->name('services.show');
         Route::get('services/{service}/edit', [AdminServiceController::class, 'edit'])->name('services.edit');
         Route::patch('services/{service}', [AdminServiceController::class, 'update'])->name('services.update');
+        Route::scopeBindings()->group(function () {
+            Route::get('services/{service}/procedures', [AdminProcedureController::class, 'index'])
+                ->name('services.procedures.index');
+            Route::get('services/{service}/procedures/create', [AdminProcedureController::class, 'create'])
+                ->name('services.procedures.create');
+            Route::post('services/{service}/procedures', [AdminProcedureController::class, 'store'])
+                ->name('services.procedures.store');
+            Route::get('services/{service}/procedures/{procedure}', [AdminProcedureController::class, 'show'])
+                ->name('services.procedures.show');
+            Route::get('services/{service}/procedures/{procedure}/edit', [AdminProcedureController::class, 'edit'])
+                ->name('services.procedures.edit');
+            Route::patch('services/{service}/procedures/{procedure}', [AdminProcedureController::class, 'update'])
+                ->name('services.procedures.update');
+        });
         Route::get('clients', [AdminClientController::class, 'index'])
             ->can('viewAny', Client::class)
             ->name('clients.index');

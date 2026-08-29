@@ -193,7 +193,7 @@ gestionar sus sesiones básicas.
 ## **Objetivo**
 
 Extender en una feature futura el seguimiento clínico estructurado más allá de
-las sesiones básicas incluidas en F07.
+las sesiones básicas incluidas en F08.
 
 ## **Alcance**
 
@@ -206,7 +206,7 @@ las sesiones básicas incluidas en F07.
 
 * Los planes estarán asociados a tratamientos asignados.
 * La información clínica deberá respetar ownership, autorización y auditoría.
-* Esta feature futura no redefine las sesiones operativas básicas de F07.
+* Esta feature futura no redefine las sesiones operativas básicas de F08.
 
 ---
 
