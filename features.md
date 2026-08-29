@@ -137,22 +137,21 @@ Centralizar la información clínica y la evolución de los pacientes.
 
 ## **Objetivo**
 
-Permitir administrar los servicios que ofrece la veterinaria.
+Permitir administrar el catálogo terapéutico y su estructura general.
 
 ## **Alcance**
 
-* Crear servicios.  
-* Modificar servicios.  
-* Habilitar o deshabilitar servicios.  
-* Definir duración.  
-* Definir precio.  
-* Definir disponibilidad.  
-* Asociar profesionales.
+* Crear, modificar, activar y desactivar servicios.
+* Crear, modificar, activar y desactivar procedimientos de cada servicio.
+* Definir una duración orientativa opcional para procedimientos.
 
 ## **Reglas principales**
 
-* Solo los servicios habilitados podrán ser solicitados por los clientes.  
-* La configuración del servicio deberá utilizarse para determinar las condiciones de los turnos y tratamientos relacionados.
+* Service representa un área terapéutica y no tiene precio ni duración.
+* Procedure pertenece a Service, puede tener duración orientativa y no tiene
+  precio.
+* La baja comercial se realiza mediante estado, sin eliminar referencias
+  históricas.
 
 ---
 
@@ -160,24 +159,32 @@ Permitir administrar los servicios que ofrece la veterinaria.
 
 ## **Objetivo**
 
-Permitir administrar los tratamientos disponibles y los tratamientos realizados a los pacientes.
+Permitir administrar tratamientos reutilizables, asignarlos a mascotas y
+gestionar sus sesiones básicas.
 
 ## **Alcance**
 
-* Administración de tratamientos.  
-* Solicitud de tratamientos por parte del cliente.  
-* Definición de duración.  
-* Definición de cantidad de sesiones.  
-* Definición de frecuencia.  
-* Definición de objetivos.  
-* Seguimiento del progreso.
+* Administración de tratamientos de catálogo asociados a un servicio.
+* Asociación de uno o varios procedimientos del mismo servicio.
+* Definición de cantidad estimada de sesiones.
+* Asignación de tratamientos a mascotas con snapshots históricos.
+* Generación y administración básica de sesiones.
+* Precio y estado independientes por sesión.
+* Seguimiento del progreso por sesiones completadas.
+* Consulta cliente de asignaciones y sesiones de sus propias mascotas.
+* Conservación histórica y reemplazo de sesiones canceladas.
 
 ## **Reglas principales**
 
-* El cliente solamente podrá solicitar tratamientos habilitados por la veterinaria.  
-* La solicitud no requiere aprobación profesional previa.  
-* Los tratamientos podrán contar con un plan de seguimiento.  
-* La información del tratamiento deberá respetar las reglas de acceso del paciente.
+* El tratamiento requiere al menos un procedimiento del mismo servicio.
+* El precio pertenece a TreatmentSession, no al catálogo.
+* El administrador asigna tratamientos y administra sesiones.
+* El cliente no solicita ni modifica tratamientos en esta versión.
+* El cliente solo consulta recursos de sus propias mascotas.
+* Cambios posteriores del catálogo no alteran asignaciones históricas.
+* `planned_sessions` representa sesiones completadas requeridas. Una sesión
+  cancelada no cuenta ni cambia ese total y genera un reemplazo pendiente con
+  numeración consecutiva cuando sea necesario.
 
 ---
 
@@ -185,25 +192,21 @@ Permitir administrar los tratamientos disponibles y los tratamientos realizados 
 
 ## **Objetivo**
 
-Permitir realizar seguimiento estructurado de los tratamientos.
+Extender en una feature futura el seguimiento clínico estructurado más allá de
+las sesiones básicas incluidas en F08.
 
 ## **Alcance**
 
-* Crear planes personalizados.  
-* Definir sesiones.  
-* Definir frecuencia.  
-* Registrar sesiones realizadas.  
-* Registrar sesiones pendientes.  
-* Registrar evolución.  
-* Consultar progreso.  
-* Finalizar tratamientos.
+* Crear protocolos o planes clínicos personalizados.
+* Definir frecuencia y objetivos clínicos.
+* Registrar evolución clínica detallada.
+* Asociar procedimientos concretos a sesiones cuando se defina.
 
 ## **Reglas principales**
 
-* Los planes estarán asociados a tratamientos.  
-* El progreso deberá poder ser consultado por el cliente cuando corresponda.  
-* Los profesionales autorizados podrán registrar y modificar la evolución.  
-* La información deberá quedar asociada al paciente correspondiente.
+* Los planes estarán asociados a tratamientos asignados.
+* La información clínica deberá respetar ownership, autorización y auditoría.
+* Esta feature futura no redefine las sesiones operativas básicas de F08.
 
 ---
 
@@ -494,4 +497,3 @@ Las decisiones técnicas globales deberán mantenerse en `technical.md`.
 Las reglas de producto deberán mantenerse en `spec.md`.
 
 Las reglas específicas de una funcionalidad deberán mantenerse en su correspondiente especificación de feature.
-

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(ServiceSeeder::class);
+        $this->call(ProcedureSeeder::class);
 
         if (app()->environment('local')) {
             $admin = User::query()->firstOrCreate([

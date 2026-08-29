@@ -16,6 +16,10 @@ class ServiceController extends Controller
 
         return Inertia::render('services/index', [
             'services' => Service::query()
+                ->with(['procedures' => fn ($query) => $query
+                    ->where('is_active', true)
+                    ->orderBy('name')
+                    ->orderBy('id')])
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->orderBy('id')
@@ -28,6 +32,11 @@ class ServiceController extends Controller
     {
         Gate::authorize('view', $service);
 
+        $service->load(['procedures' => fn ($query) => $query
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->orderBy('id')]);
+
         return Inertia::render('services/show', [
             'service' => $this->commercialData($service),
         ]);
@@ -36,14 +45,14 @@ class ServiceController extends Controller
     /** @return array<string, mixed> */
     private function commercialData(Service $service): array
     {
-        return $service->only([
-            'id',
-            'name',
-            'description',
-            'duration_minutes',
-            'price',
-            'currency',
-            'modalities',
-        ]);
+        return [
+            ...$service->only(['id', 'name', 'description']),
+            'procedures' => $service->procedures->map(fn ($procedure): array => $procedure->only([
+                'id',
+                'name',
+                'description',
+                'duration_minutes',
+            ]))->values()->all(),
+        ];
     }
 }

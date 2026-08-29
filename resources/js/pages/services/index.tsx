@@ -28,11 +28,6 @@ export default function ServicesIndex({ services }: { services: Service[] }) {
                                 <p className="line-clamp-3 text-sm text-muted-foreground">
                                     {service.description}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
-                                    {service.duration_minutes
-                                        ? `Approximately ${service.duration_minutes} minutes`
-                                        : 'Duration to be arranged'}
-                                </p>
                             </Link>
                         ))}
                     </div>

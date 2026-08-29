@@ -44,6 +44,12 @@ class Pet extends Model
         return $this->hasMany(ClinicalRecord::class);
     }
 
+    /** @return HasMany<PetTreatment, $this> */
+    public function treatments(): HasMany
+    {
+        return $this->hasMany(PetTreatment::class);
+    }
+
     /**
      * @return array<string, string>
      */

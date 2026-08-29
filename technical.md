@@ -206,13 +206,40 @@ La implementación deberá garantizar que no se produzcan inconsistencias en la 
 
 # **11\. Tratamientos y seguimiento**
 
-Los tratamientos disponibles para solicitud deberán estar previamente habilitados por la veterinaria.
+La implementación de servicios y procedimientos corresponde a Feature 07. Los
+tratamientos de catálogo, asignaciones y sesiones corresponden a Feature 08.
 
-La solicitud de un tratamiento no requerirá aprobación profesional previa.
+El dominio terapéutico se compone de servicios, procedimientos, tratamientos
+de catálogo, tratamientos asignados a mascotas y sesiones.
 
-Los tratamientos podrán incluir planes de seguimiento y sesiones.
+`Service` representa un área general y no contiene precio ni duración.
+`Procedure` pertenece a un servicio, puede contener una duración orientativa y
+no contiene precio. `Treatment` pertenece a un servicio, agrupa procedimientos
+de ese mismo servicio y define una cantidad estimada de sesiones.
 
-La información relacionada con el progreso deberá mantenerse vinculada al paciente y respetar las reglas de autorización definidas para la información clínica.
+`PetTreatment` representa la asignación concreta a una mascota y conserva
+snapshots históricos de las condiciones acordadas. `TreatmentSession`
+pertenece a esa asignación y conserva precio, moneda y estado propios. Los
+importes deberán persistirse como decimales, nunca float.
+
+La creación y ajuste de sesiones deberá ejecutarse transaccionalmente,
+manteniendo numeración única y sin modificar precios históricos. El progreso se
+calculará exclusivamente como sesiones completadas sobre `planned_sessions`.
+
+Una sesión cancelada se conserva como historial, no altera
+`planned_sessions` y no cuenta para el progreso. Salvo cuando el tratamiento
+esté suspendido o cancelado, la cancelación deberá garantizar que sesiones
+completadas más pendientes alcancen el total requerido, generando
+transaccionalmente un reemplazo `pending` con el siguiente número consecutivo y
+el precio predeterminado vigente. Los números cancelados no se reutilizan.
+
+Los clientes solo podrán consultar asignaciones y sesiones de sus propias
+mascotas. No podrán solicitar ni modificar tratamientos en esta versión. La
+autorización deberá recorrer `User → Client → Pet → PetTreatment →
+TreatmentSession`.
+
+No se implementan protocolos complejos, facturación, pagos ni procedimientos
+diferentes por número de sesión.
 
 ---
 
@@ -556,4 +583,3 @@ Las decisiones marcadas como pendientes deberán resolverse antes de generar las
 El documento deberá evolucionar junto con el proyecto. Las decisiones técnicas importantes que modifiquen la arquitectura deberán registrarse y justificarse para mantener trazabilidad.
 
 Las features no deberán utilizar decisiones técnicas contradictorias con este documento sin actualizar previamente la especificación correspondiente.
-

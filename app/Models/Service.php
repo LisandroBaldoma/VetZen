@@ -6,34 +6,39 @@ use Database\Factories\ServiceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
  * @property string $name
  * @property string $description
- * @property int|null $duration_minutes
- * @property string|null $price
- * @property string $currency
- * @property array<int, string> $modalities
  * @property bool $is_active
  */
-#[Fillable(['name', 'description', 'duration_minutes', 'price', 'currency', 'modalities', 'is_active'])]
+#[Fillable(['name', 'description', 'is_active'])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */
     use HasFactory;
 
     protected $attributes = [
-        'currency' => 'ARS',
         'is_active' => true,
     ];
+
+    /** @return HasMany<Procedure, $this> */
+    public function procedures(): HasMany
+    {
+        return $this->hasMany(Procedure::class);
+    }
+
+    /** @return HasMany<Treatment, $this> */
+    public function treatments(): HasMany
+    {
+        return $this->hasMany(Treatment::class);
+    }
 
     protected function casts(): array
     {
         return [
-            'duration_minutes' => 'integer',
-            'price' => 'decimal:2',
-            'modalities' => 'array',
             'is_active' => 'boolean',
         ];
     }

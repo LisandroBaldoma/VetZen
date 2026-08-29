@@ -114,31 +114,41 @@ La información clínica deberá considerarse información protegida y su acceso
 
 La veterinaria podrá administrar los servicios que ofrece a sus clientes.
 
-Cada servicio podrá contemplar:
+Cada servicio representa un área terapéutica general, con nombre, descripción
+y estado activo o inactivo. Un servicio no tiene precio ni duración.
 
-* Duración.  
-* Precio.  
-* Disponibilidad.  
-* Profesionales asociados.
-
-Los servicios estarán relacionados con la gestión de turnos y tratamientos.
+Los servicios contienen procedimientos. Cada procedimiento representa una
+técnica perteneciente a un servicio, puede tener una duración orientativa
+opcional y no tiene precio.
 
 ---
 
 # **8\. Tratamientos**
 
-VetZen permitirá administrar tratamientos destinados a los pacientes.
+VetZen permitirá administrar tratamientos reutilizables del catálogo y
+asignarlos a pacientes.
 
 Deberá permitir:
 
-* Crear tratamientos.  
-* Recibir solicitudes de tratamientos realizadas por clientes.  
-* Gestionar las solicitudes por parte de los profesionales.  
-* Definir duración.  
-* Definir cantidad de sesiones.  
-* Definir frecuencia.  
-* Definir objetivos.  
-* Realizar seguimiento del progreso.
+* Crear tratamientos asociados a un servicio.
+* Asociar uno o varios procedimientos del mismo servicio.
+* Definir una cantidad estimada de sesiones.
+* Asignar un tratamiento a una mascota.
+* Conservar las condiciones históricas acordadas al asignarlo.
+* Generar y administrar sesiones con precio y estado independientes.
+* Realizar seguimiento del progreso según las sesiones completadas.
+* Conservar sesiones canceladas como historial y generar reemplazos pendientes
+  cuando sean necesarios para alcanzar las sesiones requeridas.
+
+La veterinaria cobra por sesión. El precio efectivo pertenece a cada sesión y
+no al servicio, procedimiento o tratamiento del catálogo. Los clientes pueden
+consultar en modo lectura los tratamientos y sesiones de sus propias mascotas,
+pero no pueden solicitarlos ni modificarlos en esta versión.
+
+Las sesiones canceladas no cuentan para completar el tratamiento ni modifican
+la cantidad requerida. Se conservan históricamente y generan un reemplazo
+pendiente con numeración consecutiva cuando sea necesario. El tratamiento se
+completa cuando las sesiones completadas alcanzan la cantidad prevista.
 
 ---
 
@@ -276,9 +286,19 @@ El asistente virtual tampoco deberá utilizarse como sustituto de la atención p
 
 #### **Tratamientos**
 
-* Los clientes podrán solicitar únicamente tratamientos que hayan sido **habilitados previamente por la veterinaria**.  
-* La solicitud de un tratamiento **no requerirá una aprobación profesional previa** para generarlo.  
-* El tratamiento podrá contar posteriormente con su correspondiente planificación y seguimiento.
+* Los tratamientos del catálogo agrupan procedimientos de un mismo servicio y
+  definen una cantidad estimada de sesiones.
+* Un administrador podrá asignar tratamientos a mascotas y administrar sus
+  sesiones.
+* Los clientes podrán consultar únicamente tratamientos y sesiones de sus
+  propias mascotas, en modo lectura.
+* Los clientes no podrán solicitar tratamientos ni modificar asignaciones,
+  sesiones, precios o estados en esta versión.
+* Cada sesión conservará su precio efectivo e historial independientemente de
+  cambios posteriores del catálogo.
+* Las sesiones canceladas no cuentan para el progreso, no reutilizan su número
+  y generan reemplazos cuando falten sesiones pendientes para alcanzar el total
+  requerido.
 
 #### **Turnos**
 
@@ -351,4 +371,3 @@ Y con dos reglas especialmente importantes:
 > **El asistente virtual no tendrá acceso libre a la información clínica: solamente podrá utilizar información autorizada y datos correspondientes al usuario autenticado.**
 
 También queda definido que el asistente tendrá un rol **activo**, no solamente de preguntas y respuestas: podrá ayudar al cliente a encontrar y solicitar un turno, siempre dentro de las reglas del sistema.
-

@@ -4,6 +4,7 @@ import ServiceDetails from '@/components/service-details';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { edit } from '@/routes/admin/services';
+import { index as proceduresIndex } from '@/routes/admin/services/procedures';
 import type { Service } from '@/types';
 
 export default function AdminServiceShow({ service }: { service: Service }) {
@@ -25,9 +26,16 @@ export default function AdminServiceShow({ service }: { service: Service }) {
                             {service.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                     </div>
-                    <Button asChild>
-                        <Link href={edit(service.id)}>Edit</Link>
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href={proceduresIndex(service.id)}>
+                                Procedures
+                            </Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href={edit(service.id)}>Edit</Link>
+                        </Button>
+                    </div>
                 </div>
                 <ServiceDetails service={service} />
             </div>

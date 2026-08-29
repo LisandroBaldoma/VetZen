@@ -21,11 +21,4 @@ class UpdateServiceRequest extends FormRequest
     {
         return $this->serviceRules($this->route('service'));
     }
-
-    protected function prepareForValidation(): void
-    {
-        if (! $this->has('modalities')) {
-            $this->merge(['modalities' => []]);
-        }
-    }
 }
