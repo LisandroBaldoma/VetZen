@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Client;
+use App\Models\ClinicalRecord;
 use App\Models\Pet;
 use App\Policies\ClientPolicy;
+use App\Policies\ClinicalRecordPolicy;
 use App\Policies\PetPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         Gate::policy(Client::class, ClientPolicy::class);
+        Gate::policy(ClinicalRecord::class, ClinicalRecordPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
     }
 

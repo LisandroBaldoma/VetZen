@@ -1,7 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import PetSummary from '@/components/pet-summary';
+import { Button } from '@/components/ui/button';
 import { edit, photo } from '@/routes/pets';
+import { index as medicalRecordsIndex } from '@/routes/pets/medical-records';
 import type { Pet } from '@/types';
 
 export default function PetShow({ pet }: { pet: Pet }) {
@@ -15,6 +17,11 @@ export default function PetShow({ pet }: { pet: Pet }) {
                     editHref={edit.url(pet.id)}
                     photoHref={photo.url(pet.id)}
                 />
+                <Button asChild variant="outline">
+                    <Link href={medicalRecordsIndex.url(pet.id)}>
+                        View medical records
+                    </Link>
+                </Button>
             </div>
         </>
     );

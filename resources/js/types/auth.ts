@@ -37,6 +37,22 @@ export type Pet = {
     photo: string | null;
 };
 
+export type ClinicalRecord = {
+    id: number;
+    pet_id: number;
+    created_by: number;
+    updated_by: number;
+    type: 'consultation' | 'evaluation' | 'evolution' | 'session' | 'other';
+    title: string;
+    content: string;
+    occurred_at: string;
+    is_visible_to_client: boolean;
+    created_at: string;
+    updated_at: string;
+    creator?: Pick<User, 'id' | 'name'>;
+    updater?: Pick<User, 'id' | 'name'>;
+};
+
 export type Auth = {
     user: User;
     roles: string[];
