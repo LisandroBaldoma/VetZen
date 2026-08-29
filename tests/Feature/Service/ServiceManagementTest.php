@@ -46,24 +46,15 @@ class ServiceManagementTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Acupuncture',
             'description' => 'General commercial description.',
-            'duration_minutes' => 30,
-            'price' => '1500.50',
-            'currency' => 'ARS',
-            'modalities' => ['clinic', 'home_visit'],
         ]);
 
         $service = Service::query()->where('name', 'Acupuncture')->firstOrFail();
         $response->assertRedirect(route('admin.services.show', $service));
         $this->assertTrue($service->is_active);
-        $this->assertSame('1500.50', $service->price);
 
         $this->actingAs($admin)->patch(route('admin.services.update', $service), [
             'name' => 'Updated acupuncture',
             'description' => 'Updated description.',
-            'duration_minutes' => null,
-            'price' => '0',
-            'currency' => 'ARS',
-            'modalities' => [],
             'is_active' => false,
             'client_id' => 999,
             'role' => 'client',
@@ -71,8 +62,6 @@ class ServiceManagementTest extends TestCase
 
         $service->refresh();
         $this->assertSame('Updated acupuncture', $service->name);
-        $this->assertSame('0.00', $service->price);
-        $this->assertSame([], $service->modalities);
         $this->assertFalse($service->is_active);
         $this->assertNull($service->getAttribute('client_id'));
         $this->assertNull($service->getAttribute('role'));
@@ -86,8 +75,6 @@ class ServiceManagementTest extends TestCase
         $payload = [
             'name' => 'Forbidden update',
             'description' => $service->description,
-            'currency' => 'ARS',
-            'modalities' => [],
         ];
 
         $this->actingAs($client)->get(route('admin.services.index'))->assertForbidden();
@@ -107,13 +94,9 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Existing service',
             'description' => '',
-            'duration_minutes' => 0,
-            'price' => '-0.01',
-            'currency' => 'USD',
-            'modalities' => ['clinic', 'clinic', 'remote'],
             'is_active' => 'not-boolean',
         ])->assertSessionHasErrors([
-            'name', 'description', 'duration_minutes', 'price', 'currency', 'modalities.1', 'modalities.2', 'is_active',
+            'name', 'description', 'is_active',
         ]);
 
         $this->assertSame(1, Service::query()->count());
@@ -127,10 +110,6 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($admin)->patch(route('admin.services.update', $service), [
             'name' => 'Same name',
             'description' => 'Still valid.',
-            'duration_minutes' => null,
-            'price' => null,
-            'currency' => 'ARS',
-            'modalities' => [],
             'is_active' => true,
         ])->assertSessionHasNoErrors();
     }

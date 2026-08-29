@@ -35,7 +35,6 @@ export default function AdminServicesIndex({
                                 <tr>
                                     <th className="px-4 py-3">Service</th>
                                     <th className="px-4 py-3">Status</th>
-                                    <th className="px-4 py-3">Base price</th>
                                     <th className="px-4 py-3" />
                                 </tr>
                             </thead>
@@ -58,11 +57,6 @@ export default function AdminServicesIndex({
                                                     : 'Inactive'}
                                             </Badge>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            {service.price
-                                                ? `${service.currency} ${service.price}`
-                                                : 'Not set'}
-                                        </td>
                                         <td className="flex justify-end gap-2 px-4 py-3">
                                             <Form
                                                 {...AdminServiceController.update.form(
@@ -79,34 +73,6 @@ export default function AdminServicesIndex({
                                                     name="description"
                                                     value={service.description}
                                                 />
-                                                <input
-                                                    type="hidden"
-                                                    name="duration_minutes"
-                                                    value={
-                                                        service.duration_minutes ??
-                                                        ''
-                                                    }
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="price"
-                                                    value={service.price ?? ''}
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="currency"
-                                                    value={service.currency}
-                                                />
-                                                {service.modalities.map(
-                                                    (modality) => (
-                                                        <input
-                                                            key={modality}
-                                                            type="hidden"
-                                                            name="modalities[]"
-                                                            value={modality}
-                                                        />
-                                                    ),
-                                                )}
                                                 <input
                                                     type="hidden"
                                                     name="is_active"

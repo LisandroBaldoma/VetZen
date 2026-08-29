@@ -40,10 +40,6 @@ class ServiceController extends Controller
             'id',
             'name',
             'description',
-            'duration_minutes',
-            'price',
-            'currency',
-            'modalities',
         ]);
     }
 }

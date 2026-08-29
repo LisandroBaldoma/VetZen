@@ -13,10 +13,6 @@ class ServiceFactory extends Factory
         return [
             'name' => fake()->unique()->words(3, true),
             'description' => fake()->paragraph(),
-            'duration_minutes' => fake()->optional()->numberBetween(15, 90),
-            'price' => fake()->optional()->randomFloat(2, 0, 100000),
-            'currency' => 'ARS',
-            'modalities' => fake()->randomElements(['clinic', 'online', 'home_visit'], fake()->numberBetween(0, 3)),
             'is_active' => true,
         ];
     }

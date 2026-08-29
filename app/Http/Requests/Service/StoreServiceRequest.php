@@ -19,11 +19,4 @@ class StoreServiceRequest extends FormRequest
     {
         return $this->serviceRules();
     }
-
-    protected function prepareForValidation(): void
-    {
-        if (! $this->has('modalities')) {
-            $this->merge(['modalities' => []]);
-        }
-    }
 }
