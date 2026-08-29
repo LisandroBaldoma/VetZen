@@ -1,549 +1,650 @@
-# Feature 07 — Servicios
+# Feature 07 — Servicios y Tratamientos
 
 ## 1. Objetivo
 
-Implementar el catálogo de terapias complementarias que ofrece VetZen. Un
-servicio define la identidad y la información comercial general de una terapia;
-no representa su aplicación clínica a una mascota concreta.
+Implementar el catálogo terapéutico de VetZen y la asignación operativa de tratamientos a mascotas mediante este modelo simple y evolutivo:
 
-La primera versión permite al administrador listar, consultar, crear, editar,
-activar y desactivar servicios. Un cliente autenticado puede listar y consultar
-únicamente servicios activos. La autorización debe aplicarse siempre en
-backend.
+```text
+Service
+  ├── Procedure
+  └── Treatment ── incluye uno o varios Procedure del mismo Service
 
-## 2. Problema
+Pet
+  └── PetTreatment
+        └── TreatmentSession
+```
 
-VetZen ya gestiona clientes, mascotas e historia clínica, pero no dispone de
-una fuente estructurada para describir qué terapias ofrece la veterinaria. El
-catálogo proporciona esa identidad estable y la información comercial que el
-cliente necesita, además de preparar una referencia para futuros Tratamientos.
+Un servicio representa un área terapéutica general. Sus procedimientos representan técnicas disponibles dentro de esa área. Un tratamiento representa una combinación reutilizable de procedimientos y una cantidad estimada de sesiones. Al asignarlo a una mascota se crea un tratamiento individual con condiciones acordadas y sesiones con precio y estado independientes.
 
-Esta feature no resuelve la aplicación individual de una terapia, la
-planificación clínica, los turnos ni la agenda.
+Esta feature no implementa protocolos clínicos complejos, planificación de procedimientos por número de sesión, pagos, facturación ni evolución clínica detallada.
 
-## 3. Contexto real de VetZen
+## 2. Contexto y problema de negocio
 
-El catálogo inicial conocido contempla cuatro servicios:
+La definición anterior de F07 trataba cada servicio como una prestación con duración, precio y modalidades propias, y postergaba los tratamientos. La validación con el veterinario reemplaza ese modelo:
 
-### Acupuntura Veterinaria
+* un servicio es el área terapéutica general y no tiene precio ni duración;
+* un procedimiento pertenece a un servicio y puede tener duración orientativa, pero no precio;
+* un tratamiento pertenece a un servicio, combina uno o más procedimientos y propone una cantidad estimada de sesiones;
+* el catálogo de tratamientos no contiene un precio general;
+* la veterinaria cobra por sesión;
+* la asignación a una mascota debe preservar lo acordado aunque posteriormente cambie el catálogo;
+* cada sesión conserva su propio precio y estado.
 
-Servicio de acupuntura veterinaria. El material actual describe sesiones de
-aproximadamente 15–20 minutos. La duración configurada en el catálogo es
-orientativa y modificable. Las frecuencias dependen del paciente y no
-pertenecen a `Service`.
+Este modelo representa la práctica real sin anticipar protocolos, facturación ni estructuras clínicas innecesarias.
 
-### Fitoterapia
+## 3. Dependencias y compatibilidad
 
-Servicio de fitoterapia veterinaria. Puede contemplar las modalidades `clinic`
-y `online`. El material actual describe consultas de aproximadamente 45
-minutos. Estudios, receta, preparado y seguimiento individual pertenecen al
-futuro Treatment y/o dominio clínico.
+F07 depende de:
 
-### Flores de Bach / Terapia Floral
+* Feature 03: autenticación y verificación de email;
+* Feature 04: roles `admin` y `client`, Spatie Laravel Permission, Policies y separación de áreas;
+* Feature 05: relaciones `User → Client → Pet`, ownership y administración de mascotas;
+* Feature 06: protección de información clínica y convenciones de autorización;
+* Laravel, React, Inertia, Wayfinder, Tailwind CSS y PHPUnit ya adoptados.
 
-Servicio de terapia floral veterinaria. El material actual describe sesiones
-de aproximadamente 45 minutos y modalidad `online`. Las esencias indicadas,
-recetas y controles individuales no pertenecen a `Service`.
+Las relaciones con cliente y mascota se resuelven mediante el modelo existente. No se duplica `client_id` ni `user_id` cuando el ownership puede derivarse desde `Pet`.
 
-### Fisioterapia Veterinaria
+## 4. Alcance funcional
 
-Terapia orientada a la rehabilitación física, movilidad y recuperación
-funcional del paciente, adaptada a sus necesidades individuales. Tiene como
-referencia una duración habitual de 45 minutos, modalidad inicial `clinic`,
-precio configurable sin valor hardcodeado y estado activo.
+### Catálogo terapéutico
 
-Esta referencia no incorpora plan de rehabilitación, ejercicios, cantidad o
-frecuencia de sesiones, evolución ni resultados clínicos. Esos conceptos
-pertenecen al futuro Treatment.
+El administrador puede:
 
-Los valores descriptos sirven para configurar el catálogo inicial. No son
-invariantes clínicas ni precios permanentes.
+* listar, consultar, crear, editar, activar y desactivar servicios;
+* listar, consultar, crear, editar, activar y desactivar procedimientos dentro de un servicio;
+* listar, consultar, crear, editar, activar y desactivar tratamientos del catálogo;
+* asociar uno o varios procedimientos a un tratamiento;
+* consultar activos e inactivos sin perder referencias históricas.
 
-## 4. Usuarios
+### Tratamientos de mascotas
 
-### Administrador
+El administrador puede:
 
-El rol `admin` puede:
-
-* listar todos los servicios, activos e inactivos;
-* consultar cualquier servicio;
-* crear servicios;
-* editar servicios;
-* activar servicios;
-* desactivar servicios.
-
-No puede eliminarlos porque delete no forma parte de Feature 07.
+* asignar un tratamiento activo del catálogo a una mascota;
+* definir las condiciones acordadas para esa asignación;
+* generar sus sesiones previstas;
+* consultar y actualizar el estado del tratamiento asignado;
+* consultar y actualizar fecha programada, precio, estado y notas de cada sesión;
+* consultar el progreso calculado desde las sesiones completadas.
 
 ### Cliente
 
-El rol `client` puede listar y consultar servicios activos. No puede crear,
-editar, activar, desactivar, cambiar precios o modalidades, consultar servicios
-inactivos ni acceder a endpoints administrativos, incluso mediante requests
-HTTP manuales.
+El cliente puede consultar los tratamientos asignados a sus propias mascotas y
+sus sesiones, siempre en modo de solo lectura. No puede solicitar tratamientos
+ni modificar asignaciones, sesiones, fechas, precios o estados.
 
-Feature 07 no crea nuevos roles, permisos profesionales ni una matriz granular
-de capacidades.
+Las operaciones son create, read, update y cambio de estado. No se incluye eliminación física, Soft Deletes ni archivo independiente.
 
-## 5. Dependencias
+## 5. Actores y permisos
 
-* Feature 03: autenticación, usuario autenticado y verificación de email.
-* Feature 04: roles `admin` y `client`, Spatie Laravel Permission, Policies y
-  separación entre las áreas administrativa y de cliente.
-* Feature 05: convenciones de CRUD, Form Requests, protección de atributos y
-  pantallas React/Inertia.
-* Feature 06: separación entre información comercial e información clínica.
-* Stack implementado: Laravel 13, React 19, Inertia 3, Wayfinder, Tailwind CSS,
-  Spatie Laravel Permission y PHPUnit.
+### Administrador
 
-No existe actualmente implementación de Servicios. La implementación debe
-seguir las convenciones existentes sin introducir repositorios, services,
-DTOs, APIs paralelas u otras abstracciones sin una necesidad concreta.
+El rol `admin` puede administrar el catálogo completo, asignar tratamientos a cualquier mascota existente y administrar sus sesiones. Todas las operaciones requieren autorización de backend.
 
-## 6. Modelo de dominio
+### Cliente
 
-`Service` es un recurso global del catálogo. No pertenece a un cliente ni a una
-mascota.
+El rol `client`:
 
-```text
-Service
-├── id
-├── name
-├── description
-├── duration_minutes
-├── price
-├── currency
-├── modalities
-├── is_active
-├── created_at
-└── updated_at
-```
+* no crea ni modifica servicios, procedimientos o tratamientos del catálogo;
+* no asigna tratamientos;
+* no crea ni modifica sesiones;
+* si se habilita la lectura, solo consulta tratamientos y sesiones de sus propias mascotas;
+* nunca accede a información de mascotas ajenas mediante URLs, bindings, payloads o requests directas.
 
-| Atributo | Contrato de primera versión |
-| --- | --- |
-| `id` | Identificador y route model binding |
-| `name` | Nombre comercial obligatorio y único |
-| `description` | Texto comercial/general obligatorio |
-| `duration_minutes` | Entero positivo nullable; duración habitual orientativa |
-| `price` | Decimal nullable y no negativo; precio base orientativo |
-| `currency` | Moneda explícita; único valor inicial: `ARS` |
-| `modalities` | Lista multivalor controlada; admite cero, una o varias |
-| `is_active` | Booleano con default `true`; disponibilidad comercial |
-| `created_at`, `updated_at` | Timestamps convencionales de Laravel |
-
-La representación prevista para `modalities` es JSON con cast a array, si al
-implementar se confirma su compatibilidad con la base de datos actual. No se
-crea una tabla `service_modalities`. `price` debe persistirse con un decimal
-apropiado, nunca float. `is_active` debe tener default de base de datos `true`
-y cast booleano.
-
-No se agregan otros campos salvo un requisito técnico imprescindible de Laravel
-previamente justificado. En particular, `Service` no contiene `pet_id`,
-`client_id`, `user_id`, profesionales, disponibilidad horaria, frecuencia,
-cantidad de sesiones, receta, diagnóstico, indicaciones clínicas, evolución,
-seguimiento ni campos de IA.
-
-## 7. Distinción Service vs Treatment
-
-```text
-Service                              futuro Treatment
-Qué terapia ofrece VetZen            Aplicación a una mascota concreta
-Información comercial general        Información individual y clínica
-No pertenece a una Pet               Pertenece a una Pet
-No registra sesiones realizadas      Podrá organizar sesiones y seguimiento
-No contiene receta individual        Podrá vincular indicaciones o recetas
-```
-
-La relación futura será:
-
-```text
-Pet
- ↓
-Treatment
- ↓
-Service
-```
-
-Feature 07 proporciona únicamente la identidad estable de `Service`. No crea
-`Treatment`, `TreatmentSession`, relaciones con estructuras inexistentes ni
-una relación directa entre `Service` y `ClinicalRecord`.
-
-## 8. Alcance
-
-Feature 07 incluye:
-
-* Modelo y catálogo de `Service` con los atributos aprobados.
-* Listado y detalle administrativo de servicios activos e inactivos.
-* Creación, edición, activación y desactivación administrativas.
-* Listado y detalle de servicios activos para clientes autenticados.
-* Precio base, moneda ARS explícita, duración orientativa y modalidades simples.
-* Autenticación, autorización con Spatie y `ServicePolicy`, validación y
-  protección contra mass assignment en backend.
-* Frontend React/Inertia coherente con las áreas actuales de cliente y admin.
-* Factory, pruebas Feature/HTTP y evaluación de un Seeder inicial conforme a
-  las convenciones del proyecto.
-
-Las operaciones son create, read, update y cambio de estado. No existe delete.
-
-## 9. Fuera de alcance
-
-No se incluyen:
-
-* `Treatment`, `TreatmentSession` o asignación a mascotas.
-* Sesiones, planes, ejercicios, frecuencia, evolución, resultados o seguimiento.
-* Recetas, preparados, estudios, diagnósticos o indicaciones clínicas.
-* Cambios o relaciones adicionales con Historia Clínica.
-* Profesionales asociados, asignación o permisos profesionales.
-* Disponibilidad horaria, agenda, horarios, turnos o reservas.
-* Precios por modalidad, primera consulta, control, domicilio o adicionales.
-* Descuentos, promociones, historial de precios o motor de tarifas.
-* Pagos o facturación.
-* Delete, Soft Deletes, archivo o eliminación condicional.
-* Slug, URLs públicas o SEO.
-* Notificaciones, IA, RAG, embeddings o recomendaciones automáticas.
-* Asignación automática de servicios a mascotas.
-
-## 10. Reglas de negocio
-
-1. Un servicio describe una terapia ofrecida por VetZen y no una atención de
-   un paciente.
-2. `name` y `description` son obligatorios.
-3. El nombre es único: no pueden coexistir duplicados funcionales.
-4. `duration_minutes` es nullable y, cuando existe, representa una duración
-   aproximada configurable, no una regla clínica.
-5. `price` es nullable, configurable, no negativo y representa un precio base
-   orientativo en la moneda explícita `ARS`.
-6. Un servicio admite cero, una o varias modalidades de `clinic`, `online` y
-   `home_visit`.
-7. Las modalidades no tienen precio, horario, profesional, disponibilidad ni
-   duración propios en esta versión.
-8. `is_active = true` significa que VetZen ofrece el servicio;
-   `is_active = false` lo conserva pero lo retira del catálogo del cliente.
-9. `is_active` no representa agenda, horarios, turnos libres ni profesionales.
-10. Admin administra todos los servicios; client solo lee los activos.
-11. Las rutas del cliente y sus props Inertia deben excluir inactivos. Conocer
-    su ID o URL no permite consultarlos.
-12. La baja se realiza exclusivamente con `is_active = false`; no se elimina ni
-    archiva el recurso.
-13. Los listados se ordenan alfabéticamente por `name` con desempate estable por
-    `id`. No existe `sort_order`.
-14. Precios y duraciones del material no se hardcodean como reglas permanentes.
-15. Frecuencia, receta, evolución y seguimiento no se guardan en `Service`.
-16. Toda autorización se aplica en Laravel; la UI no es seguridad.
-
-## 11. Autorización
-
-Spatie Laravel Permission resuelve las capacidades generales de los roles
-existentes y `ServicePolicy` protege cada acción o recurso. No se crea una
-matriz granular de permisos para Servicios.
+No se crean roles adicionales ni una matriz granular de profesionales.
 
 | Acción | `client` | `admin` |
 | --- | --- | --- |
-| Listar | Solo activos | Todos |
-| Consultar activo | Permitido | Permitido |
-| Consultar inactivo | Denegado | Permitido |
-| Crear | Denegado | Permitido |
-| Editar | Denegado | Permitido |
-| Cambiar precio/modalidades | Denegado | Permitido |
-| Activar/desactivar | Denegado | Permitido |
-| Eliminar | No incluido | No incluido |
+| Administrar Service, Procedure o Treatment | Denegado | Permitido |
+| Asignar Treatment a Pet | Denegado | Permitido |
+| Administrar PetTreatment o TreatmentSession | Denegado | Permitido |
+| Leer PetTreatment y sesiones propios | Permitido, solo lectura | Permitido |
+| Leer recursos de otra Pet | Denegado | Permitido |
 
-Las rutas permanecen bajo autenticación y verificación de email. El área
-administrativa exige rol o capacidad administrativa y la Policy. Las rutas del
-cliente autorizan lectura y aplican explícitamente el estado activo.
-
-El catálogo no tiene ownership horizontal porque es global. Su frontera es la
-separación entre lectura de activos y administración. Un client que intenta
-usar una ruta administrativa o consultar un inactivo debe recibir una
-denegación del backend.
-
-## 12. Información comercial
-
-Un client autenticado puede recibir de un servicio activo:
-
-* `name`;
-* `description`;
-* `duration_minutes`;
-* `price`;
-* `currency`;
-* `modalities`.
-
-La UI presenta duración y precio como información aproximada/orientativa.
-Cuando `duration_minutes` o `price` sean null debe mostrar una ausencia
-coherente, sin inventar valores.
-
-No se exponen al cliente servicios inactivos, configuración administrativa,
-timestamps salvo necesidad real de UI, información clínica, datos de clientes
-o mascotas. El catálogo no se abre a visitantes no autenticados.
-
-`description` contiene texto plano comercial/general. No admite HTML arbitrario
-ni se utiliza para diagnósticos, recetas, evolución, resultados, frecuencia o
-tratamientos individuales.
-
-## 13. Modalidades
-
-`modalities` es una lista controlada multivalor. Admite una lista vacía o una
-combinación sin repetidos de:
-
-* `clinic`: atención en consultorio;
-* `online`: atención online;
-* `home_visit`: atención a domicilio.
-
-El backend valida la lista y cada elemento y rechaza valores arbitrarios. La
-representación simple prevista es JSON con cast de Eloquent a array.
-
-No se crea una entidad separada. Si una futura feature requiere atributos
-propios por modalidad, podrá normalizar el modelo entonces.
-
-## 14. Precio
-
-`price` es un precio comercial base y orientativo:
-
-* nullable;
-* configurable por admin;
-* no negativo cuando existe;
-* persistido como decimal apropiado, nunca float.
-
-`currency` mantiene la moneda explícita y utiliza únicamente `ARS`. Los
-importes del material existente no se usan como defaults ni se hardcodean.
-
-No se implementan variantes, adicionales, descuentos, promociones, historial
-ni motor de tarifas.
-
-## 15. Duración
-
-`duration_minutes` es nullable, entero, positivo cuando existe y configurable
-por admin. Representa la duración habitual u orientativa de una sesión.
-
-La UI debe presentarla como aproximada. No se almacenan rangos; para Acupuntura
-se configurará un valor orientativo al cargar el catálogo, sin convertir el
-rango 15–20 minutos en una regla rígida.
-
-Cantidad de sesiones, frecuencia y controles individuales pertenecen a
-Treatment.
-
-## 16. Estado y baja
-
-`is_active` es booleano y tiene default `true`.
+## 6. Entidades y relaciones
 
 ```text
-is_active = true  → servicio ofrecido comercialmente
-is_active = false → servicio conservado pero no disponible para clientes
+Service 1 ──── * Procedure
+Service 1 ──── * Treatment
+Treatment * ──── * Procedure
+
+User 1 ──── 0..1 Client
+Client 1 ──── * Pet
+Pet 1 ──── * PetTreatment
+Treatment 1 ──── * PetTreatment
+PetTreatment 1 ──── * TreatmentSession
 ```
 
-Admin consulta ambos estados y puede cambiarlos. Client solo lista y consulta
-activos; el detalle de un inactivo se deniega aunque conozca el identificador.
+La relación `Treatment ↔ Procedure` es multivalor. Todo procedimiento asociado debe pertenecer al mismo servicio que el tratamiento.
 
-No existe endpoint DELETE, Soft Deletes, archivo ni eliminación condicional. La
-identidad se preserva para futuras relaciones históricas.
+`PetTreatment` es la instancia individual acordada para una mascota; `Treatment` es una plantilla reutilizable. `TreatmentSession` pertenece exclusivamente a `PetTreatment`.
 
-## 17. Flujos principales
+## 7. Service
 
-### Cliente: listar y consultar activos
+`Service` representa un área terapéutica general ofrecida por VetZen.
 
-1. Accede a Servicios desde su área autenticada.
-2. Laravel verifica autenticación, verificación y capacidad de lectura.
-3. El backend consulta solo activos, ordenados por `name` e `id`.
-4. La respuesta expone exclusivamente los campos comerciales aprobados.
-5. Al abrir un detalle, la Policy y el estado vuelven a comprobarse.
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador y route model binding |
+| `name` | Nombre obligatorio y único |
+| `description` | Descripción general obligatoria, texto plano |
+| `is_active` | Booleano, default `true` |
+| timestamps | Timestamps convencionales |
 
-El flujo termina en la consulta; no permite contratar, reservar, solicitar un
-turno ni iniciar un tratamiento.
+Un servicio no tiene precio, moneda, duración, modalidad, disponibilidad horaria, profesional ni relación directa con mascotas o historia clínica.
 
-### Administrador: listar y consultar
+Ejemplos: Fisioterapia, Acupuntura, Fitoterapia y Flores de Bach.
 
-1. Accede a Administración → Servicios.
-2. Laravel verifica autenticación, rol/capacidad y Policy.
-3. Recibe activos e inactivos ordenados establemente por nombre.
-4. Puede abrir el detalle de cualquiera.
+## 8. Procedure
 
-### Administrador: crear
+`Procedure` representa una técnica o práctica perteneciente a un servicio.
 
-1. Abre el formulario de alta y Laravel autoriza la acción.
-2. Envía únicamente los campos aprobados.
-3. El Form Request valida los datos.
-4. El backend persiste el servicio con `is_active = true` por defecto, salvo
-   elección administrativa explícita válida.
-5. Redirige según la convención del área administrativa.
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador |
+| `service_id` | Servicio propietario, obligatorio |
+| `name` | Nombre obligatorio |
+| `description` | Descripción opcional, texto plano |
+| `duration_minutes` | Entero positivo nullable; duración orientativa |
+| `is_active` | Booleano, default `true` |
+| timestamps | Timestamps convencionales |
 
-### Administrador: editar y cambiar estado
+El nombre es único dentro de su servicio, no necesariamente en todo VetZen. Un procedimiento no tiene precio, moneda, cantidad de sesiones ni información clínica individual.
 
-1. Abre un servicio y Laravel autoriza la actualización.
-2. Envía los atributos editables aprobados.
-3. El Form Request valida y el backend actualiza solo esos campos.
-4. Cambiar `is_active` altera inmediatamente la visibilidad para clientes.
+Desactivarlo impide seleccionarlo en nuevos tratamientos, pero conserva sus referencias históricas.
+
+## 9. Treatment
+
+`Treatment` representa un tratamiento reutilizable del catálogo.
+
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador |
+| `service_id` | Servicio al que pertenece |
+| `name` | Nombre obligatorio |
+| `description` | Descripción obligatoria, texto plano |
+| `estimated_sessions` | Entero mayor que cero |
+| `is_active` | Booleano, default `true` |
+| timestamps | Timestamps convencionales |
+
+Un tratamiento:
+
+* pertenece a un único servicio;
+* incluye al menos un procedimiento;
+* solo incluye procedimientos del mismo servicio;
+* no tiene precio, moneda, duración total, frecuencia ni objetivos clínicos;
+* no define qué procedimiento se aplicará en cada sesión;
+* no puede agregar procedimientos inactivos;
+* conserva asociaciones históricas si un procedimiento se desactiva después.
+
+El nombre es único dentro del servicio.
+
+## 10. PetTreatment
+
+`PetTreatment` representa la asignación de un tratamiento del catálogo a una mascota.
+
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador |
+| `pet_id` | Mascota autorizada |
+| `treatment_id` | Tratamiento seleccionado |
+| `planned_sessions` | Sesiones previstas, copiadas inicialmente de `estimated_sessions` |
+| `default_session_price` | Precio predeterminado por sesión, decimal no negativo |
+| `currency` | Moneda explícita; valor inicial `ARS` |
+| `starts_on` | Fecha de inicio |
+| `status` | Estado controlado |
+| `notes` | Texto opcional |
+| timestamps | Timestamps convencionales |
+
+La mascota se resuelve mediante un contexto autorizado y no se reasigna por mass assignment. La asignación conserva las condiciones acordadas aunque cambie posteriormente el catálogo.
+
+Además de mantener `treatment_id`, la asignación conserva como snapshot:
+
+* nombre del tratamiento;
+* descripción del tratamiento;
+* cantidad de sesiones acordada;
+* precio predeterminado por sesión y moneda;
+* procedimientos incluidos al asignar.
+
+Los procedimientos congelados se persisten mediante una relación propia entre
+`PetTreatment` y `Procedure`, conservando `procedure_id` cuando exista, nombre
+y descripción opcional como snapshots. Las consultas históricas usan los
+snapshots y no los valores actuales del catálogo.
+
+## 11. TreatmentSession
+
+`TreatmentSession` representa una sesión concreta del tratamiento asignado.
+
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador |
+| `pet_treatment_id` | Tratamiento asignado propietario |
+| `session_number` | Entero positivo, único dentro de `PetTreatment` |
+| `scheduled_at` | Fecha y hora programada nullable |
+| `price` | Decimal no negativo; precio propio de la sesión |
+| `currency` | Moneda copiada inicialmente desde `PetTreatment` |
+| `status` | Estado controlado |
+| `notes` | Texto opcional |
+| timestamps | Timestamps convencionales |
+
+Al generarse, cada sesión copia precio y moneda de `PetTreatment`. Su precio puede cambiar individualmente. Cambiar el precio predeterminado no modifica sesiones ya creadas, históricas o completadas.
+
+## 12. Reglas de negocio
+
+1. `Service` es un área terapéutica y no tiene precio ni duración.
+2. Todo `Procedure` pertenece a un `Service` y no tiene precio.
+3. Todo `Treatment` pertenece a un `Service` y requiere al menos un `Procedure` de ese mismo servicio.
+4. `estimated_sessions` y `planned_sessions` son enteros mayores que cero.
+5. El catálogo no define precios; el precio se acuerda al asignar el tratamiento y se persiste por sesión.
+6. Una asignación nueva solo puede usar un tratamiento activo.
+7. Las sesiones pertenecen a `PetTreatment`, nunca directamente a `Treatment`.
+8. La generación inicial crea exactamente `planned_sessions`, numeradas desde 1 sin duplicados ni huecos.
+9. Cada sesión nueva copia `default_session_price` y `currency`.
+10. Cambios del catálogo no reescriben asignaciones ni sesiones existentes.
+11. Cambios del precio predeterminado no reescriben sesiones existentes.
+12. Una sesión completada cuenta para el progreso; una cancelada no cuenta como completada.
+13. `planned_sessions` representa la cantidad de sesiones efectivamente
+    completadas que requiere el tratamiento.
+14. El progreso se calcula exclusivamente como
+    `completed_sessions / planned_sessions`; las canceladas no forman parte del
+    numerador ni del denominador.
+15. Cancelar una sesión no modifica `planned_sessions` y conserva el registro,
+    número, precio y demás datos históricos de la sesión cancelada.
+16. Después de una cancelación, el sistema garantiza que
+    `completed_sessions + pending_sessions >= planned_sessions`.
+17. Si falta una sesión, se genera un reemplazo `pending` con el siguiente
+    número consecutivo disponible y el `default_session_price` vigente.
+18. Los números cancelados no se reutilizan y nunca existen números duplicados.
+19. Si el tratamiento está `suspended` o `cancelled`, no se generan reemplazos
+    automáticamente.
+20. Activar/desactivar conserva la identidad; no existe delete.
+21. Toda autorización y ownership se aplican en Laravel.
+22. `pet_id`, `client_id`, `user_id`, roles o permisos del frontend no prueban ownership.
+23. `planned_sessions` puede ajustarse transaccionalmente mientras el
+    tratamiento esté `pending` o `in_progress`.
+24. Al aumentarlo se crean sesiones `pending`, consecutivas y con el precio
+    predeterminado vigente.
+25. Al reducirlo solo se eliminan las últimas sesiones `pending`; nunca se
+    eliminan sesiones `completed` o `cancelled`.
+26. `planned_sessions` nunca puede quedar por debajo de las sesiones
+    completadas.
+27. Un tratamiento `suspended` o `cancelled` no admite cambios de cantidad ni
+    sesiones. El tratamiento suspendido puede reanudarse manualmente; el
+    cancelado no se reabre en F07.
+
+## 13. Estados y transiciones
+
+### PetTreatment
+
+* `pending`: asignado, todavía no iniciado;
+* `in_progress`: tratamiento iniciado;
+* `completed`: tratamiento finalizado;
+* `suspended`: pausado temporalmente;
+* `cancelled`: cancelado.
+
+### TreatmentSession
+
+* `pending`: sesión prevista o programada;
+* `completed`: sesión realizada;
+* `cancelled`: sesión cancelada.
+
+Los estados son valores controlados por la aplicación. Se aplican estas reglas:
+
+* completar la primera sesión cambia `pending` a `in_progress` si aún quedan
+  sesiones requeridas;
+* cuando las sesiones completadas alcanzan `planned_sessions`, el tratamiento
+  pasa a `completed`;
+* `suspended` y `cancelled` solo se establecen manualmente por admin;
+* reanudar un tratamiento suspendido lo devuelve a `pending` o `in_progress`
+  según la cantidad de sesiones completadas;
+* cancelar una sesión no cancela el tratamiento;
+* cancelar una sesión genera un reemplazo cuando
+  `completed_sessions + pending_sessions < planned_sessions`, excepto si el
+  tratamiento está suspendido o cancelado;
+* un tratamiento cancelado no admite modificaciones ni nuevas sesiones;
+* una reapertura de tratamientos cancelados queda fuera de F07.
+
+La posibilidad de aumentar sesiones de un tratamiento ya `completed` permanece
+pendiente por la contradicción indicada en la sección 24.
+
+## 14. Flujos principales
+
+### Administrar el catálogo
+
+1. Admin crea o selecciona un servicio.
+2. Crea procedimientos dentro de ese servicio.
+3. Crea un tratamiento, define descripción y sesiones estimadas.
+4. Selecciona uno o más procedimientos activos del mismo servicio.
+5. El backend valida consistencia y persiste catálogo y asociaciones.
+
+### Asignar un tratamiento a una mascota
+
+1. Admin abre una mascota existente.
+2. El backend autoriza la mascota y muestra tratamientos activos.
+3. Admin selecciona tratamiento, fecha de inicio, sesiones previstas, precio por sesión, moneda, estado y notas.
+4. El backend vuelve a validar tratamiento, servicio y ownership.
+5. Crea `PetTreatment`, conserva el acuerdo y genera sus sesiones atómicamente.
+6. Cada sesión queda numerada, con precio propio y estado `pending`.
+
+### Administrar una sesión
+
+1. Admin abre el tratamiento asignado desde la mascota.
+2. Selecciona una sesión autorizada.
+3. Puede cambiar fecha programada, precio, estado y notas.
+4. El backend actualiza únicamente esa sesión.
+5. El progreso se recalcula desde las sesiones completadas.
+
+### Cancelar y reemplazar una sesión
+
+1. Admin cambia una sesión `pending` a `cancelled`.
+2. El backend conserva íntegramente la sesión cancelada.
+3. Dentro de la misma transacción calcula sesiones completadas y pendientes.
+4. Si su suma es menor que `planned_sessions` y el tratamiento no está
+   suspendido ni cancelado, crea una sesión `pending` de reemplazo.
+5. El reemplazo usa el siguiente `session_number`, sin reutilizar el cancelado,
+   y copia el precio y moneda predeterminados vigentes.
+
+### Cliente: consulta propia
+
+1. Cliente abre una mascota propia.
+2. El backend verifica `User → Client → Pet`.
+3. Lista tratamientos asignados y sesiones en modo lectura.
+4. Una URL de otra mascota se deniega.
+
+## 15. Validaciones
+
+La implementación usa Form Requests y separa validación de autorización.
+
+### Service
+
+* `name`: required, string, máximo 255 y único globalmente;
+* `description`: required, string y texto plano;
+* `is_active`: boolean.
+
+### Procedure
+
+* servicio: existente y autorizado, preferentemente derivado de la ruta;
+* `name`: required, string, máximo 255 y único por servicio;
+* `description`: nullable, string y texto plano;
+* `duration_minutes`: nullable, integer, mínimo 1;
+* `is_active`: boolean.
+
+### Treatment
+
+* servicio: existente y autorizado;
+* `name`: required, string, máximo 255 y único por servicio;
+* `description`: required, string y texto plano;
+* `estimated_sessions`: required, integer, mínimo 1;
+* procedimientos: required, array, mínimo 1 y sin duplicados;
+* cada procedimiento: existente, activo y del mismo servicio;
+* `is_active`: boolean.
+
+### PetTreatment
+
+* mascota: existente y autorizada, derivada del contexto;
+* tratamiento: required, existente y activo;
+* `planned_sessions`: required, integer, mínimo 1;
+* `default_session_price`: required, decimal válido, mínimo 0, nunca float;
+* `currency`: required, inicialmente solo `ARS`;
+* `starts_on`: required, fecha válida;
+* `status`: required y perteneciente a los estados aprobados;
+* `notes`: nullable, string.
+
+### TreatmentSession
+
+* tratamiento asignado: existente y autorizado, derivado de la ruta;
+* `session_number`: required, integer, mínimo 1 y único por asignación;
+* `scheduled_at`: nullable, fecha y hora válida;
+* `price`: required, decimal válido, mínimo 0, nunca float;
+* `currency`: required, inicialmente solo `ARS`;
+* `status`: required y perteneciente a los estados aprobados;
+* `notes`: nullable, string.
+
+Los modelos declaran explícitamente atributos asignables. Payloads con ownership, roles, permisos o relaciones no autorizadas se ignoran o rechazan sin alterar recursos.
+
+## 16. Autorización y ownership
+
+El catálogo es global y su administración pertenece a `admin`. Los recursos individuales siguen:
+
+```text
+User → Client → Pet → PetTreatment → TreatmentSession
+```
+
+Las Policies protegen cada recurso y comprueban la relación completa. Una sesión no se autoriza por conocer su ID. El frontend refleja permisos, pero middleware, Policies, Form Requests y consultas acotadas son la barrera definitiva.
+
+## 17. Persistencia e integridad
+
+La futura implementación mantiene:
+
+* claves foráneas para todas las relaciones aprobadas;
+* unicidad de `Service.name`;
+* unicidad de `Procedure(service_id, name)`;
+* unicidad de `Treatment(service_id, name)`;
+* unicidad de la asociación `Treatment ↔ Procedure`;
+* unicidad de `TreatmentSession(pet_treatment_id, session_number)`;
+* importes decimales, nunca float;
+* timestamps convencionales;
+* `is_active = true` como default del catálogo;
+* ausencia de Soft Deletes y columnas especulativas.
+
+Las sesiones se generan atómicamente con `PetTreatment`. La implementación debe evitar números duplicados ante reintentos.
 
 ## 18. Frontend
 
-### Cliente
-
-Debe existir `Servicios → Listado → Detalle` para clientes autenticados. El
-listado muestra solo activos, ordenados alfabéticamente. El detalle presenta
-nombre, descripción, duración orientativa, precio base con moneda y modalidades,
-omitiendo coherentemente los valores null.
-
-Contempla estado vacío, carga, errores y diseño responsive. No muestra acciones
-administrativas ni contratación, reservas, pagos, turnos o tratamientos.
-
 ### Administrador
 
-Debe existir `Administración → Servicios → Listado / Crear / Editar / Detalle`.
-El listado diferencia activos e inactivos y permite cambiar el estado. No
-existe acción de eliminación.
+La UI React/Inertia ofrece:
 
-La implementación reutiliza `AppLayout`, componentes UI, formularios, errores,
-flash/toasts, React, Inertia y Wayfinder. No introduce API REST paralela, router
-frontend, estado global ni librería UI nueva.
-
-La UI refleja permisos; backend, Form Requests, middleware y Policies tienen la
-autoridad definitiva.
-
-## 19. Validación
-
-La implementación usa Form Requests. Validación y autorización son fronteras
-separadas.
-
-* `name`: required, string, máximo 255 caracteres y único en `services`; al
-  actualizar ignora únicamente el registro actual.
-* `description`: required, string y texto plano, con longitud razonable
-  compatible con una columna `text` y el patrón del proyecto.
-* `duration_minutes`: nullable, integer y mayor que cero.
-* `price`: nullable, decimal válido y mayor o igual a cero; nunca float.
-* `currency`: required y exclusivamente `ARS`.
-* `modalities`: required como array, puede estar vacío y no admite duplicados.
-* `modalities.*`: cada elemento pertenece a `clinic`, `online` o `home_visit`.
-* `is_active`: boolean; puede omitirse al crear para aplicar default `true`.
-
-La unicidad de `name` debe respaldarse con validación y restricción única de
-base de datos. La implementación usa el comportamiento de comparación de la
-base aprobada y no crea otra normalización sin necesidad.
-
-El modelo declara explícitamente atributos asignables. Solo se persisten datos
-validados y seleccionados. Claves como `pet_id`, `client_id`, `user_id`,
-`created_by`, `updated_by`, `role`, `permissions`, profesionales u horarios se
-ignoran o rechazan sin alterar el recurso.
-
-React renderiza `name` y `description` como texto, sin interpretar HTML.
-
-## 20. Testing
-
-La implementación prioriza pruebas Feature/HTTP con PHPUnit, factories y datos
-propios de cada caso. Las escrituras comprueban respuesta y estado persistido.
-
-### Administrador
-
-* Lista y consulta activos e inactivos.
-* Crea un servicio válido y se aplican `ARS` e `is_active = true`.
-* Edita todos los atributos aprobados.
-* Activa y desactiva servicios.
-* No existe ruta ni operación de eliminación.
-* El listado se ordena por `name` y por `id` como desempate.
+* Servicios: listado, detalle, alta y edición;
+* procedimientos contextualizados por servicio;
+* tratamientos contextualizados por servicio, con selección multivalor compatible;
+* tratamientos asignados contextualizados por mascota;
+* detalle de asignación con progreso y sesiones;
+* edición individual de sesión;
+* estados vacíos, errores, carga y confirmaciones coherentes.
 
 ### Cliente
 
-* Lista servicios activos y consulta su detalle.
-* No recibe inactivos en listado, detalle ni props serializadas.
-* No consulta un inactivo conociendo su ID o URL.
-* No crea, edita, activa, desactiva ni cambia precio o modalidades mediante
-  requests directas.
-* No accede a endpoints administrativos.
+La lectura se accede desde una mascota propia y no desde un panel global. Solo
+se muestran asignaciones, snapshots y sesiones autorizadas en modo lectura. No
+se muestran controles de solicitud o modificación.
 
-### Autenticación y autorización
+Se reutilizan `AppLayout`, componentes existentes, flash/toasts y Wayfinder. No se agregan API REST paralela, router frontend, estado global ni librería UI.
 
-* Un usuario no autenticado sigue el flujo actual hacia login.
-* La matriz de `ServicePolicy` cubre `viewAny`, `view`, `create` y `update` para
-  admin y client; el cambio de estado usa `update` o la acción dedicada que
-  adopte la implementación.
-* Pruebas HTTP demuestran autorización en cada endpoint.
+## 19. Testing requerido
 
-### Validación y seguridad
+Las futuras pruebas Feature/HTTP cubren como mínimo:
 
-* Payload vacío falla para campos obligatorios.
-* `name` cubre required, longitud y unicidad, incluida actualización propia.
-* `description` es obligatoria y se renderiza como texto seguro.
-* `duration_minutes` acepta null y positivos; rechaza cero, negativos y no
-  enteros.
-* `price` acepta null, cero y decimales no negativos; rechaza negativos y
-  formatos inválidos sin pérdida por float.
-* `currency` solo acepta `ARS`.
-* `modalities` acepta cero, una o varias opciones y rechaza duplicados, valores
-  arbitrarios o una estructura no array.
-* `is_active` acepta booleanos y aplica default `true` al omitirse al crear.
-* Payloads con ownership, roles, permisos o campos no aprobados no alteran el
-  recurso.
+* CRUD sin delete y cambio de estado de Service, Procedure y Treatment;
+* nombres únicos globales o por servicio;
+* procedimientos vacíos, duplicados, inactivos o de otro servicio rechazados;
+* ausencia de precio/duración en Service y de precio en Procedure/Treatment;
+* asignación de tratamiento activo a mascota;
+* generación atómica de sesiones numeradas con precio y moneda copiados;
+* independencia del precio y estado de cada sesión;
+* cancelación conserva historial y genera exactamente el reemplazo necesario;
+* el reemplazo usa numeración consecutiva y precio predeterminado vigente;
+* tratamientos suspendidos o cancelados no generan reemplazos automáticos;
+* cambio del precio predeterminado sin modificar sesiones existentes;
+* cambios del catálogo sin alterar el acuerdo histórico;
+* cálculo de progreso desde sesiones completadas;
+* validación de enteros, decimales, fechas, estados y longitudes;
+* admin administra cualquier mascota y client no muta recursos de F07;
+* Client A lee recursos de Pet A y nunca los de Pet B;
+* payloads manipulados no reasignan relaciones, ownership, roles o permisos;
+* autenticación y verificación de email;
+* ausencia de ruta de eliminación;
+* regresión de autenticación, clientes, mascotas e historia clínica.
 
-### Catálogo inicial y regresión
+## 20. Casos límite relevantes
 
-* Si se incorpora un Seeder, se verifica que produzca el catálogo inicial sin
-  duplicados al ejecutarse nuevamente.
-* Se mantienen pruebas de regresión relacionadas con autenticación y roles.
+* Un servicio inactivo conserva procedimientos, tratamientos y asignaciones históricas, pero no se usa en nuevas configuraciones.
+* Un procedimiento inactivo sigue visible históricamente y no se agrega a nuevos tratamientos.
+* Un tratamiento inactivo conserva asignaciones y no puede asignarse nuevamente.
+* Cambiar el servicio de un procedimiento o tratamiento no puede dejar asociaciones cruzadas.
+* Una asignación confirmada nunca queda sin sesiones.
+* Reintentar una creación no duplica sesiones.
+* Precio cero es válido; precio negativo o formato no decimal es inválido.
+* Una sesión puede existir sin fecha programada.
+* Cancelar una sesión no cancela todo el tratamiento.
+* Una cancelación no cambia `planned_sessions` ni reutiliza numeración.
+* Varias cancelaciones pueden producir más registros que sesiones requeridas.
+* Completar una sesión incrementa el progreso una sola vez.
+* Modificar el catálogo no cambia precios, estados ni notas de sesiones.
+* IDs válidos de otra mascota no conceden acceso.
 
-No se prueban Treatment, sesiones, agenda, pagos ni historia clínica en F07.
+## 21. Ejemplo completo
 
-## 21. Criterios de aceptación
+### Catálogo
 
-* [ ] Existe `Service` únicamente con el modelo aprobado.
-* [ ] Nombre y descripción son obligatorios; nombre es único.
-* [ ] Duración nullable, precio base nullable en ARS, modalidades multivalor e
-  `is_active` funcionan según el contrato.
-* [ ] Admin lista, consulta, crea, edita, activa y desactiva.
-* [ ] Client autenticado lista y consulta solo activos y recibe exclusivamente
-  los campos comerciales aprobados.
-* [ ] Client no muta el catálogo ni accede a endpoints administrativos.
-* [ ] Spatie y `ServicePolicy` autorizan en backend.
-* [ ] No existe delete, Soft Deletes, archivo, slug ni `sort_order`.
-* [ ] Los listados usan orden alfabético estable por `name` e `id`.
-* [ ] No se hardcodean precios del material comercial.
-* [ ] Si se usa Seeder para el catálogo inicial, sigue las convenciones del
-  proyecto y evita duplicados.
-* [ ] No se guardan datos clínicos ni relaciones anticipadas en `Service`.
-* [ ] Las pantallas React/Inertia siguen las convenciones existentes.
-* [ ] Las pruebas y controles de calidad aplicables pasan.
-* [ ] No se implementa funcionalidad fuera de Feature 07.
+```text
+Service
+  name: Fisioterapia
+  description: Rehabilitación física, movilidad y recuperación funcional.
+  is_active: true
+```
 
-## 22. Dependencias futuras
+Procedimientos de Fisioterapia:
 
-Feature 08 podrá introducir `Treatment` para relacionar una mascota con la
-identidad estable de un servicio y definir inicio, estado, indicaciones,
-sesiones, evolución y seguimiento. Esa feature definirá sus propias reglas
-clínicas, autorización y visibilidad.
+1. Lámpara infrarroja — 15 minutos orientativos.
+2. Magnetoterapia — 30 minutos orientativos.
+3. Electroterapia — 20 minutos orientativos.
+4. Masoterapia — 25 minutos orientativos.
+5. Ejercicios terapéuticos — 30 minutos orientativos.
 
-Turnos y agenda podrán consumir `Service` cuando sus requisitos se definan.
-Profesionales, disponibilidad horaria y atributos propios por modalidad
-requieren dominios concretos; Feature 07 no los anticipa.
+```text
+Treatment
+  service: Fisioterapia
+  name: Fisioterapia inicial para dolor lumbar leve
+  description: Abordaje inicial orientativo definido por la veterinaria.
+  estimated_sessions: 6
+  is_active: true
+  procedures:
+    - Lámpara infrarroja
+    - Electroterapia
+    - Masoterapia
+```
 
-Una futura base de conocimiento podrá usar contenido comercial autorizado de
-Servicios, pero Feature 07 no implementa IA, RAG ni embeddings.
+### Asignación a una mascota
 
-## 23. Decisiones resueltas
+```text
+Pet: Mora
+Treatment: Fisioterapia inicial para dolor lumbar leve
+planned_sessions: 6
+default_session_price: ARS 18.000,00
+starts_on: 2026-09-01
+status: pending
+notes: Seguimiento inicial acordado con la familia.
+```
 
-* **Estructura mínima:** `id`, `name`, `description`, `duration_minutes`,
-  `price`, `currency`, `modalities`, `is_active` y timestamps.
-* **Nombre y descripción:** obligatorios; nombre único con máximo 255 y
-  descripción de texto plano comercial/general.
-* **Precio:** base nullable, decimal no negativo y configurable; sin variantes
-  ni motor de tarifas. Moneda explícita `ARS`.
-* **Modalidades:** lista controlada multivalor con `clinic`, `online` y
-  `home_visit`; admite cero, una o varias y se prevé JSON + cast.
-* **Duración:** `duration_minutes` nullable, entero positivo y orientativo; sin
-  rangos ni frecuencia individual.
-* **Estado:** `is_active` booleano con default `true`; admin administra ambos
-  estados y client accede solo a activos.
-* **Baja:** no hay delete, Soft Deletes, archivo ni eliminación condicional. La
-  baja comercial es `is_active = false`.
-* **Slug:** no se implementa; se utiliza ID y route model binding.
-* **Visibilidad:** client autenticado ve de activos `name`, `description`,
-  `duration_minutes`, `price`, `currency` y `modalities`. No hay catálogo
-  público.
-* **Orden:** alfabético por `name`, con `id` como desempate; sin `sort_order`.
-* **Disponibilidad y profesionales:** fuera de alcance. `is_active` expresa
-  solo disponibilidad comercial.
-* **Roles:** únicamente `admin` y `client`, con Spatie y `ServicePolicy`; no se
-  crea una matriz granular nueva.
-* **Catálogo inicial:** Acupuntura Veterinaria, Fitoterapia, Flores de Bach /
-  Terapia Floral y Fisioterapia Veterinaria. Se evaluará un Seeder conforme al
-  proyecto, nunca datos hardcodeados en una migration.
+| N.º | Precio inicial | Estado inicial | Evolución independiente posible |
+| --- | ---: | --- | --- |
+| 1 | ARS 18.000,00 | `pending` | Completarse a ARS 18.000,00 |
+| 2 | ARS 18.000,00 | `pending` | Reprogramarse sin cambiar precio |
+| 3 | ARS 18.000,00 | `pending` | Cambiar a ARS 20.000,00 |
+| 4 | ARS 18.000,00 | `pending` | Conservar su propio estado |
+| 5 | ARS 18.000,00 | `pending` | Conservar su propio precio |
+| 6 | ARS 18.000,00 | `pending` | Cancelarse individualmente |
 
-No quedan decisiones de producto pendientes dentro del alcance aprobado de
-Feature 07. Variantes de precio, normalización de modalidades, catálogo público,
-profesionales, agenda o eliminación requerirán una decisión futura y una
-actualización previa de la documentación.
+Si la sesión 3 se cancela, se conserva como `cancelled` y se crea la sesión 7
+como `pending`, con el precio predeterminado vigente. El tratamiento continúa
+requiriendo seis sesiones completadas. Los números 1 a 6 no se renumeran ni se
+reutiliza el 3.
+
+Con las sesiones 1 y 2 completadas, el progreso es `2 / 6`. Las sesiones
+canceladas no aparecen en el numerador ni denominador. Cambiar luego el precio
+predeterminado no modifica las sesiones existentes, aunque se utiliza para
+nuevos reemplazos. Cambiar el catálogo tampoco altera la composición acordada.
+
+## 22. Criterios de aceptación
+
+* [ ] Service contiene solo nombre, descripción y estado además de campos convencionales.
+* [ ] Procedure pertenece a Service, admite duración orientativa nullable y no tiene precio.
+* [ ] Treatment pertenece a Service, requiere procedimientos compatibles y sesiones estimadas positivas.
+* [ ] El catálogo se administra sin eliminación física.
+* [ ] PetTreatment vincula Pet con Treatment y conserva las condiciones acordadas.
+* [ ] Una asignación genera sus TreatmentSession atómicamente.
+* [ ] Cada sesión conserva precio, moneda y estado propios.
+* [ ] Cambios de catálogo o precio predeterminado no reescriben sesiones.
+* [ ] El progreso se calcula desde sesiones completadas.
+* [ ] Una sesión cancelada se conserva, no modifica `planned_sessions`, no
+  cuenta para el progreso y genera el reemplazo necesario con numeración nueva.
+* [ ] Admin administra catálogo, asignaciones y sesiones.
+* [ ] Client no modifica ningún recurso de F07.
+* [ ] Client consulta en modo lectura únicamente asignaciones y sesiones de sus
+  propias mascotas, con ownership completo.
+* [ ] Backend aplica autenticación, autorización, validación e integridad.
+* [ ] No existen precio de servicio/procedimiento, protocolos, pagos ni facturación.
+* [ ] Pruebas y controles de calidad pasan antes de declarar la implementación completa.
+
+## 23. Fuera de alcance
+
+No se incluyen:
+
+* precio, moneda o duración en Service;
+* precio en Procedure o Treatment;
+* protocolos clínicos versionados o plantillas por sesión;
+* procedimientos planificados o realizados por sesión;
+* frecuencia, objetivos o reglas clínicas automatizadas;
+* evolución clínica por procedimiento;
+* diagnósticos, recetas, estudios o indicaciones clínicas detalladas;
+* pagos, facturación, caja, descuentos, promociones o paquetes prepagos;
+* inventario de insumos;
+* turnos, agenda o disponibilidad horaria;
+* profesionales asociados o roles nuevos;
+* notificaciones, IA, RAG o embeddings;
+* eliminación, Soft Deletes o archivo adicional;
+* API o catálogo público.
+
+## 24. Decisiones pendientes
+
+### DECISIÓN PENDIENTE — Aumento de un tratamiento completado
+
+Las decisiones recibidas contienen dos reglas incompatibles: indican que
+`planned_sessions` solo puede modificarse mientras el tratamiento no esté
+`completed`, pero también que aumentar las sesiones de un tratamiento
+completado debe devolverlo a `in_progress`.
+
+Debe elegirse si `completed` es inmutable en F07 o si admin puede aumentarlo y
+reabrirlo automáticamente. La implementación de ese caso debe esperar esta
+definición.
+
+## 25. Decisiones tomadas
+
+* Service es el área terapéutica general y solo contiene nombre, descripción y estado funcional.
+* Procedure pertenece a Service, puede tener duración orientativa y no tiene precio.
+* Treatment pertenece a Service, requiere procedimientos compatibles y sesiones estimadas positivas.
+* Treatment no define procedimientos distintos por sesión.
+* PetTreatment vincula Pet con Treatment y contiene condiciones acordadas.
+* TreatmentSession pertenece a PetTreatment y tiene número, precio, moneda y estado propios.
+* El precio se cobra y conserva por sesión.
+* La moneda inicial se mantiene en `ARS`, compatible con la decisión previa.
+* Los recursos se desactivan y conservan; no se eliminan.
+* El progreso se deriva de sesiones completadas sobre previstas.
+* Los roles siguen limitados a `admin` y `client`, con ownership backend.
+* No se introducen protocolos, facturación, pagos ni planificación por sesión.
+* Client consulta asignaciones y sesiones propias en modo lectura y no puede
+  solicitar tratamientos.
+* PetTreatment conserva snapshots de tratamiento y procedimientos mediante una
+  relación histórica propia.
+* La cantidad prevista puede aumentar o reducirse transaccionalmente en estados
+  `pending` e `in_progress`, respetando sesiones históricas.
+* Los estados combinan cambios administrativos y automatismos por sesiones
+  completadas según la sección 13.
+* Las sesiones canceladas se conservan, no cuentan para el progreso y generan
+  reemplazos pendientes sin cambiar `planned_sessions`.
+* `session_number` identifica el orden de registros generados, no el ordinal de
+  una sesión clínica completada; por eso puede superar `planned_sessions`.
+
+## 26. Impacto documental y de implementación
+
+Esta especificación reemplaza el contrato anterior de F07. Existen estas divergencias:
+
+* la implementación existente refleja el contrato anterior: Service contiene precio, moneda, duración y modalidades, y aún no existen Procedure, Treatment, PetTreatment ni TreatmentSession.
+
+`spec.md`, `technical.md` y `features.md` fueron armonizados con este contrato.
+Antes de implementar el nuevo modelo debe resolverse la decisión pendiente y
+planificarse migraciones nuevas sin modificar migraciones
+históricas ejecutadas.
+
+Historia Clínica permanece desacoplada. Una sesión completada informa progreso operativo, pero no crea ni modifica automáticamente `ClinicalRecord`. Una integración futura deberá respetar autorización, auditoría y visibilidad de Feature 06.
