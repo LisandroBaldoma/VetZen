@@ -217,6 +217,12 @@ de catálogo, tratamientos asignados a mascotas y sesiones.
 no contiene precio. `Treatment` pertenece a un servicio, agrupa procedimientos
 de ese mismo servicio y define una cantidad estimada de sesiones.
 
+`ServiceRequest` representa únicamente la intención de un cliente de solicitar
+atención para un `Service` activo y una `Pet` propia. Su ownership se deriva por
+`User → Client → Pet → ServiceRequest`; no duplica `client_id` ni `user_id` y no
+acepta relaciones de ownership desde el payload. Sus estados son `pending`,
+`resolved` y `cancelled`.
+
 `PetTreatment` representa la asignación concreta a una mascota y conserva
 snapshots históricos de las condiciones acordadas. `TreatmentSession`
 pertenece a esa asignación y conserva precio, moneda y estado propios. Los
@@ -233,10 +239,17 @@ completadas más pendientes alcancen el total requerido, generando
 transaccionalmente un reemplazo `pending` con el siguiente número consecutivo y
 el precio predeterminado vigente. Los números cancelados no se reutilizan.
 
-Los clientes solo podrán consultar asignaciones y sesiones de sus propias
-mascotas. No podrán solicitar ni modificar tratamientos en esta versión. La
-autorización deberá recorrer `User → Client → Pet → PetTreatment →
-TreatmentSession`.
+Los clientes podrán crear y consultar solicitudes de servicios únicamente para
+sus propias mascotas. No podrán seleccionar `Treatment`, resolver solicitudes,
+crear `PetTreatment` ni modificar asignaciones o sesiones. El administrador
+representa durante F08 al profesional autorizado que determina el tratamiento.
+
+La resolución deberá ejecutarse transaccionalmente: validar que el `Treatment`
+activo pertenece al mismo `Service` solicitado, crear `PetTreatment` y sus
+sesiones con las reglas vigentes, marcar `ServiceRequest` como `resolved` y
+conservar una referencia nullable al `PetTreatment` resultante. La autorización
+de lectura cliente recorrerá tanto `User → Client → Pet → ServiceRequest` como
+`User → Client → Pet → PetTreatment → TreatmentSession`.
 
 No se implementan protocolos complejos, facturación, pagos ni procedimientos
 diferentes por número de sesión.

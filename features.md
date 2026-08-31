@@ -173,13 +173,19 @@ gestionar sus sesiones básicas.
 * Seguimiento del progreso por sesiones completadas.
 * Consulta cliente de asignaciones y sesiones de sus propias mascotas.
 * Conservación histórica y reemplazo de sesiones canceladas.
+* Solicitud cliente de un servicio activo para una mascota propia mediante
+  `ServiceRequest`.
+* Resolución profesional de la solicitud mediante un tratamiento compatible.
 
 ## **Reglas principales**
 
 * El tratamiento requiere al menos un procedimiento del mismo servicio.
 * El precio pertenece a TreatmentSession, no al catálogo.
-* El administrador asigna tratamientos y administra sesiones.
-* El cliente no solicita ni modifica tratamientos en esta versión.
+* El cliente solicita un Service activo para una Pet propia, no un Treatment.
+* El administrador determina el Treatment, crea PetTreatment y administra sus
+  sesiones.
+* El cliente no selecciona tratamientos ni modifica solicitudes resueltas,
+  asignaciones o sesiones.
 * El cliente solo consulta recursos de sus propias mascotas.
 * Cambios posteriores del catálogo no alteran asignaciones históricas.
 * `planned_sessions` representa sesiones completadas requeridas. Una sesión
