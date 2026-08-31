@@ -40,7 +40,7 @@ Puede:
 * Gestionar su información personal.  
 * Registrar y administrar sus mascotas.  
 * Solicitar turnos.  
-* Solicitar tratamientos.  
+* Solicitar atención para un servicio activo desde una mascota propia.
 * Consultar información relacionada con sus mascotas.  
 * Consultar el seguimiento de sus tratamientos.  
 * Utilizar el asistente virtual.
@@ -139,11 +139,16 @@ Deberá permitir:
 * Realizar seguimiento del progreso según las sesiones completadas.
 * Conservar sesiones canceladas como historial y generar reemplazos pendientes
   cuando sean necesarios para alcanzar las sesiones requeridas.
+* Registrar solicitudes de atención para un servicio activo y una mascota
+  propia, sin que el cliente seleccione el tratamiento clínico.
+* Permitir que el profesional resuelva la solicitud asignando un tratamiento
+  compatible después de evaluar al paciente.
 
 La veterinaria cobra por sesión. El precio efectivo pertenece a cada sesión y
 no al servicio, procedimiento o tratamiento del catálogo. Los clientes pueden
-consultar en modo lectura los tratamientos y sesiones de sus propias mascotas,
-pero no pueden solicitarlos ni modificarlos en esta versión.
+solicitar un servicio activo para una mascota propia, pero no seleccionar ni
+asignar un tratamiento. Una vez que el profesional lo determina, pueden
+consultar en modo lectura el tratamiento, sus sesiones y progreso.
 
 Las sesiones canceladas no cuentan para completar el tratamiento ni modifican
 la cantidad requerida. Se conservan históricamente y generan un reemplazo
@@ -292,8 +297,11 @@ El asistente virtual tampoco deberá utilizarse como sustituto de la atención p
   sesiones.
 * Los clientes podrán consultar únicamente tratamientos y sesiones de sus
   propias mascotas, en modo lectura.
-* Los clientes no podrán solicitar tratamientos ni modificar asignaciones,
-  sesiones, precios o estados en esta versión.
+* Los clientes podrán solicitar atención para un servicio activo desde una
+  mascota propia, pero no podrán seleccionar ni asignar tratamientos.
+* El profesional autorizado determinará el tratamiento después de evaluar al
+  paciente y será el único que configure asignaciones, sesiones, precios y
+  estados.
 * Cada sesión conservará su precio efectivo e historial independientemente de
   cambios posteriores del catálogo.
 * Las sesiones canceladas no cuentan para el progreso, no reutilizan su número
@@ -325,7 +333,7 @@ Podrá:
 * Consultar información general autorizada de la veterinaria.  
 * Consultar información seleccionada de la historia clínica.  
 * Consultar información de las mascotas del cliente cuando tenga los permisos correspondientes.  
-* Ayudar al cliente a identificar el servicio o tratamiento que necesita según la información disponible.  
+* Ayudar al cliente a identificar el servicio por el que puede solicitar atención, sin diagnosticar ni seleccionar un tratamiento clínico.
 * Ayudar al cliente a encontrar un turno adecuado.  
 * Asistir al cliente durante el proceso de solicitud de un turno.  
 * Consultar información actualizada de turnos y tratamientos cuando corresponda.

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['treatment_name', 'treatment_description', 'planned_sessions', 'default_session_price', 'currency', 'starts_on', 'status', 'notes'])]
 class PetTreatment extends Model
@@ -31,6 +32,11 @@ class PetTreatment extends Model
     public function sessions(): HasMany
     {
         return $this->hasMany(TreatmentSession::class);
+    }
+
+    public function serviceRequest(): HasOne
+    {
+        return $this->hasOne(ServiceRequest::class);
     }
 
     protected function casts(): array

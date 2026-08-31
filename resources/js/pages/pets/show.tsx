@@ -4,6 +4,8 @@ import PetSummary from '@/components/pet-summary';
 import { Button } from '@/components/ui/button';
 import { edit, photo } from '@/routes/pets';
 import { index as medicalRecordsIndex } from '@/routes/pets/medical-records';
+import { index as serviceRequestsIndex } from '@/routes/pets/service-requests';
+import { index as treatmentsIndex } from '@/routes/pets/treatments';
 import type { Pet } from '@/types';
 
 export default function PetShow({ pet }: { pet: Pet }) {
@@ -20,6 +22,16 @@ export default function PetShow({ pet }: { pet: Pet }) {
                 <Button asChild variant="outline">
                     <Link href={medicalRecordsIndex.url(pet.id)}>
                         View medical records
+                    </Link>
+                </Button>
+                <Button asChild variant="outline">
+                    <Link href={treatmentsIndex.url(pet.id)}>
+                        Ver tratamientos
+                    </Link>
+                </Button>
+                <Button asChild>
+                    <Link href={serviceRequestsIndex(pet.id)}>
+                        Solicitudes de atención
                     </Link>
                 </Button>
             </div>

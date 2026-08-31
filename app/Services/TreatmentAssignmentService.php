@@ -82,8 +82,8 @@ class TreatmentAssignmentService
             $locked = TreatmentSession::query()->lockForUpdate()->findOrFail($session->id);
             $petTreatment = PetTreatment::query()->lockForUpdate()->findOrFail($locked->pet_treatment_id);
 
-            if ($petTreatment->status === 'cancelled') {
-                throw ValidationException::withMessages(['status' => __('Cancelled treatments cannot be modified.')]);
+            if (in_array($petTreatment->status, ['suspended', 'cancelled'], true)) {
+                throw ValidationException::withMessages(['status' => __('Suspended or cancelled treatments cannot have their sessions modified.')]);
             }
 
             $locked->update($attributes);
@@ -104,6 +104,30 @@ class TreatmentAssignmentService
             }
 
             return $locked->load('petTreatment');
+        });
+    }
+
+    public function changeStatus(PetTreatment $petTreatment, string $requestedStatus): PetTreatment
+    {
+        return DB::transaction(function () use ($petTreatment, $requestedStatus): PetTreatment {
+            $locked = PetTreatment::query()->lockForUpdate()->findOrFail($petTreatment->id);
+
+            if ($locked->status === 'cancelled') {
+                throw ValidationException::withMessages(['status' => __('Cancelled treatments cannot be reopened.')]);
+            }
+
+            if ($requestedStatus === 'resume') {
+                if ($locked->status !== 'suspended') {
+                    throw ValidationException::withMessages(['status' => __('Only suspended treatments can be resumed.')]);
+                }
+
+                $completed = $locked->sessions()->where('status', 'completed')->count();
+                $requestedStatus = $completed > 0 ? 'in_progress' : 'pending';
+            }
+
+            $locked->update(['status' => $requestedStatus]);
+
+            return $locked;
         });
     }
 

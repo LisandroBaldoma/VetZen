@@ -7,14 +7,21 @@ Implementar tratamientos reutilizables del catálogo y su asignación operativa 
 ```text
 Service
   ├── Procedure
-  └── Treatment ── incluye uno o varios Procedure del mismo Service
+  ├── Treatment ── incluye uno o varios Procedure del mismo Service
+  └── ServiceRequest
 
 Pet
+  ├── ServiceRequest
   └── PetTreatment
         └── TreatmentSession
 ```
 
 Un servicio representa un área terapéutica general. Sus procedimientos representan técnicas disponibles dentro de esa área. Un tratamiento representa una combinación reutilizable de procedimientos y una cantidad estimada de sesiones. Al asignarlo a una mascota se crea un tratamiento individual con condiciones acordadas y sesiones con precio y estado independientes.
+
+`ServiceRequest` representa que un cliente solicita atención para un servicio
+activo desde una mascota propia. No representa ni selecciona un tratamiento. El
+administrador, actuando como profesional autorizado durante F08, determina el
+tratamiento después de evaluar al paciente.
 
 Esta feature no implementa protocolos clínicos complejos, planificación de procedimientos por número de sesión, pagos, facturación ni evolución clínica detallada.
 
@@ -67,11 +74,19 @@ El administrador puede:
 * consultar y actualizar fecha programada, precio, estado y notas de cada sesión;
 * consultar el progreso calculado desde las sesiones completadas.
 
+### Solicitudes de servicios
+
+El cliente puede crear una solicitud para un Service activo desde una Pet propia
+y consultar luego su estado. El administrador puede consultar solicitudes,
+identificar las pendientes y resolverlas mediante un Treatment activo del mismo
+Service, creando el PetTreatment y sus sesiones según este contrato.
+
 ### Cliente
 
-El cliente puede consultar los tratamientos asignados a sus propias mascotas y
-sus sesiones, siempre en modo de solo lectura. No puede solicitar tratamientos
-ni modificar asignaciones, sesiones, fechas, precios o estados.
+El cliente puede solicitar un Service activo para una Pet propia y consultar sus
+solicitudes. No puede seleccionar un Treatment, resolver solicitudes ni modificar
+asignaciones, sesiones, fechas, precios o estados. Después de la resolución puede
+consultar el PetTreatment, sus sesiones y progreso en modo de solo lectura.
 
 Las operaciones son create, read, update y cambio de estado. No se incluye eliminación física, Soft Deletes ni archivo independiente.
 
@@ -79,14 +94,19 @@ Las operaciones son create, read, update y cambio de estado. No se incluye elimi
 
 ### Administrador
 
-El rol `admin` puede administrar tratamientos, asignarlos a cualquier mascota existente y administrar sus sesiones. Servicios y procedimientos pertenecen a F07. Todas las operaciones requieren autorización de backend.
+El rol `admin` puede consultar solicitudes, determinar el Treatment compatible,
+resolverlas creando PetTreatment y administrar tratamientos y sesiones. Durante
+F08 representa al profesional autorizado; no se crean roles adicionales.
 
 ### Cliente
 
 El rol `client`:
 
 * no crea ni modifica servicios, procedimientos o tratamientos del catálogo;
+* crea solicitudes únicamente para Services activos y Pets propias;
+* consulta únicamente sus propias solicitudes;
 * no asigna tratamientos;
+* no resuelve solicitudes ni vincula PetTreatment;
 * no crea ni modifica sesiones;
 * si se habilita la lectura, solo consulta tratamientos y sesiones de sus propias mascotas;
 * nunca accede a información de mascotas ajenas mediante URLs, bindings, payloads o requests directas.
@@ -96,6 +116,9 @@ No se crean roles adicionales ni una matriz granular de profesionales.
 | Acción | `client` | `admin` |
 | --- | --- | --- |
 | Administrar Treatment | Denegado | Permitido |
+| Crear ServiceRequest para Pet propia | Permitido | Permitido |
+| Consultar ServiceRequest propia | Permitido | Permitido |
+| Resolver ServiceRequest | Denegado | Permitido |
 | Asignar Treatment a Pet | Denegado | Permitido |
 | Administrar PetTreatment o TreatmentSession | Denegado | Permitido |
 | Leer PetTreatment y sesiones propios | Permitido, solo lectura | Permitido |
@@ -106,18 +129,25 @@ No se crean roles adicionales ni una matriz granular de profesionales.
 ```text
 Service 1 ──── * Procedure
 Service 1 ──── * Treatment
+Service 1 ──── * ServiceRequest
 Treatment * ──── * Procedure
 
 User 1 ──── 0..1 Client
 Client 1 ──── * Pet
+Pet 1 ──── * ServiceRequest
 Pet 1 ──── * PetTreatment
 Treatment 1 ──── * PetTreatment
+ServiceRequest 0..1 ──── 0..1 PetTreatment
 PetTreatment 1 ──── * TreatmentSession
 ```
 
 La relación `Treatment ↔ Procedure` es multivalor. Todo procedimiento asociado debe pertenecer al mismo servicio que el tratamiento.
 
 `PetTreatment` es la instancia individual acordada para una mascota; `Treatment` es una plantilla reutilizable. `TreatmentSession` pertenece exclusivamente a `PetTreatment`.
+
+`ServiceRequest` conserva la intención previa a la evaluación. Su referencia
+nullable a PetTreatment se completa solamente al resolverla y mantiene la
+trazabilidad entre solicitud y asignación.
 
 ## 7. Service
 
@@ -178,6 +208,33 @@ Un tratamiento:
 * conserva asociaciones históricas si un procedimiento se desactiva después.
 
 El nombre es único dentro del servicio.
+
+## 9.1. ServiceRequest
+
+`ServiceRequest` representa una solicitud de atención para un Service realizada
+desde una Pet. No constituye un diagnóstico, una evaluación clínica ni un
+Treatment.
+
+| Campo conceptual | Contrato |
+| --- | --- |
+| `id` | Identificador |
+| `pet_id` | Pet propietaria de la solicitud, obligatorio |
+| `service_id` | Service activo solicitado, obligatorio |
+| `pet_treatment_id` | PetTreatment que resolvió la solicitud, nullable |
+| `status` | `pending`, `resolved` o `cancelled`; default `pending` |
+| `notes` | Nota simple opcional del cliente, texto plano |
+| timestamps | Timestamps convencionales |
+
+El backend deriva `pet_id` desde la mascota autorizada de la ruta y nunca acepta
+`client_id` ni `user_id`. Al crear la solicitud ignora o rechaza cualquier intento
+de enviar `treatment_id`, `pet_treatment_id`, estado, roles o permisos. La solicitud
+no crea automáticamente Treatment, PetTreatment, TreatmentSession, ClinicalRecord
+ni Appointment.
+
+Al resolverla, `pet_treatment_id` referencia el PetTreatment creado para la misma
+Pet. El Treatment de esa asignación debe pertenecer al mismo Service solicitado.
+No se define unicidad que impida solicitudes independientes posteriores para la
+misma combinación Pet–Service.
 
 ## 10. PetTreatment
 
@@ -271,8 +328,25 @@ Al generarse, cada sesión copia precio y moneda de `PetTreatment`. Su precio pu
 27. Un tratamiento `suspended` o `cancelled` no admite cambios de cantidad ni
     sesiones. El tratamiento suspendido puede reanudarse manualmente; el
     cancelado no se reabre en F08.
+28. Client crea ServiceRequest únicamente para una Pet propia y un Service activo.
+29. Crear ServiceRequest no crea recursos clínicos, tratamientos, sesiones ni turnos.
+30. Solo admin puede resolver una solicitud y seleccionar Treatment.
+31. El Treatment elegido al resolver debe estar activo y pertenecer al mismo Service solicitado.
+32. La resolución crea PetTreatment y TreatmentSession atómicamente, cambia la
+    solicitud a `resolved` y conserva `pet_treatment_id`.
+33. Una solicitud `cancelled` permanece como historial y no puede resolverse.
 
 ## 13. Estados y transiciones
+
+### ServiceRequest
+
+* `pending`: creada y todavía sin tratamiento asignado;
+* `resolved`: resuelta profesionalmente y vinculada al PetTreatment resultante;
+* `cancelled`: cancelada y conservada como historial.
+
+Client crea solicitudes en `pending` y no controla su estado. Solo admin puede
+resolverlas. La cancelación no elimina el registro ni crea automáticamente otros
+recursos.
 
 ### PetTreatment
 
@@ -325,6 +399,25 @@ pendiente por la contradicción indicada en la sección 24.
 4. El backend vuelve a validar tratamiento, servicio y ownership.
 5. Crea `PetTreatment`, conserva el acuerdo y genera sus sesiones atómicamente.
 6. Cada sesión queda numerada, con precio propio y estado `pending`.
+
+### Cliente: solicitar un servicio
+
+1. Client abre una Pet propia.
+2. Laravel obtiene únicamente Services activos.
+3. Client selecciona un Service y puede escribir una nota simple opcional.
+4. El backend verifica `User → Client → Pet` y deriva la Pet desde la ruta.
+5. Crea ServiceRequest en `pending`.
+6. No crea Treatment, PetTreatment, TreatmentSession, ClinicalRecord ni Appointment.
+
+### Admin: resolver una solicitud
+
+1. Admin consulta solicitudes `pending` y abre una en contexto de la Pet.
+2. Después de la evaluación profesional, selecciona un Treatment activo del
+   mismo Service solicitado.
+3. Configura las condiciones de PetTreatment sin intervención del cliente.
+4. Una transacción valida compatibilidad, crea PetTreatment, snapshots y sesiones.
+5. La misma transacción marca ServiceRequest como `resolved` y asigna
+   `pet_treatment_id`.
 
 ### Administrar una sesión
 
@@ -379,6 +472,15 @@ La implementación usa Form Requests y separa validación de autorización.
 * cada procedimiento: existente, activo y del mismo servicio;
 * `is_active`: boolean.
 
+### ServiceRequest
+
+* mascota: derivada de una ruta autorizada, nunca aceptada como prueba de ownership;
+* servicio: required, existente y activo;
+* `status`: no aceptado al crear desde Client; controlado por backend;
+* `notes`: nullable, string y longitud limitada;
+* `treatment_id` y `pet_treatment_id`: no aceptados desde Client;
+* al resolver: Treatment required, activo y perteneciente al Service solicitado.
+
 ### PetTreatment
 
 * mascota: existente y autorizada, derivada del contexto;
@@ -410,6 +512,17 @@ El catálogo es global y su administración pertenece a `admin`. Los recursos in
 User → Client → Pet → PetTreatment → TreatmentSession
 ```
 
+Para solicitudes se aplica además:
+
+```text
+User → Client → Pet → ServiceRequest
+```
+
+Client puede crear solicitudes solo bajo Pets propias, consultar únicamente las
+propias y nunca cambiar su estado a `resolved` ni asociar un Treatment. Admin puede
+consultar, cancelar y resolver solicitudes. Los IDs y campos de ownership enviados
+por frontend no alteran estas relaciones.
+
 Las Policies protegen cada recurso y comprueban la relación completa. Una sesión no se autoriza por conocer su ID. El frontend refleja permisos, pero middleware, Policies, Form Requests y consultas acotadas son la barrera definitiva.
 
 ## 17. Persistencia e integridad
@@ -421,13 +534,19 @@ La futura implementación mantiene:
 * unicidad de `Procedure(service_id, name)`;
 * unicidad de `Treatment(service_id, name)`;
 * unicidad de la asociación `Treatment ↔ Procedure`;
+* foreign keys de `ServiceRequest` hacia Pet, Service y PetTreatment nullable;
+* unicidad nullable de `ServiceRequest.pet_treatment_id`, para que una asignación
+  resuelva como máximo una solicitud;
 * unicidad de `TreatmentSession(pet_treatment_id, session_number)`;
 * importes decimales, nunca float;
 * timestamps convencionales;
 * `is_active = true` como default del catálogo;
 * ausencia de Soft Deletes y columnas especulativas.
 
-Las sesiones se generan atómicamente con `PetTreatment`. La implementación debe evitar números duplicados ante reintentos.
+Las sesiones se generan atómicamente con `PetTreatment`. La resolución de una
+ServiceRequest incluye en la misma transacción la asignación, las sesiones y la
+actualización de solicitud. La implementación debe evitar números duplicados y
+resoluciones repetidas ante reintentos.
 
 ## 18. Frontend
 
@@ -436,6 +555,9 @@ Las sesiones se generan atómicamente con `PetTreatment`. La implementación deb
 La UI React/Inertia ofrece:
 
 * tratamientos contextualizados por servicio, usando los procedimientos administrados por F07 con selección multivalor compatible;
+* listado de solicitudes con identificación y filtro de pendientes;
+* detalle de ServiceRequest contextualizado por Pet e inicio del flujo de resolución;
+* trazabilidad desde la solicitud resuelta hacia PetTreatment;
 * tratamientos asignados contextualizados por mascota;
 * detalle de asignación con progreso y sesiones;
 * edición individual de sesión;
@@ -443,9 +565,11 @@ La UI React/Inertia ofrece:
 
 ### Cliente
 
-La lectura se accede desde una mascota propia y no desde un panel global. Solo
-se muestran asignaciones, snapshots y sesiones autorizadas en modo lectura. No
-se muestran controles de solicitud o modificación.
+El acceso se realiza desde una mascota propia. Client consulta Services activos,
+crea ServiceRequest con nota simple opcional y consulta sus solicitudes y estados.
+No se muestra un selector de Treatment para iniciar atención. Después de la
+resolución se muestran PetTreatment, snapshots, sesiones y progreso autorizados en
+modo lectura, sin controles administrativos.
 
 Se reutilizan `AppLayout`, componentes existentes, flash/toasts y Wayfinder. No se agregan API REST paralela, router frontend, estado global ni librería UI.
 
@@ -457,6 +581,17 @@ Las futuras pruebas Feature/HTTP cubren como mínimo:
 * nombres de Treatment únicos por servicio;
 * procedimientos vacíos, duplicados, inactivos o de otro servicio rechazados;
 * ausencia de precio en Treatment;
+* Client lista Services activos disponibles para solicitar;
+* Client crea ServiceRequest para una Pet propia y no para una Pet ajena;
+* Service inactivo no puede solicitarse;
+* Client consulta solicitudes propias y no las de otro cliente;
+* Client no marca solicitudes como `resolved`, no selecciona Treatment y no
+  controla `pet_treatment_id`;
+* admin consulta solicitudes y solicitudes pendientes;
+* admin resuelve una solicitud con Treatment activo del mismo Service;
+* un Treatment de otro Service no puede resolver la solicitud;
+* la resolución crea PetTreatment y sesiones, cambia la solicitud a `resolved`
+  y conserva la referencia a PetTreatment dentro de una transacción;
 * asignación de tratamiento activo a mascota;
 * generación atómica de sesiones numeradas con precio y moneda copiados;
 * independencia del precio y estado de cada sesión;
@@ -469,7 +604,9 @@ Las futuras pruebas Feature/HTTP cubren como mínimo:
 * validación de enteros, decimales, fechas, estados y longitudes;
 * admin administra cualquier mascota y client no muta recursos de F08;
 * Client A lee recursos de Pet A y nunca los de Pet B;
-* payloads manipulados no reasignan relaciones, ownership, roles o permisos;
+* payloads manipulados con `pet_id`, `client_id`, `user_id`, Service
+  ajeno/inactivo, `treatment_id`, `pet_treatment_id`, roles o permisos no
+  reasignan relaciones ni elevan privilegios;
 * autenticación y verificación de email;
 * ausencia de ruta de eliminación;
 * regresión de autenticación, clientes, mascotas e historia clínica.
@@ -490,6 +627,8 @@ Las futuras pruebas Feature/HTTP cubren como mínimo:
 * Completar una sesión incrementa el progreso una sola vez.
 * Modificar el catálogo no cambia precios, estados ni notas de sesiones.
 * IDs válidos de otra mascota no conceden acceso.
+* Una solicitud cancelada permanece histórica y no puede resolverse.
+* Reintentar una resolución no crea asignaciones o sesiones duplicadas.
 
 ## 21. Ejemplo completo
 
@@ -525,6 +664,19 @@ Treatment
 
 ### Asignación a una mascota
 
+Antes de la asignación, Client puede registrar únicamente:
+
+```text
+ServiceRequest
+  Pet: Mora
+  Service: Fisioterapia
+  status: pending
+  notes: Quisiera consultar por dificultad para moverse.
+```
+
+Después de la evaluación profesional, admin determina el Treatment compatible y
+resuelve la solicitud mediante la asignación siguiente:
+
 ```text
 Pet: Mora
 Treatment: Fisioterapia inicial para dolor lumbar leve
@@ -557,6 +709,10 @@ nuevos reemplazos. Cambiar el catálogo tampoco altera la composición acordada.
 ## 22. Criterios de aceptación
 
 * [ ] Treatment pertenece a Service, requiere procedimientos compatibles y sesiones estimadas positivas.
+* [ ] Client crea ServiceRequest únicamente para Service activo y Pet propia.
+* [ ] Client no selecciona Treatment ni controla la resolución.
+* [ ] Admin resuelve una solicitud solo con Treatment compatible y conserva la
+  relación ServiceRequest–PetTreatment.
 * [ ] El catálogo se administra sin eliminación física.
 * [ ] PetTreatment vincula Pet con Treatment y conserva las condiciones acordadas.
 * [ ] Una asignación genera sus TreatmentSession atómicamente.
@@ -566,8 +722,9 @@ nuevos reemplazos. Cambiar el catálogo tampoco altera la composición acordada.
 * [ ] Una sesión cancelada se conserva, no modifica `planned_sessions`, no
   cuenta para el progreso y genera el reemplazo necesario con numeración nueva.
 * [ ] Admin administra tratamientos, asignaciones y sesiones.
-* [ ] Client no modifica ningún recurso de F08.
-* [ ] Client consulta en modo lectura únicamente asignaciones y sesiones de sus
+* [ ] Client solo crea solicitudes `pending`; no modifica asignaciones, sesiones
+  ni estados profesionales de F08.
+* [ ] Client consulta únicamente solicitudes, asignaciones y sesiones de sus
   propias mascotas, con ownership completo.
 * [ ] Backend aplica autenticación, autorización, validación e integridad.
 * [ ] No existen precio de servicio/procedimiento, protocolos, pagos ni facturación.
@@ -620,7 +777,12 @@ definición.
 * Los roles siguen limitados a `admin` y `client`, con ownership backend.
 * No se introducen protocolos, facturación, pagos ni planificación por sesión.
 * Client consulta asignaciones y sesiones propias en modo lectura y no puede
-  solicitar tratamientos.
+  seleccionar ni solicitar Treatments; puede solicitar un Service activo para
+  una Pet propia mediante ServiceRequest.
+* ServiceRequest representa intención de atención, con estados `pending`,
+  `resolved` y `cancelled`, y no constituye información clínica.
+* Admin representa al profesional autorizado de F08 y determina el Treatment.
+* Una resolución compatible conserva `pet_treatment_id` nullable como trazabilidad.
 * PetTreatment conserva snapshots de tratamiento y procedimientos mediante una
   relación histórica propia.
 * La cantidad prevista puede aumentar o reducirse transaccionalmente en estados
@@ -634,13 +796,28 @@ definición.
 
 ## 26. Impacto documental y de implementación
 
-Esta especificación separa de F07 el dominio de tratamientos y sesiones. La implementación actual de estas entidades es infraestructura backend parcial de F08, no una funcionalidad terminada.
+Esta especificación mantiene F07 como catálogo y ubica en F08 solicitudes,
+tratamientos, asignaciones y sesiones. La implementación real de F08 es backend
+parcial: ya existen tablas y modelos de Treatment, PetTreatment, snapshots y
+TreatmentSession, además del servicio transaccional y pruebas iniciales. Todavía
+no existen rutas, Policies, Form Requests, controladores ni UI funcional completa
+de F08, y ServiceRequest no está implementado.
 
-* la implementación existente refleja el contrato anterior: Service contiene precio, moneda, duración y modalidades, y aún no existen Procedure, Treatment, PetTreatment ni TreatmentSession.
+Plan de implementación actualizado:
 
-`spec.md`, `technical.md` y `features.md` fueron armonizados con este contrato.
-Antes de implementar el nuevo modelo debe resolverse la decisión pendiente y
-planificarse migraciones nuevas sin modificar migraciones
-históricas ejecutadas.
+1. Crear mediante una migración nueva `service_requests` con `pet_id`,
+   `service_id`, `pet_treatment_id` nullable, `status`, `notes` y timestamps.
+2. Incorporar modelo, relaciones, factory y Policy con ownership completo.
+3. Implementar creación y lectura cliente desde una Pet propia, usando solo
+   Services activos y sin aceptar Treatment ni campos de resolución.
+4. Implementar listado/detalle admin de solicitudes y resolución transaccional
+   mediante un Treatment activo del mismo Service.
+5. Integrar la resolución con la infraestructura existente de PetTreatment y
+   sesiones, protegiendo reintentos y preservando trazabilidad.
+6. Completar UI React/Inertia, Wayfinder y las pruebas exigidas en la sección 19.
+
+La decisión pendiente sobre aumentar `planned_sessions` de un PetTreatment
+`completed` no bloquea ServiceRequest ni debe resolverse durante estos pasos. No
+se modificarán migraciones históricas ejecutadas.
 
 Historia Clínica permanece desacoplada. Una sesión completada informa progreso operativo, pero no crea ni modifica automáticamente `ClinicalRecord`. Una integración futura deberá respetar autorización, auditoría y visibilidad de Feature 06.

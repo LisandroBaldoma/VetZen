@@ -2,10 +2,12 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
     ClipboardList,
+    ClipboardPlus,
     FolderGit2,
     LayoutGrid,
     PawPrint,
     Stethoscope,
+    Syringe,
     UserRound,
     Users,
 } from 'lucide-react';
@@ -26,7 +28,9 @@ import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
+import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
+import { index as treatmentsIndex } from '@/routes/admin/treatments';
 import { edit as clientProfile } from '@/routes/clients';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
@@ -75,6 +79,16 @@ export function AppSidebar() {
                       title: 'Procedimientos',
                       href: proceduresIndex(),
                       icon: ClipboardList,
+                  },
+                  {
+                      title: 'Tratamientos',
+                      href: treatmentsIndex(),
+                      icon: Syringe,
+                  },
+                  {
+                      title: 'Solicitudes',
+                      href: serviceRequestsIndex(),
+                      icon: ClipboardPlus,
                   },
               ]
             : auth.user.client
