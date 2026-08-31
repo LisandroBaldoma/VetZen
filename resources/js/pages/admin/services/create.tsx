@@ -6,11 +6,11 @@ import ServiceFormFields from '@/components/service-form-fields';
 export default function AdminServiceCreate() {
     return (
         <>
-            <Head title="Add service" />
+            <Head title="Crear servicio" />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title="Add service"
-                    description="Create a therapy in the VetZen catalog."
+                    title="Crear servicio"
+                    description="Agregá una terapia al catálogo de VetZen."
                 />
                 <Form
                     {...AdminServiceController.store.form()}

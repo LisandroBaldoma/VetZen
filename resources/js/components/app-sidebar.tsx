@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
+    ClipboardList,
     FolderGit2,
     LayoutGrid,
     PawPrint,
@@ -24,6 +25,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
+import { index as proceduresIndex } from '@/routes/admin/procedures';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { edit as clientProfile } from '@/routes/clients';
 import { index as myPetsIndex } from '@/routes/pets';
@@ -55,19 +57,24 @@ export function AppSidebar() {
         ...(isAdmin
             ? [
                   {
-                      title: 'Clients',
+                      title: 'Clientes',
                       href: clientsIndex(),
                       icon: Users,
                   },
                   {
-                      title: 'Pets',
+                      title: 'Mascotas',
                       href: petsIndex(),
                       icon: PawPrint,
                   },
                   {
-                      title: 'Services',
+                      title: 'Servicios',
                       href: adminServicesIndex(),
                       icon: Stethoscope,
+                  },
+                  {
+                      title: 'Procedimientos',
+                      href: proceduresIndex(),
+                      icon: ClipboardList,
                   },
               ]
             : auth.user.client

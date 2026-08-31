@@ -123,3 +123,63 @@ facturación. Ese dominio pertenece a F08.
 
 Se respetan los nombres del esquema vigente: `duration_minutes` e `is_active`.
 No quedan decisiones pendientes dentro del alcance de F07.
+
+## 14. F07.1 — Reorganización de la gestión administrativa
+
+La gestión administrativa prioriza acciones directas y elimina las pantallas de
+detalle genéricas del flujo principal. Las rutas de detalle existentes pueden
+conservarse por compatibilidad, pero no se enlazan desde los listados.
+
+### Servicios
+
+`/admin/services` muestra nombre, estado, cantidad de procedimientos y la acción
+Editar. La cantidad se obtiene mediante un conteo de relación y enlaza al listado
+contextual del servicio. El estado se modifica mediante una acción dedicada que
+solicita confirmación y muestra feedback, sin reenviar los demás campos.
+
+### Procedimientos por servicio
+
+`/admin/services/{service}/procedures` identifica claramente el servicio y ofrece
+Crear procedimiento, Editar servicio y Volver a servicios. La tabla muestra
+procedimiento, duración, estado y únicamente la acción Editar. Las rutas anidadas
+mantienen bindings acotados para impedir operar un procedimiento bajo un servicio
+incorrecto.
+
+### Catálogo global de procedimientos
+
+`/admin/procedures` permite al administrador consultar todos los procedimientos.
+Cada fila identifica y enlaza su servicio, permite editar directamente dentro de
+ese contexto y cambiar el estado con confirmación. La relación Service se carga de
+forma anticipada para evitar consultas N+1.
+
+Toda esta interfaz se presenta en español, contempla estados vacíos y tablas con
+desplazamiento horizontal en pantallas pequeñas. F07.1 no modifica el esquema de
+datos ni incorpora tratamientos, precios, sesiones o reglas de F08.
+
+## 15. F07.2 — Refinamiento UX/UI de Servicios y Procedimientos
+
+F07.2 simplifica los controles del panel administrativo sin modificar reglas de
+negocio, relaciones ni permisos. En el encabezado contextual de procedimientos se
+mantiene Crear procedimiento como acción principal; una flecha con tooltip permite
+volver a Servicios y se elimina el acceso Editar servicio.
+
+En la tabla de Servicios, el conteo de procedimientos es informativo y un botón
+compacto con icono de ojo abre el listado del servicio. Todas las tablas de este
+módulo usan un icono de lápiz con tooltip y nombre accesible para editar. El estado
+se presenta como un único botón interactivo `Activo` o `Inactivo`, que conserva la
+confirmación y el feedback de las acciones de estado existentes.
+
+El catálogo `/admin/procedures` incorpora búsqueda backend, filtros y paginación.
+Utiliza los siguientes query parameters opcionales:
+
+| Parámetro | Valores |
+| --- | --- |
+| `search` | fragmento del nombre del procedimiento |
+| `service` | ID de Service |
+| `status` | `active` o `inactive` |
+| `page` | página solicitada |
+
+Los parámetros vacíos se omiten, cualquier cambio de filtro reinicia la página y
+los filtros válidos se conservan en los enlaces de paginación. La interfaz distingue
+el catálogo vacío de una búsqueda sin coincidencias y ofrece una acción para limpiar
+todos los filtros.

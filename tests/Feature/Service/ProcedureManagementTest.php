@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\User;
 use Database\Seeders\ProcedureSeeder;
 use Database\Seeders\ServiceSeeder;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -36,7 +37,7 @@ class ProcedureManagementTest extends TestCase
         ]);
 
         $procedure = Procedure::query()->where('name', 'Magnetotherapy')->firstOrFail();
-        $response->assertRedirect(route('admin.services.procedures.show', [$service, $procedure]));
+        $response->assertRedirect(route('admin.services.procedures.index', $service));
         $this->assertTrue($procedure->service->is($service));
         $this->assertNull($procedure->duration_minutes);
         $this->assertTrue($procedure->is_active);
@@ -53,13 +54,122 @@ class ProcedureManagementTest extends TestCase
             'duration_minutes' => 30,
             'is_active' => false,
             'service_id' => $otherService->id,
-        ])->assertRedirect(route('admin.services.procedures.show', [$service, $procedure]));
+        ])->assertRedirect(route('admin.services.procedures.index', $service));
 
         $procedure->refresh();
         $this->assertSame('Updated magnetotherapy', $procedure->name);
         $this->assertSame(30, $procedure->duration_minutes);
         $this->assertFalse($procedure->is_active);
         $this->assertTrue($procedure->service->is($service));
+    }
+
+    public function test_admin_can_use_the_global_procedure_catalog_with_service_context(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create(['name' => 'Rehabilitación']);
+        $procedure = Procedure::factory()->for($service)->create(['name' => 'Hidroterapia']);
+
+        $this->actingAs($admin)->get(route('admin.procedures.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/procedures/index')
+                ->has('procedures.data', 1)
+                ->where('procedures.data.0.id', $procedure->id)
+                ->where('procedures.data.0.service.id', $service->id)
+                ->where('procedures.data.0.service.name', 'Rehabilitación')
+                ->has('services', 1)
+                ->where('filters.search', '')
+                ->where('filters.service', '')
+                ->where('filters.status', ''));
+    }
+
+    public function test_global_catalog_filters_procedures_by_name_service_and_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $selectedService = Service::factory()->create();
+        $otherService = Service::factory()->create();
+        $match = Procedure::factory()->for($selectedService)->create([
+            'name' => 'Magnetoterapia avanzada',
+            'is_active' => true,
+        ]);
+        Procedure::factory()->for($selectedService)->inactive()->create(['name' => 'Magnetoterapia inactiva']);
+        Procedure::factory()->for($otherService)->create(['name' => 'Magnetoterapia externa']);
+        Procedure::factory()->for($selectedService)->create(['name' => 'Hidroterapia']);
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'search' => 'magneto',
+            'service' => $selectedService->id,
+            'status' => 'active',
+        ]))->assertOk()->assertInertia(fn ($page) => $page
+            ->has('procedures.data', 1)
+            ->where('procedures.data.0.id', $match->id)
+            ->where('filters.search', 'magneto')
+            ->where('filters.service', (string) $selectedService->id)
+            ->where('filters.status', 'active'));
+    }
+
+    public function test_global_catalog_preserves_filters_in_pagination_links(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        Procedure::factory()
+            ->count(11)
+            ->for($service)
+            ->state(new Sequence(fn (Sequence $sequence) => [
+                'name' => 'Procedure '.$sequence->index,
+                'is_active' => true,
+            ]))
+            ->create();
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'search' => 'Procedure',
+            'service' => $service->id,
+            'status' => 'active',
+        ]))->assertOk()->assertInertia(fn ($page) => $page
+            ->where('procedures.per_page', 10)
+            ->where('procedures.last_page', 2)
+            ->where('procedures.links.2.url', fn ($url) => str_contains($url, 'search=Procedure')
+                && str_contains($url, 'service='.$service->id)
+                && str_contains($url, 'status=active')));
+    }
+
+    public function test_global_catalog_rejects_invalid_filters(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'service' => 999999,
+            'status' => 'archived',
+        ]))->assertSessionHasErrors(['service', 'status']);
+    }
+
+    public function test_admin_can_change_only_the_procedure_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        $procedure = Procedure::factory()->for($service)->create(['name' => 'Láser', 'is_active' => true]);
+
+        $this->actingAs($admin)
+            ->from(route('admin.services.procedures.index', $service))
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])
+            ->assertRedirect(route('admin.services.procedures.index', $service));
+
+        $procedure->refresh();
+        $this->assertFalse($procedure->is_active);
+        $this->assertSame('Láser', $procedure->name);
+    }
+
+    public function test_procedure_status_requires_a_boolean_value(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        $procedure = Procedure::factory()->for($service)->create(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => 'invalid'])
+            ->assertSessionHasErrors('is_active');
+
+        $this->assertTrue($procedure->fresh()->is_active);
     }
 
     public function test_client_cannot_access_or_mutate_procedure_administration(): void
@@ -74,6 +184,8 @@ class ProcedureManagementTest extends TestCase
         $this->actingAs($client)->get(route('admin.services.procedures.show', [$service, $procedure]))->assertForbidden();
         $this->actingAs($client)->post(route('admin.services.procedures.store', $service), $payload)->assertForbidden();
         $this->actingAs($client)->patch(route('admin.services.procedures.update', [$service, $procedure]), $payload)->assertForbidden();
+        $this->actingAs($client)->get(route('admin.procedures.index'))->assertForbidden();
+        $this->actingAs($client)->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])->assertForbidden();
 
         $this->assertSame($procedure->name, $procedure->fresh()->name);
     }
@@ -132,6 +244,10 @@ class ProcedureManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->patch(route('admin.services.procedures.update', [$service, $procedure]), ['name' => 'Moved'])
+            ->assertNotFound();
+
+        $this->actingAs($admin)
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])
             ->assertNotFound();
     }
 

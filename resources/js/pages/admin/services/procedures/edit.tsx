@@ -3,7 +3,7 @@ import AdminProcedureController from '@/actions/App/Http/Controllers/Admin/Proce
 import Heading from '@/components/heading';
 import ProcedureFormFields from '@/components/procedure-form-fields';
 import { Button } from '@/components/ui/button';
-import { show } from '@/routes/admin/services/procedures';
+import { index } from '@/routes/admin/services/procedures';
 import type { Procedure, Service } from '@/types';
 
 export default function AdminProcedureEdit({
@@ -15,11 +15,11 @@ export default function AdminProcedureEdit({
 }) {
     return (
         <>
-            <Head title={`Edit ${procedure.name}`} />
+            <Head title={`Editar ${procedure.name}`} />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title={`Edit ${procedure.name}`}
-                    description={`Update this procedure within ${service.name}.`}
+                    title={`Editar ${procedure.name}`}
+                    description={`Actualizá este procedimiento de ${service.name}.`}
                 />
                 <Form
                     {...AdminProcedureController.update.form([
@@ -37,7 +37,7 @@ export default function AdminProcedureEdit({
                     )}
                 </Form>
                 <Button variant="outline" asChild>
-                    <Link href={show([service.id, procedure.id])}>Cancel</Link>
+                    <Link href={index(service.id)}>Cancelar</Link>
                 </Button>
             </div>
         </>

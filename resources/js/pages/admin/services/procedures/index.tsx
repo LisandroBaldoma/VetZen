@@ -1,10 +1,12 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import AdminProcedureController from '@/actions/App/Http/Controllers/Admin/ProcedureController';
+import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft, Pencil } from 'lucide-react';
+import ProcedureStatusController from '@/actions/App/Http/Controllers/Admin/ProcedureStatusController';
+import CatalogIconLink from '@/components/catalog-icon-link';
+import CatalogStatusForm from '@/components/catalog-status-form';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { show as serviceShow } from '@/routes/admin/services';
-import { create, show } from '@/routes/admin/services/procedures';
+import { index as servicesIndex } from '@/routes/admin/services';
+import { create, edit } from '@/routes/admin/services/procedures';
 import type { Procedure, Service } from '@/types';
 
 export default function AdminProceduresIndex({
@@ -16,37 +18,41 @@ export default function AdminProceduresIndex({
 }) {
     return (
         <>
-            <Head title={`Procedures — ${service.name}`} />
+            <Head title={`Procedimientos — ${service.name}`} />
             <div className="space-y-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-4">
-                    <Heading
-                        title="Procedures"
-                        description={`Manage the techniques available for ${service.name}.`}
-                    />
-                    <div className="flex gap-2">
-                        <Button variant="outline" asChild>
-                            <Link href={serviceShow(service.id)}>
-                                Back to service
-                            </Link>
-                        </Button>
-                        <Button asChild>
-                            <Link href={create(service.id)}>Add procedure</Link>
-                        </Button>
+                    <div className="flex items-start gap-3">
+                        <CatalogIconLink
+                            href={servicesIndex()}
+                            label="Volver a servicios"
+                            icon={ArrowLeft}
+                        />
+                        <Heading
+                            title={`Procedimientos de ${service.name}`}
+                            description="Administrá las prácticas asociadas a este servicio."
+                        />
                     </div>
+                    <Button asChild>
+                        <Link href={create(service.id)}>
+                            Crear procedimiento
+                        </Link>
+                    </Button>
                 </div>
                 {procedures.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
-                        This service has no procedures yet.
+                        Este servicio todavía no tiene procedimientos.
                     </p>
                 ) : (
                     <div className="overflow-x-auto rounded-xl border">
-                        <table className="w-full text-left text-sm">
+                        <table className="w-full min-w-2xl text-left text-sm">
                             <thead className="bg-muted/50 text-muted-foreground">
                                 <tr>
-                                    <th className="px-4 py-3">Procedure</th>
-                                    <th className="px-4 py-3">Duration</th>
-                                    <th className="px-4 py-3">Status</th>
-                                    <th className="px-4 py-3" />
+                                    <th className="px-4 py-3">Procedimiento</th>
+                                    <th className="px-4 py-3">Duración</th>
+                                    <th className="px-4 py-3">Estado</th>
+                                    <th className="px-4 py-3 text-right">
+                                        Acciones
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,80 +64,26 @@ export default function AdminProceduresIndex({
                                         <td className="px-4 py-3 text-muted-foreground">
                                             {procedure.duration_minutes
                                                 ? `${procedure.duration_minutes} min`
-                                                : 'Not specified'}
+                                                : 'Sin especificar'}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <Badge
-                                                variant={
-                                                    procedure.is_active
-                                                        ? 'secondary'
-                                                        : 'outline'
-                                                }
-                                            >
-                                                {procedure.is_active
-                                                    ? 'Active'
-                                                    : 'Inactive'}
-                                            </Badge>
-                                        </td>
-                                        <td className="flex justify-end gap-2 px-4 py-3">
-                                            <Form
-                                                {...AdminProcedureController.update.form(
+                                            <CatalogStatusForm
+                                                form={ProcedureStatusController.update.form(
                                                     [service.id, procedure.id],
                                                 )}
-                                            >
-                                                <input
-                                                    type="hidden"
-                                                    name="name"
-                                                    value={procedure.name}
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="description"
-                                                    value={
-                                                        procedure.description ??
-                                                        ''
-                                                    }
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="duration_minutes"
-                                                    value={
-                                                        procedure.duration_minutes ??
-                                                        ''
-                                                    }
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="is_active"
-                                                    value={
-                                                        procedure.is_active
-                                                            ? '0'
-                                                            : '1'
-                                                    }
-                                                />
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                >
-                                                    {procedure.is_active
-                                                        ? 'Deactivate'
-                                                        : 'Activate'}
-                                                </Button>
-                                            </Form>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                asChild
-                                            >
-                                                <Link
-                                                    href={show([
-                                                        service.id,
-                                                        procedure.id,
-                                                    ])}
-                                                >
-                                                    View
-                                                </Link>
-                                            </Button>
+                                                isActive={procedure.is_active}
+                                                subject={`el procedimiento ${procedure.name}`}
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <CatalogIconLink
+                                                href={edit([
+                                                    service.id,
+                                                    procedure.id,
+                                                ])}
+                                                label={`Editar procedimiento ${procedure.name}`}
+                                                icon={Pencil}
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -143,3 +95,10 @@ export default function AdminProceduresIndex({
         </>
     );
 }
+
+AdminProceduresIndex.layout = {
+    breadcrumbs: [
+        { title: 'Servicios', href: servicesIndex() },
+        { title: 'Procedimientos', href: '#' },
+    ],
+};

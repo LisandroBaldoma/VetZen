@@ -40,9 +40,9 @@ class ProcedureController extends Controller
             'name', 'description', 'duration_minutes', 'is_active',
         ]));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Procedure created.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Procedimiento creado.')]);
 
-        return to_route('admin.services.procedures.show', [$service, $procedure]);
+        return to_route('admin.services.procedures.index', $service);
     }
 
     public function show(Service $service, Procedure $procedure): Response
@@ -74,9 +74,9 @@ class ProcedureController extends Controller
             'name', 'description', 'duration_minutes', 'is_active',
         ]));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Procedure updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Procedimiento actualizado.')]);
 
-        return to_route('admin.services.procedures.show', [$service, $procedure]);
+        return to_route('admin.services.procedures.index', $service);
     }
 
     private function authorizeAdmin(): void
