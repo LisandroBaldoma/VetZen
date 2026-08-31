@@ -9,6 +9,7 @@ type Props = {
 
 export default function CatalogStatusForm({ form, isActive, subject }: Props) {
     const action = isActive ? 'desactivar' : 'activar';
+    const accessibleSubject = subject.replace(/^el /, '');
 
     return (
         <Form
@@ -27,15 +28,15 @@ export default function CatalogStatusForm({ form, isActive, subject }: Props) {
                     <Button
                         type="submit"
                         size="sm"
-                        variant="outline"
+                        variant={isActive ? 'default' : 'outline'}
                         disabled={processing}
-                        aria-label={`${isActive ? 'Desactivar' : 'Activar'} ${subject}`}
+                        aria-label={`${isActive ? 'Desactivar' : 'Activar'} ${accessibleSubject}`}
                     >
                         {processing
                             ? 'Guardando…'
                             : isActive
-                              ? 'Desactivar'
-                              : 'Activar'}
+                              ? 'Activo'
+                              : 'Inactivo'}
                     </Button>
                 </>
             )}

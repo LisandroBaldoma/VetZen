@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\User;
 use Database\Seeders\ProcedureSeeder;
 use Database\Seeders\ServiceSeeder;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -72,10 +73,74 @@ class ProcedureManagementTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('admin/procedures/index')
-                ->has('procedures', 1)
-                ->where('procedures.0.id', $procedure->id)
-                ->where('procedures.0.service.id', $service->id)
-                ->where('procedures.0.service.name', 'Rehabilitación'));
+                ->has('procedures.data', 1)
+                ->where('procedures.data.0.id', $procedure->id)
+                ->where('procedures.data.0.service.id', $service->id)
+                ->where('procedures.data.0.service.name', 'Rehabilitación')
+                ->has('services', 1)
+                ->where('filters.search', '')
+                ->where('filters.service', '')
+                ->where('filters.status', ''));
+    }
+
+    public function test_global_catalog_filters_procedures_by_name_service_and_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $selectedService = Service::factory()->create();
+        $otherService = Service::factory()->create();
+        $match = Procedure::factory()->for($selectedService)->create([
+            'name' => 'Magnetoterapia avanzada',
+            'is_active' => true,
+        ]);
+        Procedure::factory()->for($selectedService)->inactive()->create(['name' => 'Magnetoterapia inactiva']);
+        Procedure::factory()->for($otherService)->create(['name' => 'Magnetoterapia externa']);
+        Procedure::factory()->for($selectedService)->create(['name' => 'Hidroterapia']);
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'search' => 'magneto',
+            'service' => $selectedService->id,
+            'status' => 'active',
+        ]))->assertOk()->assertInertia(fn ($page) => $page
+            ->has('procedures.data', 1)
+            ->where('procedures.data.0.id', $match->id)
+            ->where('filters.search', 'magneto')
+            ->where('filters.service', (string) $selectedService->id)
+            ->where('filters.status', 'active'));
+    }
+
+    public function test_global_catalog_preserves_filters_in_pagination_links(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        Procedure::factory()
+            ->count(11)
+            ->for($service)
+            ->state(new Sequence(fn (Sequence $sequence) => [
+                'name' => 'Procedure '.$sequence->index,
+                'is_active' => true,
+            ]))
+            ->create();
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'search' => 'Procedure',
+            'service' => $service->id,
+            'status' => 'active',
+        ]))->assertOk()->assertInertia(fn ($page) => $page
+            ->where('procedures.per_page', 10)
+            ->where('procedures.last_page', 2)
+            ->where('procedures.links.2.url', fn ($url) => str_contains($url, 'search=Procedure')
+                && str_contains($url, 'service='.$service->id)
+                && str_contains($url, 'status=active')));
+    }
+
+    public function test_global_catalog_rejects_invalid_filters(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.procedures.index', [
+            'service' => 999999,
+            'status' => 'archived',
+        ]))->assertSessionHasErrors(['service', 'status']);
     }
 
     public function test_admin_can_change_only_the_procedure_status(): void

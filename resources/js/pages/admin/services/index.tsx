@@ -1,8 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
+import { Eye, Pencil } from 'lucide-react';
 import ServiceStatusController from '@/actions/App/Http/Controllers/Admin/ServiceStatusController';
+import CatalogIconLink from '@/components/catalog-icon-link';
 import CatalogStatusForm from '@/components/catalog-status-form';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { create, edit, index } from '@/routes/admin/services';
 import { index as proceduresIndex } from '@/routes/admin/services/procedures';
@@ -52,50 +53,37 @@ export default function AdminServicesIndex({
                                             {service.name}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <Badge
-                                                    variant={
-                                                        service.is_active
-                                                            ? 'secondary'
-                                                            : 'outline'
-                                                    }
-                                                >
-                                                    {service.is_active
-                                                        ? 'Activo'
-                                                        : 'Inactivo'}
-                                                </Badge>
-                                                <CatalogStatusForm
-                                                    form={ServiceStatusController.update.form(
+                                            <CatalogStatusForm
+                                                form={ServiceStatusController.update.form(
+                                                    service.id,
+                                                )}
+                                                isActive={
+                                                    service.is_active ?? false
+                                                }
+                                                subject={`el servicio ${service.name}`}
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <span>
+                                                    {service.procedures_count ??
+                                                        0}
+                                                </span>
+                                                <CatalogIconLink
+                                                    href={proceduresIndex(
                                                         service.id,
                                                     )}
-                                                    isActive={
-                                                        service.is_active ??
-                                                        false
-                                                    }
-                                                    subject={`el servicio ${service.name}`}
+                                                    label={`Ver procedimientos de ${service.name}`}
+                                                    icon={Eye}
                                                 />
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <Link
-                                                href={proceduresIndex(
-                                                    service.id,
-                                                )}
-                                                className="font-medium underline-offset-4 hover:underline"
-                                            >
-                                                {service.procedures_count ?? 0}
-                                            </Link>
-                                        </td>
                                         <td className="px-4 py-3 text-right">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                asChild
-                                            >
-                                                <Link href={edit(service.id)}>
-                                                    Editar
-                                                </Link>
-                                            </Button>
+                                            <CatalogIconLink
+                                                href={edit(service.id)}
+                                                label={`Editar servicio ${service.name}`}
+                                                icon={Pencil}
+                                            />
                                         </td>
                                     </tr>
                                 ))}

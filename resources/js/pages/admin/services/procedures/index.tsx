@@ -1,13 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import ProcedureStatusController from '@/actions/App/Http/Controllers/Admin/ProcedureStatusController';
+import CatalogIconLink from '@/components/catalog-icon-link';
 import CatalogStatusForm from '@/components/catalog-status-form';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    edit as serviceEdit,
-    index as servicesIndex,
-} from '@/routes/admin/services';
+import { index as servicesIndex } from '@/routes/admin/services';
 import { create, edit } from '@/routes/admin/services/procedures';
 import type { Procedure, Service } from '@/types';
 
@@ -23,27 +21,22 @@ export default function AdminProceduresIndex({
             <Head title={`Procedimientos — ${service.name}`} />
             <div className="space-y-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-4">
-                    <Heading
-                        title={`Procedimientos de ${service.name}`}
-                        description="Administrá las prácticas asociadas a este servicio."
-                    />
-                    <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" asChild>
-                            <Link href={servicesIndex()}>
-                                Volver a servicios
-                            </Link>
-                        </Button>
-                        <Button variant="outline" asChild>
-                            <Link href={serviceEdit(service.id)}>
-                                Editar servicio
-                            </Link>
-                        </Button>
-                        <Button asChild>
-                            <Link href={create(service.id)}>
-                                Crear procedimiento
-                            </Link>
-                        </Button>
+                    <div className="flex items-start gap-3">
+                        <CatalogIconLink
+                            href={servicesIndex()}
+                            label="Volver a servicios"
+                            icon={ArrowLeft}
+                        />
+                        <Heading
+                            title={`Procedimientos de ${service.name}`}
+                            description="Administrá las prácticas asociadas a este servicio."
+                        />
                     </div>
+                    <Button asChild>
+                        <Link href={create(service.id)}>
+                            Crear procedimiento
+                        </Link>
+                    </Button>
                 </div>
                 {procedures.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
@@ -74,47 +67,23 @@ export default function AdminProceduresIndex({
                                                 : 'Sin especificar'}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <Badge
-                                                    variant={
-                                                        procedure.is_active
-                                                            ? 'secondary'
-                                                            : 'outline'
-                                                    }
-                                                >
-                                                    {procedure.is_active
-                                                        ? 'Activo'
-                                                        : 'Inactivo'}
-                                                </Badge>
-                                                <CatalogStatusForm
-                                                    form={ProcedureStatusController.update.form(
-                                                        [
-                                                            service.id,
-                                                            procedure.id,
-                                                        ],
-                                                    )}
-                                                    isActive={
-                                                        procedure.is_active
-                                                    }
-                                                    subject={`el procedimiento ${procedure.name}`}
-                                                />
-                                            </div>
+                                            <CatalogStatusForm
+                                                form={ProcedureStatusController.update.form(
+                                                    [service.id, procedure.id],
+                                                )}
+                                                isActive={procedure.is_active}
+                                                subject={`el procedimiento ${procedure.name}`}
+                                            />
                                         </td>
                                         <td className="px-4 py-3 text-right">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                asChild
-                                            >
-                                                <Link
-                                                    href={edit([
-                                                        service.id,
-                                                        procedure.id,
-                                                    ])}
-                                                >
-                                                    Editar
-                                                </Link>
-                                            </Button>
+                                            <CatalogIconLink
+                                                href={edit([
+                                                    service.id,
+                                                    procedure.id,
+                                                ])}
+                                                label={`Editar procedimiento ${procedure.name}`}
+                                                icon={Pencil}
+                                            />
                                         </td>
                                     </tr>
                                 ))}

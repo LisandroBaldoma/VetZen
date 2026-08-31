@@ -155,3 +155,31 @@ forma anticipada para evitar consultas N+1.
 Toda esta interfaz se presenta en español, contempla estados vacíos y tablas con
 desplazamiento horizontal en pantallas pequeñas. F07.1 no modifica el esquema de
 datos ni incorpora tratamientos, precios, sesiones o reglas de F08.
+
+## 15. F07.2 — Refinamiento UX/UI de Servicios y Procedimientos
+
+F07.2 simplifica los controles del panel administrativo sin modificar reglas de
+negocio, relaciones ni permisos. En el encabezado contextual de procedimientos se
+mantiene Crear procedimiento como acción principal; una flecha con tooltip permite
+volver a Servicios y se elimina el acceso Editar servicio.
+
+En la tabla de Servicios, el conteo de procedimientos es informativo y un botón
+compacto con icono de ojo abre el listado del servicio. Todas las tablas de este
+módulo usan un icono de lápiz con tooltip y nombre accesible para editar. El estado
+se presenta como un único botón interactivo `Activo` o `Inactivo`, que conserva la
+confirmación y el feedback de las acciones de estado existentes.
+
+El catálogo `/admin/procedures` incorpora búsqueda backend, filtros y paginación.
+Utiliza los siguientes query parameters opcionales:
+
+| Parámetro | Valores |
+| --- | --- |
+| `search` | fragmento del nombre del procedimiento |
+| `service` | ID de Service |
+| `status` | `active` o `inactive` |
+| `page` | página solicitada |
+
+Los parámetros vacíos se omiten, cualquier cambio de filtro reinicia la página y
+los filtros válidos se conservan en los enlaces de paginación. La interfaz distingue
+el catálogo vacío de una búsqueda sin coincidencias y ofrece una acción para limpiar
+todos los filtros.
