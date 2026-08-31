@@ -36,6 +36,12 @@ class Service extends Model
         return $this->hasMany(Treatment::class);
     }
 
+    /** @return HasMany<ServiceRequest, $this> */
+    public function requests(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class);
+    }
+
     protected function casts(): array
     {
         return [

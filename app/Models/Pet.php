@@ -50,6 +50,17 @@ class Pet extends Model
         return $this->hasMany(PetTreatment::class);
     }
 
+    public function petTreatments(): HasMany
+    {
+        return $this->hasMany(PetTreatment::class);
+    }
+
+    /** @return HasMany<ServiceRequest, $this> */
+    public function serviceRequests(): HasMany
+    {
+        return $this->hasMany(ServiceRequest::class);
+    }
+
     /**
      * @return array<string, string>
      */

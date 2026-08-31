@@ -7,6 +7,7 @@ use App\Models\PetTreatment;
 use App\Models\Service;
 use App\Services\TreatmentAssignmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class TreatmentAssignmentTest extends TestCase
@@ -89,6 +90,33 @@ class TreatmentAssignmentTest extends TestCase
 
         $this->assertSame('completed', $assigned->fresh()->status);
         $this->assertSame(2, $assigned->sessions()->where('status', 'completed')->count());
+    }
+
+    public function test_resize_adds_and_removes_only_pending_sessions(): void
+    {
+        $assigned = $this->assignedTreatment(2);
+        $manager = app(TreatmentAssignmentService::class);
+
+        $manager->resize($assigned, 4);
+        $this->assertSame([1, 2, 3, 4], $assigned->sessions()->orderBy('session_number')->pluck('session_number')->all());
+
+        $manager->resize($assigned, 3);
+        $this->assertSame([1, 2, 3], $assigned->sessions()->orderBy('session_number')->pluck('session_number')->all());
+        $this->assertSame(3, $assigned->fresh()->planned_sessions);
+    }
+
+    public function test_suspended_treatment_does_not_allow_session_changes_or_generate_replacements(): void
+    {
+        $assigned = $this->assignedTreatment(1);
+        $manager = app(TreatmentAssignmentService::class);
+        $manager->changeStatus($assigned, 'suspended');
+
+        $this->expectException(ValidationException::class);
+        $session = $assigned->sessions()->sole();
+        $manager->updateSession($session, [
+            'scheduled_at' => null, 'price' => $session->price, 'currency' => 'ARS',
+            'status' => 'cancelled', 'notes' => null,
+        ]);
     }
 
     private function assignedTreatment(int $plannedSessions): PetTreatment

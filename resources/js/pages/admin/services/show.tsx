@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { edit } from '@/routes/admin/services';
 import { index as proceduresIndex } from '@/routes/admin/services/procedures';
+import { index as treatmentsIndex } from '@/routes/admin/services/treatments';
 import type { Service } from '@/types';
 
 export default function AdminServiceShow({ service }: { service: Service }) {
@@ -30,6 +31,11 @@ export default function AdminServiceShow({ service }: { service: Service }) {
                         <Button variant="outline" asChild>
                             <Link href={proceduresIndex(service.id)}>
                                 Procedures
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href={treatmentsIndex(service.id)}>
+                                Tratamientos
                             </Link>
                         </Button>
                         <Button asChild>
