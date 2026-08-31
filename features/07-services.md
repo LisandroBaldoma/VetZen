@@ -123,3 +123,35 @@ facturación. Ese dominio pertenece a F08.
 
 Se respetan los nombres del esquema vigente: `duration_minutes` e `is_active`.
 No quedan decisiones pendientes dentro del alcance de F07.
+
+## 14. F07.1 — Reorganización de la gestión administrativa
+
+La gestión administrativa prioriza acciones directas y elimina las pantallas de
+detalle genéricas del flujo principal. Las rutas de detalle existentes pueden
+conservarse por compatibilidad, pero no se enlazan desde los listados.
+
+### Servicios
+
+`/admin/services` muestra nombre, estado, cantidad de procedimientos y la acción
+Editar. La cantidad se obtiene mediante un conteo de relación y enlaza al listado
+contextual del servicio. El estado se modifica mediante una acción dedicada que
+solicita confirmación y muestra feedback, sin reenviar los demás campos.
+
+### Procedimientos por servicio
+
+`/admin/services/{service}/procedures` identifica claramente el servicio y ofrece
+Crear procedimiento, Editar servicio y Volver a servicios. La tabla muestra
+procedimiento, duración, estado y únicamente la acción Editar. Las rutas anidadas
+mantienen bindings acotados para impedir operar un procedimiento bajo un servicio
+incorrecto.
+
+### Catálogo global de procedimientos
+
+`/admin/procedures` permite al administrador consultar todos los procedimientos.
+Cada fila identifica y enlaza su servicio, permite editar directamente dentro de
+ese contexto y cambiar el estado con confirmación. La relación Service se carga de
+forma anticipada para evitar consultas N+1.
+
+Toda esta interfaz se presenta en español, contempla estados vacíos y tablas con
+desplazamiento horizontal en pantallas pequeñas. F07.1 no modifica el esquema de
+datos ni incorpora tratamientos, precios, sesiones o reglas de F08.

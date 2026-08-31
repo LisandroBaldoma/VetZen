@@ -7,11 +7,11 @@ import type { Service } from '@/types';
 export default function AdminServiceEdit({ service }: { service: Service }) {
     return (
         <>
-            <Head title={`Edit ${service.name}`} />
+            <Head title={`Editar ${service.name}`} />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title={`Edit ${service.name}`}
-                    description="Update the service's commercial information."
+                    title={`Editar ${service.name}`}
+                    description="Actualizá la información comercial del servicio."
                 />
                 <Form
                     {...AdminServiceController.update.form(service.id)}

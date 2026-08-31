@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Service;
 
+use App\Models\Procedure;
 use App\Models\Service;
 use App\Models\User;
 use Database\Seeders\ServiceSeeder;
@@ -38,10 +39,14 @@ class ServiceManagementTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $inactive = Service::factory()->inactive()->create(['name' => 'Inactive']);
+        Procedure::factory()->count(2)->for($inactive)->create();
 
         $this->actingAs($admin)->get(route('admin.services.index'))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->has('services', 1)->where('services.0.is_active', false));
+            ->assertInertia(fn ($page) => $page
+                ->has('services', 1)
+                ->where('services.0.is_active', false)
+                ->where('services.0.procedures_count', 2));
 
         $response = $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Acupuncture',
@@ -49,7 +54,7 @@ class ServiceManagementTest extends TestCase
         ]);
 
         $service = Service::query()->where('name', 'Acupuncture')->firstOrFail();
-        $response->assertRedirect(route('admin.services.show', $service));
+        $response->assertRedirect(route('admin.services.index'));
         $this->assertTrue($service->is_active);
 
         $this->actingAs($admin)->patch(route('admin.services.update', $service), [
@@ -58,7 +63,7 @@ class ServiceManagementTest extends TestCase
             'is_active' => false,
             'client_id' => 999,
             'role' => 'client',
-        ])->assertRedirect(route('admin.services.show', $service));
+        ])->assertRedirect(route('admin.services.index'));
 
         $service->refresh();
         $this->assertSame('Updated acupuncture', $service->name);
@@ -66,6 +71,34 @@ class ServiceManagementTest extends TestCase
         $this->assertNull($service->getAttribute('client_id'));
         $this->assertNull($service->getAttribute('role'));
         $this->actingAs($admin)->get(route('admin.services.show', $inactive))->assertOk();
+    }
+
+    public function test_admin_can_change_only_the_service_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create(['name' => 'Fisioterapia', 'is_active' => true]);
+
+        $this->actingAs($admin)
+            ->from(route('admin.services.index'))
+            ->patch(route('admin.services.status.update', $service), ['is_active' => false])
+            ->assertRedirect(route('admin.services.index'))
+            ->assertSessionHasNoErrors();
+
+        $service->refresh();
+        $this->assertFalse($service->is_active);
+        $this->assertSame('Fisioterapia', $service->name);
+    }
+
+    public function test_service_status_requires_a_boolean_value(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.services.status.update', $service), ['is_active' => 'invalid'])
+            ->assertSessionHasErrors('is_active');
+
+        $this->assertTrue($service->fresh()->is_active);
     }
 
     public function test_client_cannot_access_or_mutate_administrative_services(): void
@@ -82,6 +115,7 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($client)->get(route('admin.services.show', $service))->assertForbidden();
         $this->actingAs($client)->post(route('admin.services.store'), $payload)->assertForbidden();
         $this->actingAs($client)->patch(route('admin.services.update', $service), $payload)->assertForbidden();
+        $this->actingAs($client)->patch(route('admin.services.status.update', $service), ['is_active' => false])->assertForbidden();
 
         $this->assertSame($service->name, $service->fresh()->name);
     }

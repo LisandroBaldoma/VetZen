@@ -36,7 +36,7 @@ class ProcedureManagementTest extends TestCase
         ]);
 
         $procedure = Procedure::query()->where('name', 'Magnetotherapy')->firstOrFail();
-        $response->assertRedirect(route('admin.services.procedures.show', [$service, $procedure]));
+        $response->assertRedirect(route('admin.services.procedures.index', $service));
         $this->assertTrue($procedure->service->is($service));
         $this->assertNull($procedure->duration_minutes);
         $this->assertTrue($procedure->is_active);
@@ -53,13 +53,58 @@ class ProcedureManagementTest extends TestCase
             'duration_minutes' => 30,
             'is_active' => false,
             'service_id' => $otherService->id,
-        ])->assertRedirect(route('admin.services.procedures.show', [$service, $procedure]));
+        ])->assertRedirect(route('admin.services.procedures.index', $service));
 
         $procedure->refresh();
         $this->assertSame('Updated magnetotherapy', $procedure->name);
         $this->assertSame(30, $procedure->duration_minutes);
         $this->assertFalse($procedure->is_active);
         $this->assertTrue($procedure->service->is($service));
+    }
+
+    public function test_admin_can_use_the_global_procedure_catalog_with_service_context(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create(['name' => 'Rehabilitación']);
+        $procedure = Procedure::factory()->for($service)->create(['name' => 'Hidroterapia']);
+
+        $this->actingAs($admin)->get(route('admin.procedures.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/procedures/index')
+                ->has('procedures', 1)
+                ->where('procedures.0.id', $procedure->id)
+                ->where('procedures.0.service.id', $service->id)
+                ->where('procedures.0.service.name', 'Rehabilitación'));
+    }
+
+    public function test_admin_can_change_only_the_procedure_status(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        $procedure = Procedure::factory()->for($service)->create(['name' => 'Láser', 'is_active' => true]);
+
+        $this->actingAs($admin)
+            ->from(route('admin.services.procedures.index', $service))
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])
+            ->assertRedirect(route('admin.services.procedures.index', $service));
+
+        $procedure->refresh();
+        $this->assertFalse($procedure->is_active);
+        $this->assertSame('Láser', $procedure->name);
+    }
+
+    public function test_procedure_status_requires_a_boolean_value(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create();
+        $procedure = Procedure::factory()->for($service)->create(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => 'invalid'])
+            ->assertSessionHasErrors('is_active');
+
+        $this->assertTrue($procedure->fresh()->is_active);
     }
 
     public function test_client_cannot_access_or_mutate_procedure_administration(): void
@@ -74,6 +119,8 @@ class ProcedureManagementTest extends TestCase
         $this->actingAs($client)->get(route('admin.services.procedures.show', [$service, $procedure]))->assertForbidden();
         $this->actingAs($client)->post(route('admin.services.procedures.store', $service), $payload)->assertForbidden();
         $this->actingAs($client)->patch(route('admin.services.procedures.update', [$service, $procedure]), $payload)->assertForbidden();
+        $this->actingAs($client)->get(route('admin.procedures.index'))->assertForbidden();
+        $this->actingAs($client)->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])->assertForbidden();
 
         $this->assertSame($procedure->name, $procedure->fresh()->name);
     }
@@ -132,6 +179,10 @@ class ProcedureManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->patch(route('admin.services.procedures.update', [$service, $procedure]), ['name' => 'Moved'])
+            ->assertNotFound();
+
+        $this->actingAs($admin)
+            ->patch(route('admin.services.procedures.status.update', [$service, $procedure]), ['is_active' => false])
             ->assertNotFound();
     }
 

@@ -1,9 +1,11 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import AdminServiceController from '@/actions/App/Http/Controllers/Admin/ServiceController';
+import { Head, Link } from '@inertiajs/react';
+import ServiceStatusController from '@/actions/App/Http/Controllers/Admin/ServiceStatusController';
+import CatalogStatusForm from '@/components/catalog-status-form';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create, show } from '@/routes/admin/services';
+import { create, edit, index } from '@/routes/admin/services';
+import { index as proceduresIndex } from '@/routes/admin/services/procedures';
 import type { Service } from '@/types';
 
 export default function AdminServicesIndex({
@@ -13,29 +15,34 @@ export default function AdminServicesIndex({
 }) {
     return (
         <>
-            <Head title="Services" />
+            <Head title="Servicios" />
             <div className="space-y-6 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
-                        title="Services"
-                        description="Manage the therapies offered in the client catalog."
+                        title="Servicios"
+                        description="Administrá las terapias y sus procedimientos disponibles."
                     />
                     <Button asChild>
-                        <Link href={create()}>Add service</Link>
+                        <Link href={create()}>Crear servicio</Link>
                     </Button>
                 </div>
                 {services.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
-                        There are no services yet.
+                        Todavía no hay servicios. Creá el primero para comenzar.
                     </p>
                 ) : (
                     <div className="overflow-x-auto rounded-xl border">
-                        <table className="w-full text-left text-sm">
+                        <table className="w-full min-w-2xl text-left text-sm">
                             <thead className="bg-muted/50 text-muted-foreground">
                                 <tr>
-                                    <th className="px-4 py-3">Service</th>
-                                    <th className="px-4 py-3">Status</th>
-                                    <th className="px-4 py-3" />
+                                    <th className="px-4 py-3">Servicio</th>
+                                    <th className="px-4 py-3">Estado</th>
+                                    <th className="px-4 py-3">
+                                        Procedimientos
+                                    </th>
+                                    <th className="px-4 py-3 text-right">
+                                        Acciones
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,59 +52,48 @@ export default function AdminServicesIndex({
                                             {service.name}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <Badge
-                                                variant={
-                                                    service.is_active
-                                                        ? 'secondary'
-                                                        : 'outline'
-                                                }
-                                            >
-                                                {service.is_active
-                                                    ? 'Active'
-                                                    : 'Inactive'}
-                                            </Badge>
-                                        </td>
-                                        <td className="flex justify-end gap-2 px-4 py-3">
-                                            <Form
-                                                {...AdminServiceController.update.form(
-                                                    service.id,
-                                                )}
-                                            >
-                                                <input
-                                                    type="hidden"
-                                                    name="name"
-                                                    value={service.name}
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="description"
-                                                    value={service.description}
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    name="is_active"
-                                                    value={
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <Badge
+                                                    variant={
                                                         service.is_active
-                                                            ? '0'
-                                                            : '1'
+                                                            ? 'secondary'
+                                                            : 'outline'
                                                     }
-                                                />
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
                                                 >
                                                     {service.is_active
-                                                        ? 'Deactivate'
-                                                        : 'Activate'}
-                                                </Button>
-                                            </Form>
+                                                        ? 'Activo'
+                                                        : 'Inactivo'}
+                                                </Badge>
+                                                <CatalogStatusForm
+                                                    form={ServiceStatusController.update.form(
+                                                        service.id,
+                                                    )}
+                                                    isActive={
+                                                        service.is_active ??
+                                                        false
+                                                    }
+                                                    subject={`el servicio ${service.name}`}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <Link
+                                                href={proceduresIndex(
+                                                    service.id,
+                                                )}
+                                                className="font-medium underline-offset-4 hover:underline"
+                                            >
+                                                {service.procedures_count ?? 0}
+                                            </Link>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
                                             <Button
                                                 size="sm"
                                                 variant="outline"
                                                 asChild
                                             >
-                                                <Link href={show(service.id)}>
-                                                    View
+                                                <Link href={edit(service.id)}>
+                                                    Editar
                                                 </Link>
                                             </Button>
                                         </td>
@@ -111,3 +107,7 @@ export default function AdminServicesIndex({
         </>
     );
 }
+
+AdminServicesIndex.layout = {
+    breadcrumbs: [{ title: 'Servicios', href: index() }],
+};

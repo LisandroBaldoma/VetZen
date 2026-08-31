@@ -3,8 +3,11 @@
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
+use App\Http\Controllers\Admin\ProcedureCatalogController as AdminProcedureCatalogController;
 use App\Http\Controllers\Admin\ProcedureController as AdminProcedureController;
+use App\Http\Controllers\Admin\ProcedureStatusController as AdminProcedureStatusController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ServiceStatusController as AdminServiceStatusController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
@@ -40,6 +43,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('services/{service}', [AdminServiceController::class, 'show'])->name('services.show');
         Route::get('services/{service}/edit', [AdminServiceController::class, 'edit'])->name('services.edit');
         Route::patch('services/{service}', [AdminServiceController::class, 'update'])->name('services.update');
+        Route::patch('services/{service}/status', [AdminServiceStatusController::class, 'update'])
+            ->name('services.status.update');
+        Route::get('procedures', AdminProcedureCatalogController::class)->name('procedures.index');
         Route::scopeBindings()->group(function () {
             Route::get('services/{service}/procedures', [AdminProcedureController::class, 'index'])
                 ->name('services.procedures.index');
@@ -53,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('services.procedures.edit');
             Route::patch('services/{service}/procedures/{procedure}', [AdminProcedureController::class, 'update'])
                 ->name('services.procedures.update');
+            Route::patch('services/{service}/procedures/{procedure}/status', [AdminProcedureStatusController::class, 'update'])
+                ->name('services.procedures.status.update');
         });
         Route::get('clients', [AdminClientController::class, 'index'])
             ->can('viewAny', Client::class)

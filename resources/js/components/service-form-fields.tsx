@@ -19,7 +19,7 @@ export default function ServiceFormFields({
     return (
         <>
             <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nombre</Label>
                 <Input
                     id="name"
                     name="name"
@@ -29,7 +29,7 @@ export default function ServiceFormFields({
                 <InputError message={errors.name} />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Descripción</Label>
                 <textarea
                     id="description"
                     name="description"
@@ -47,11 +47,13 @@ export default function ServiceFormFields({
                     value="1"
                     defaultChecked={service?.is_active ?? true}
                 />
-                <Label htmlFor="is_active">Active in the client catalog</Label>
+                <Label htmlFor="is_active">
+                    Activo en el catálogo para clientes
+                </Label>
                 <InputError message={errors.is_active} />
             </div>
             <Button disabled={processing}>
-                {processing ? 'Saving…' : 'Save service'}
+                {processing ? 'Guardando…' : 'Guardar servicio'}
             </Button>
         </>
     );

@@ -13,11 +13,11 @@ export default function AdminProcedureCreate({
 }) {
     return (
         <>
-            <Head title={`Add procedure — ${service.name}`} />
+            <Head title={`Crear procedimiento — ${service.name}`} />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title="Add procedure"
-                    description={`Create a technique within ${service.name}.`}
+                    title="Crear procedimiento"
+                    description={`Agregá una práctica dentro de ${service.name}.`}
                 />
                 <Form
                     {...AdminProcedureController.store.form(service.id)}
@@ -31,7 +31,7 @@ export default function AdminProcedureCreate({
                     )}
                 </Form>
                 <Button variant="outline" asChild>
-                    <Link href={index(service.id)}>Cancel</Link>
+                    <Link href={index(service.id)}>Cancelar</Link>
                 </Button>
             </div>
         </>

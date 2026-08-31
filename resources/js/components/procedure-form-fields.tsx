@@ -19,7 +19,7 @@ export default function ProcedureFormFields({
     return (
         <>
             <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nombre</Label>
                 <Input
                     id="name"
                     name="name"
@@ -29,7 +29,7 @@ export default function ProcedureFormFields({
                 <InputError message={errors.name} />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="description">Description (optional)</Label>
+                <Label htmlFor="description">Descripción (opcional)</Label>
                 <textarea
                     id="description"
                     name="description"
@@ -40,7 +40,7 @@ export default function ProcedureFormFields({
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="duration_minutes">
-                    Suggested duration in minutes (optional)
+                    Duración sugerida en minutos (opcional)
                 </Label>
                 <Input
                     id="duration_minutes"
@@ -60,11 +60,11 @@ export default function ProcedureFormFields({
                     value="1"
                     defaultChecked={procedure?.is_active ?? true}
                 />
-                <Label htmlFor="is_active">Active</Label>
+                <Label htmlFor="is_active">Activo</Label>
                 <InputError message={errors.is_active} />
             </div>
             <Button disabled={processing}>
-                {processing ? 'Saving…' : 'Save procedure'}
+                {processing ? 'Guardando…' : 'Guardar procedimiento'}
             </Button>
         </>
     );

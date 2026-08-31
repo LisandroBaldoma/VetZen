@@ -19,7 +19,11 @@ class ServiceController extends Controller
         Gate::authorize('viewAny', Service::class);
 
         return Inertia::render('admin/services/index', [
-            'services' => Service::query()->orderBy('name')->orderBy('id')->get(),
+            'services' => Service::query()
+                ->withCount('procedures')
+                ->orderBy('name')
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 
@@ -38,9 +42,9 @@ class ServiceController extends Controller
             'name', 'description', 'is_active',
         ]));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Service created.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Servicio creado.')]);
 
-        return to_route('admin.services.show', $service);
+        return to_route('admin.services.index');
     }
 
     public function show(Service $service): Response
@@ -66,9 +70,9 @@ class ServiceController extends Controller
             'name', 'description', 'is_active',
         ]));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Service updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Servicio actualizado.')]);
 
-        return to_route('admin.services.show', $service);
+        return to_route('admin.services.index');
     }
 
     private function authorizeAdmin(): void
