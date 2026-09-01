@@ -58,6 +58,49 @@ class ServiceRequestManagementTest extends TestCase
         $this->actingAs($clientA->user)->get(route('pets.service-requests.show', [$petA, $requestB]))->assertNotFound();
     }
 
+    public function test_admin_can_view_administrative_service_request_list_and_detail(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+        $serviceRequest = ServiceRequest::factory()->create();
+
+        $this->actingAs($admin)->get(route('admin.service-requests.index'))->assertOk();
+        $this->actingAs($admin)->get(route('admin.service-requests.show', $serviceRequest))->assertOk();
+    }
+
+    public function test_client_owner_cannot_view_administrative_service_request_detail(): void
+    {
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $serviceRequest = ServiceRequest::factory()->for($pet)->create();
+
+        $this->actingAs($client->user)
+            ->get(route('admin.service-requests.show', $serviceRequest))
+            ->assertForbidden();
+    }
+
+    public function test_client_owner_can_still_view_service_request_through_client_route(): void
+    {
+        $this->withoutVite();
+
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $serviceRequest = ServiceRequest::factory()->for($pet)->create();
+
+        $this->actingAs($client->user)
+            ->get(route('pets.service-requests.show', [$pet, $serviceRequest]))
+            ->assertOk();
+    }
+
+    public function test_guest_is_redirected_from_administrative_service_request_routes(): void
+    {
+        $serviceRequest = ServiceRequest::factory()->create();
+
+        $this->get(route('admin.service-requests.index'))->assertRedirect(route('login'));
+        $this->get(route('admin.service-requests.show', $serviceRequest))->assertRedirect(route('login'));
+    }
+
     public function test_admin_resolves_request_with_compatible_treatment_atomically(): void
     {
         $admin = User::factory()->admin()->create();

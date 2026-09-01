@@ -21,6 +21,7 @@ use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 Route::inertia('/', 'welcome')->name('home');
 
@@ -51,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('pets/{pet}/treatments/{petTreatment}', [PetTreatmentController::class, 'show'])->name('pets.treatments.show');
     });
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware(RoleMiddleware::using('admin'))->group(function () {
         Route::get('services', [AdminServiceController::class, 'index'])->name('services.index');
         Route::get('services/create', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('services', [AdminServiceController::class, 'store'])->name('services.store');
