@@ -1,0 +1,19 @@
+Actualiza `docs/ux/panel-redesign-spec.md` para cerrar las decisiones pendientes antes de implementar.
+
+Aplica estas decisiones definitivas:
+
+* El cliente podrá consultar toda la historia clínica de sus mascotas. Marca como dependencia necesaria actualizar Feature 06, consultas, autorización y pruebas. No lo mantengas como pregunta abierta.
+* La verificación de correo será obligatoria y efectiva.
+* En la primera versión no habrá entradas globales “Mis solicitudes”, “Mis tratamientos” ni “Tratamientos de pacientes”. Se usarán resúmenes en Inicio y navegación contextual por mascota o paciente.
+* Completar una sesión podrá abrir el alta de una evolución clínica con paciente y tipo preseleccionados, sin relación persistente entre sesión y registro.
+* Un tratamiento completado es final y no permite aumentar sesiones. Si continúa la atención se inicia un nuevo tratamiento.
+* Las cancelaciones usarán confirmación, pero no solicitarán motivo hasta que exista soporte de persistencia.
+* La eliminación de cuenta permanecerá oculta hasta definir retención o anonimización.
+* El rol determina el dashboard y navegación; los permisos controlan las capacidades dentro de cada experiencia.
+* Agenda, profesionales, permisos y configuración general siguen fuera de alcance.
+
+Comprueba y corrige la referencia `doc/ux/current-panel-audit.md` o `docs/ux/current-panel-audit.md` según la ruta real.
+
+Revisa las secciones de dependencias, preguntas pendientes, arquitectura, criterios de aceptación y orden de implementación para que no contradigan estas decisiones.
+
+No implementes código y no hagas commit. Al terminar indica exactamente qué secciones modificaste.
