@@ -1,23 +1,24 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { create, show } from '@/routes/pets';
+import { dashboard } from '@/routes';
+import { create, index, show } from '@/routes/pets';
 import type { Pet } from '@/types';
 
 export default function PetsIndex({ pets }: { pets: Pet[] }) {
     return (
         <>
-            <Head title="My pets" />
+            <Head title="Mis mascotas" />
             <div className="space-y-6 p-4">
-                <div className="flex items-start justify-between gap-4">
-                    <Heading
-                        title="My pets"
-                        description="Manage your pets' general information."
-                    />
-                    <Button asChild>
-                        <Link href={create()}>Add pet</Link>
-                    </Button>
-                </div>
+                <PageHeader
+                    title="Mis mascotas"
+                    description="Administrá la información general de tus mascotas."
+                    actions={
+                        <Button asChild>
+                            <Link href={create()}>Nueva mascota</Link>
+                        </Button>
+                    }
+                />
                 {pets.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
                         You do not have any pets yet.
@@ -42,3 +43,10 @@ export default function PetsIndex({ pets }: { pets: Pet[] }) {
         </>
     );
 }
+
+PetsIndex.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Mis mascotas', href: index() },
+    ],
+};

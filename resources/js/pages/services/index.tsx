@@ -1,16 +1,17 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
-import { show } from '@/routes/services';
+import PageHeader from '@/components/page-header';
+import { dashboard } from '@/routes';
+import { index, show } from '@/routes/services';
 import type { Service } from '@/types';
 
 export default function ServicesIndex({ services }: { services: Service[] }) {
     return (
         <>
-            <Head title="Services" />
+            <Head title="Servicios disponibles" />
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Services"
-                    description="Explore the complementary therapies currently offered by VetZen."
+                <PageHeader
+                    title="Servicios disponibles"
+                    description="Conocé las terapias complementarias que ofrece VetZen."
                 />
                 {services.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
@@ -36,3 +37,10 @@ export default function ServicesIndex({ services }: { services: Service[] }) {
         </>
     );
 }
+
+ServicesIndex.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Servicios disponibles', href: index() },
+    ],
+};

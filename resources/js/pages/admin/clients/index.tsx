@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { edit } from '@/routes/admin/clients';
+import { dashboard } from '@/routes';
+import { edit, index } from '@/routes/admin/clients';
 import type { Client, User } from '@/types';
 
 type ClientListItem = Client & { user: Pick<User, 'name' | 'email'> };
@@ -13,11 +14,11 @@ export default function AdminClientsIndex({
 }) {
     return (
         <>
-            <Head title="Clients" />
+            <Head title="Clientes" />
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Clients"
-                    description="Review and manage client details."
+                <PageHeader
+                    title="Clientes"
+                    description="Consultá y administrá los datos de los responsables."
                 />
 
                 {clients.length === 0 ? (
@@ -74,3 +75,10 @@ export default function AdminClientsIndex({
         </>
     );
 }
+
+AdminClientsIndex.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Clientes', href: index() },
+    ],
+};

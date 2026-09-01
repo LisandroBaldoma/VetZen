@@ -1,8 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { dashboard } from '@/routes';
 import { create, edit } from '@/routes/admin/services/treatments';
+import { index } from '@/routes/admin/treatments';
 import type { Service, Treatment } from '@/types';
 
 export default function TreatmentCatalog({
@@ -14,11 +16,11 @@ export default function TreatmentCatalog({
 }) {
     return (
         <>
-            <Head title="Tratamientos" />
+            <Head title="Plantillas de tratamiento" />
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Tratamientos"
-                    description="Catálogo de planes reutilizables disponibles para asignar a las mascotas."
+                <PageHeader
+                    title="Plantillas de tratamiento"
+                    description="Catálogo de configuraciones reutilizables para iniciar tratamientos de pacientes."
                 />
 
                 <section className="rounded-xl border p-5">
@@ -109,3 +111,10 @@ export default function TreatmentCatalog({
         </>
     );
 }
+
+TreatmentCatalog.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Plantillas de tratamiento', href: index() },
+    ],
+};

@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { create, show } from '@/routes/admin/pets';
+import { dashboard } from '@/routes';
+import { create, index, show } from '@/routes/admin/pets';
 import type { Client, Pet, User } from '@/types';
 
 type AdminPet = Pet & {
@@ -11,17 +12,17 @@ type AdminPet = Pet & {
 export default function AdminPetsIndex({ pets }: { pets: AdminPet[] }) {
     return (
         <>
-            <Head title="Pets" />
+            <Head title="Pacientes" />
             <div className="space-y-6 p-4">
-                <div className="flex items-start justify-between gap-4">
-                    <Heading
-                        title="Pets"
-                        description="Manage patient information."
-                    />
-                    <Button asChild>
-                        <Link href={create()}>Add pet</Link>
-                    </Button>
-                </div>
+                <PageHeader
+                    title="Pacientes"
+                    description="Administrá la información general de los pacientes."
+                    actions={
+                        <Button asChild>
+                            <Link href={create()}>Nuevo paciente</Link>
+                        </Button>
+                    }
+                />
                 {pets.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
                         There are no pets yet.
@@ -70,3 +71,10 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPet[] }) {
         </>
     );
 }
+
+AdminPetsIndex.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Pacientes', href: index() },
+    ],
+};

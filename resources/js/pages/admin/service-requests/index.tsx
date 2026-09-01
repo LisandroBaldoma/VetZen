@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { dashboard } from '@/routes';
 import { index, show } from '@/routes/admin/service-requests';
 import type { Paginated, ServiceRequest } from '@/types';
 export default function AdminRequests({
@@ -13,10 +14,10 @@ export default function AdminRequests({
 }) {
     return (
         <>
-            <Head title="Solicitudes" />
+            <Head title="Solicitudes de atención" />
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Solicitudes de servicios"
+                <PageHeader
+                    title="Solicitudes de atención"
                     description="Evaluación y asignación profesional."
                 />
                 <div className="flex gap-2">
@@ -62,3 +63,10 @@ export default function AdminRequests({
         </>
     );
 }
+
+AdminRequests.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Solicitudes de atención', href: index() },
+    ],
+};

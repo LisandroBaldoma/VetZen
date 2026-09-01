@@ -2,6 +2,8 @@ import { Form, Head } from '@inertiajs/react';
 import ClientProfileController from '@/actions/App/Http/Controllers/Client/ClientProfileController';
 import ClientProfileFields from '@/components/client-profile-fields';
 import Heading from '@/components/heading';
+import { dashboard } from '@/routes';
+import { edit as editProfile } from '@/routes/profile';
 import type { Client } from '@/types';
 
 type Props = {
@@ -11,13 +13,13 @@ type Props = {
 export default function ClientProfile({ client }: Props) {
     return (
         <>
-            <Head title="Client profile" />
+            <Head title="Datos personales" />
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Client profile"
-                    description="Manage your contact and personal information"
+                    title="Datos personales"
+                    description="Administrá tu información personal y de contacto."
                 />
 
                 <Form
@@ -37,3 +39,10 @@ export default function ClientProfile({ client }: Props) {
         </>
     );
 }
+
+ClientProfile.layout = {
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Cuenta', href: editProfile() },
+    ],
+};

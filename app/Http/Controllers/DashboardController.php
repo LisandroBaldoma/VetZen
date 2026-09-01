@@ -10,12 +10,16 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        if ($request->user()->can('clients.viewAny')) {
+        if ($request->user()->hasRole('admin')) {
             return Inertia::render('admin/dashboard');
         }
 
-        return Inertia::render('client/dashboard', [
-            'client' => $request->user()->client,
-        ]);
+        if ($request->user()->hasRole('client')) {
+            return Inertia::render('client/dashboard', [
+                'client' => $request->user()->client,
+            ]);
+        }
+
+        abort(403);
     }
 }

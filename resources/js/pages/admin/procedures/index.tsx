@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 import ProcedureStatusController from '@/actions/App/Http/Controllers/Admin/ProcedureStatusController';
 import CatalogIconLink from '@/components/catalog-icon-link';
 import CatalogStatusForm from '@/components/catalog-status-form';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { dashboard } from '@/routes';
 import { index } from '@/routes/admin/procedures';
 import {
     edit,
@@ -54,10 +55,10 @@ export default function AdminProcedureCatalog({
 
     return (
         <>
-            <Head title="Procedimientos" />
+            <Head title="Procedimientos clínicos" />
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Procedimientos"
+                <PageHeader
+                    title="Procedimientos clínicos"
                     description="Consultá y administrá todos los procedimientos del catálogo."
                 />
 
@@ -285,5 +286,8 @@ export default function AdminProcedureCatalog({
 }
 
 AdminProcedureCatalog.layout = {
-    breadcrumbs: [{ title: 'Procedimientos', href: index() }],
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Procedimientos clínicos', href: index() },
+    ],
 };

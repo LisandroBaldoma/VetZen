@@ -3,8 +3,9 @@ import { Eye, Pencil } from 'lucide-react';
 import ServiceStatusController from '@/actions/App/Http/Controllers/Admin/ServiceStatusController';
 import CatalogIconLink from '@/components/catalog-icon-link';
 import CatalogStatusForm from '@/components/catalog-status-form';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
+import { dashboard } from '@/routes';
 import { create, edit, index } from '@/routes/admin/services';
 import { index as proceduresIndex } from '@/routes/admin/services/procedures';
 import type { Service } from '@/types';
@@ -18,15 +19,15 @@ export default function AdminServicesIndex({
         <>
             <Head title="Servicios" />
             <div className="space-y-6 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                    <Heading
-                        title="Servicios"
-                        description="Administrá las terapias y sus procedimientos disponibles."
-                    />
-                    <Button asChild>
-                        <Link href={create()}>Crear servicio</Link>
-                    </Button>
-                </div>
+                <PageHeader
+                    title="Servicios clínicos"
+                    description="Administrá las terapias y sus procedimientos disponibles."
+                    actions={
+                        <Button asChild>
+                            <Link href={create()}>Crear servicio</Link>
+                        </Button>
+                    }
+                />
                 {services.length === 0 ? (
                     <p className="rounded-xl border p-6 text-sm text-muted-foreground">
                         Todavía no hay servicios. Creá el primero para comenzar.
@@ -97,5 +98,8 @@ export default function AdminServicesIndex({
 }
 
 AdminServicesIndex.layout = {
-    breadcrumbs: [{ title: 'Servicios', href: index() }],
+    breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
+        { title: 'Servicios clínicos', href: index() },
+    ],
 };
