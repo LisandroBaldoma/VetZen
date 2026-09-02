@@ -1,6 +1,7 @@
 # UX-01 - Fundamentos y navegación del panel
 
-> Estado: especificada, pendiente de implementación.
+> Estado: implementada y verificada automáticamente. Permanece pendiente la
+> validación manual responsive, visual y de accesibilidad de la sección 21.
 
 ## 1. Identificador
 
@@ -598,25 +599,25 @@ Se recorre cada destino como `admin` y `client` a 320, 375, 390, 768 y 1280 px. 
 
 ## 21. Criterios de aceptación
 
-- [ ] F09 permanece reservado y la feature usa el identificador UX-01.
-- [ ] `admin` y `client` reciben la navegación exacta definida para su rol.
-- [ ] Los permisos controlan capacidades internas y no seleccionan el panel por sí solos.
-- [ ] El sidebar presenta los grupos y el orden aprobados.
-- [ ] No se muestran Agenda, profesionales, permisos, configuración general ni listados globales de tratamientos.
-- [ ] No se muestran “Mis solicitudes” ni “Mis tratamientos” como entradas cliente.
-- [ ] El shell y Cuenta usan el vocabulario en español definido en esta feature.
-- [ ] Repository, Documentation y Platform desaparecen de la interfaz.
-- [ ] Cuenta diferencia datos de acceso y datos personales sin aparentar guardado atómico.
-- [ ] La eliminación de cuenta permanece oculta.
-- [ ] Desktop colapsado y móvil conservan todos los destinos y nombres accesibles.
-- [ ] Solo una entrada está activa en cada ruta principal o anidada cubierta.
-- [ ] Procedimientos y plantillas contextuales no activan simultáneamente Servicios clínicos.
-- [ ] `PageHeader` renderiza la única `h1` de cada vista principal incluida.
-- [ ] `PageHeader` no se aplica todavía a vistas profundas o de dominio fuera de alcance.
-- [ ] Los breadcrumbs base están en español, usan enlaces Inertia/Wayfinder y marcan la página actual.
+- [x] F09 permanece reservado y la feature usa el identificador UX-01.
+- [x] `admin` y `client` reciben la navegación exacta definida para su rol.
+- [x] Los permisos controlan capacidades internas y no seleccionan el panel por sí solos.
+- [x] El sidebar presenta los grupos y el orden aprobados.
+- [x] No se muestran Agenda, profesionales, permisos, configuración general ni listados globales de tratamientos.
+- [x] No se muestran “Mis solicitudes” ni “Mis tratamientos” como entradas cliente.
+- [x] El shell y Cuenta usan el vocabulario en español definido en esta feature.
+- [x] Repository, Documentation y Platform desaparecen de la interfaz.
+- [x] Cuenta diferencia datos de acceso y datos personales sin aparentar guardado atómico.
+- [x] La eliminación de cuenta permanece oculta.
+- [x] Desktop colapsado y móvil conservan todos los destinos y nombres accesibles.
+- [x] Solo una entrada está activa en cada ruta principal o anidada cubierta.
+- [x] Procedimientos y plantillas contextuales no activan simultáneamente Servicios clínicos.
+- [x] `PageHeader` renderiza la única `h1` de cada vista principal incluida.
+- [x] `PageHeader` no se aplica todavía a vistas profundas o de dominio fuera de alcance.
+- [x] Los breadcrumbs base están en español, usan enlaces Inertia/Wayfinder y marcan la página actual.
 - [ ] La navegación funciona con teclado, focus visible, zoom y temas claro/oscuro.
-- [ ] No se agregan endpoints, queries, datos, filtros, migraciones ni reglas de negocio.
-- [ ] Formato, lint, tipos, build y pruebas afectadas pasan antes de cerrar la implementación.
+- [x] No se agregan endpoints, queries, datos, filtros, migraciones ni reglas de negocio.
+- [x] Formato, lint, tipos, build y pruebas afectadas pasan antes de cerrar la implementación.
 
 ## 22. Definición de terminado
 

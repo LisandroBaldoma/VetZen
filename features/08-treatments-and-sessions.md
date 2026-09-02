@@ -1,5 +1,8 @@
 # Feature 08 — Tratamientos y sesiones
 
+> Estado: implementada en su contrato funcional base. El rediseño de solicitudes,
+> tratamientos y sesiones continúa en etapas UX posteriores.
+
 ## 1. Objetivo
 
 Implementar tratamientos reutilizables del catálogo y su asignación operativa a mascotas, apoyándose en los servicios y procedimientos definidos por Feature 07:
@@ -328,13 +331,16 @@ Al generarse, cada sesión copia precio y moneda de `PetTreatment`. Su precio pu
 27. Un tratamiento `suspended` o `cancelled` no admite cambios de cantidad ni
     sesiones. El tratamiento suspendido puede reanudarse manualmente; el
     cancelado no se reabre en F08.
-28. Client crea ServiceRequest únicamente para una Pet propia y un Service activo.
-29. Crear ServiceRequest no crea recursos clínicos, tratamientos, sesiones ni turnos.
-30. Solo admin puede resolver una solicitud y seleccionar Treatment.
-31. El Treatment elegido al resolver debe estar activo y pertenecer al mismo Service solicitado.
-32. La resolución crea PetTreatment y TreatmentSession atómicamente, cambia la
+28. Un tratamiento `completed` es final: no admite cambios de cantidad, nuevas
+    sesiones, reapertura ni modificaciones operativas. Si la atención continúa,
+    se inicia un nuevo PetTreatment.
+29. Client crea ServiceRequest únicamente para una Pet propia y un Service activo.
+30. Crear ServiceRequest no crea recursos clínicos, tratamientos, sesiones ni turnos.
+31. Solo admin puede resolver una solicitud y seleccionar Treatment.
+32. El Treatment elegido al resolver debe estar activo y pertenecer al mismo Service solicitado.
+33. La resolución crea PetTreatment y TreatmentSession atómicamente, cambia la
     solicitud a `resolved` y conserva `pet_treatment_id`.
-33. Una solicitud `cancelled` permanece como historial y no puede resolverse.
+34. Una solicitud `cancelled` permanece como historial y no puede resolverse.
 
 ## 13. Estados y transiciones
 
@@ -376,10 +382,9 @@ Los estados son valores controlados por la aplicación. Se aplican estas reglas:
   `completed_sessions + pending_sessions < planned_sessions`, excepto si el
   tratamiento está suspendido o cancelado;
 * un tratamiento cancelado no admite modificaciones ni nuevas sesiones;
-* una reapertura de tratamientos cancelados queda fuera de F08.
-
-La posibilidad de aumentar sesiones de un tratamiento ya `completed` permanece
-pendiente por la contradicción indicada en la sección 24.
+* una reapertura de tratamientos cancelados queda fuera de F08;
+* un tratamiento `completed` es final y no puede reabrirse ni aumentar sus
+  sesiones; una continuidad requiere una asignación nueva.
 
 ## 14. Flujos principales
 
@@ -527,7 +532,7 @@ Las Policies protegen cada recurso y comprueban la relación completa. Una sesi�
 
 ## 17. Persistencia e integridad
 
-La futura implementación mantiene:
+La implementación mantiene:
 
 * claves foráneas para todas las relaciones aprobadas;
 * unicidad de `Service.name`;
@@ -575,7 +580,7 @@ Se reutilizan `AppLayout`, componentes existentes, flash/toasts y Wayfinder. No 
 
 ## 19. Testing requerido
 
-Las futuras pruebas Feature/HTTP cubren como mínimo:
+Las pruebas Feature/HTTP cubren como mínimo:
 
 * CRUD sin delete y cambio de estado de Treatment;
 * nombres de Treatment únicos por servicio;
@@ -751,16 +756,9 @@ No se incluyen:
 
 ## 24. Decisiones pendientes
 
-### DECISIÓN PENDIENTE — Aumento de un tratamiento completado
-
-Las decisiones recibidas contienen dos reglas incompatibles: indican que
-`planned_sessions` solo puede modificarse mientras el tratamiento no esté
-`completed`, pero también que aumentar las sesiones de un tratamiento
-completado debe devolverlo a `in_progress`.
-
-Debe elegirse si `completed` es inmutable en F08 o si admin puede aumentarlo y
-reabrirlo automáticamente. La implementación de ese caso debe esperar esta
-definición.
+No quedan decisiones pendientes dentro del alcance funcional de F08. Los
+rediseños visuales y mejoras de flujo se especifican en las etapas UX
+correspondientes.
 
 ## 25. Decisiones tomadas
 
@@ -787,6 +785,8 @@ definición.
   relación histórica propia.
 * La cantidad prevista puede aumentar o reducirse transaccionalmente en estados
   `pending` e `in_progress`, respetando sesiones históricas.
+* `completed` es un estado final e inmutable. La continuidad de atención se
+  registra mediante un nuevo PetTreatment.
 * Los estados combinan cambios administrativos y automatismos por sesiones
   completadas según la sección 13.
 * Las sesiones canceladas se conservan, no cuentan para el progreso y generan
@@ -797,27 +797,10 @@ definición.
 ## 26. Impacto documental y de implementación
 
 Esta especificación mantiene F07 como catálogo y ubica en F08 solicitudes,
-tratamientos, asignaciones y sesiones. La implementación real de F08 es backend
-parcial: ya existen tablas y modelos de Treatment, PetTreatment, snapshots y
-TreatmentSession, además del servicio transaccional y pruebas iniciales. Todavía
-no existen rutas, Policies, Form Requests, controladores ni UI funcional completa
-de F08, y ServiceRequest no está implementado.
-
-Plan de implementación actualizado:
-
-1. Crear mediante una migración nueva `service_requests` con `pet_id`,
-   `service_id`, `pet_treatment_id` nullable, `status`, `notes` y timestamps.
-2. Incorporar modelo, relaciones, factory y Policy con ownership completo.
-3. Implementar creación y lectura cliente desde una Pet propia, usando solo
-   Services activos y sin aceptar Treatment ni campos de resolución.
-4. Implementar listado/detalle admin de solicitudes y resolución transaccional
-   mediante un Treatment activo del mismo Service.
-5. Integrar la resolución con la infraestructura existente de PetTreatment y
-   sesiones, protegiendo reintentos y preservando trazabilidad.
-6. Completar UI React/Inertia, Wayfinder y las pruebas exigidas en la sección 19.
-
-La decisión pendiente sobre aumentar `planned_sessions` de un PetTreatment
-`completed` no bloquea ServiceRequest ni debe resolverse durante estos pasos. No
-se modificarán migraciones históricas ejecutadas.
+tratamientos, asignaciones y sesiones. La implementación base ya contiene tablas,
+modelos, relaciones, Policies, Form Requests, controladores, servicios
+transaccionales, rutas, UI React/Inertia y pruebas de ownership y reglas de
+negocio. Las mejoras de presentación, confirmaciones, enlaces y formularios se
+realizan en las etapas UX posteriores sin redefinir este contrato.
 
 Historia Clínica permanece desacoplada. Una sesión completada informa progreso operativo, pero no crea ni modifica automáticamente `ClinicalRecord`. Una integración futura deberá respetar autorización, auditoría y visibilidad de Feature 06.

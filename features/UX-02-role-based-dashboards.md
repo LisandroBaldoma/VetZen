@@ -1,6 +1,7 @@
 # UX-02 - Dashboards por rol
 
-> Estado: especificada, pendiente de implementación.
+> Estado: implementada y verificada automáticamente. Permanece pendiente la
+> validación manual responsive y visual de la sección 21.
 
 ## 1. Objetivo
 
@@ -582,26 +583,26 @@ Con Client A y Client B:
 
 ## 21. Criterios de aceptación
 
-- [ ] `/dashboard` sigue seleccionando experiencia por rol.
-- [ ] Admin ve conteo y hasta cinco solicitudes con pendientes primero y recientes después.
-- [ ] Admin ve paciente, servicio, fecha y estado con enlaces contextuales.
-- [ ] Admin dispone de los cuatro accesos rápidos requeridos.
-- [ ] Cliente ya no ve ni recibe el formulario o la prop completa de perfil.
-- [ ] Cliente ve hasta seis mascotas propias.
-- [ ] Cliente ve hasta cinco solicitudes pendientes propias.
-- [ ] Cliente ve hasta cinco tratamientos propios `pending`, `in_progress` o `suspended`.
-- [ ] El progreso usa sesiones completadas sobre sesiones previstas.
-- [ ] No existen listados globales nuevos de solicitudes o tratamientos.
-- [ ] Las consultas aplican ownership antes de ordenar y limitar.
-- [ ] Las props son explícitas y no exponen campos innecesarios.
-- [ ] Los estados vacíos definidos se renderizan sin errores.
-- [ ] Todo el dashboard visible está en español.
-- [ ] Los nombres relevantes enlazan mediante Wayfinder.
-- [ ] La interfaz no presenta agenda, gráficos, notificaciones ni historia clínica.
-- [ ] No existen cambios de base de datos, rutas, Policies o modelos.
+- [x] `/dashboard` sigue seleccionando experiencia por rol.
+- [x] Admin ve conteo y hasta cinco solicitudes con pendientes primero y recientes después.
+- [x] Admin ve paciente, servicio, fecha y estado con enlaces contextuales.
+- [x] Admin dispone de los cuatro accesos rápidos requeridos.
+- [x] Cliente ya no ve ni recibe el formulario o la prop completa de perfil.
+- [x] Cliente ve hasta seis mascotas propias.
+- [x] Cliente ve hasta cinco solicitudes pendientes propias.
+- [x] Cliente ve hasta cinco tratamientos propios `pending`, `in_progress` o `suspended`.
+- [x] El progreso usa sesiones completadas sobre sesiones previstas.
+- [x] No existen listados globales nuevos de solicitudes o tratamientos.
+- [x] Las consultas aplican ownership antes de ordenar y limitar.
+- [x] Las props son explícitas y no exponen campos innecesarios.
+- [x] Los estados vacíos definidos se renderizan sin errores.
+- [x] Todo el dashboard visible está en español.
+- [x] Los nombres relevantes enlazan mediante Wayfinder.
+- [x] La interfaz no presenta agenda, gráficos, notificaciones ni historia clínica.
+- [x] No existen cambios de base de datos, rutas, Policies o modelos.
 - [ ] La interfaz funciona sin overflow en los anchos definidos.
-- [ ] Las pruebas de rol, datos, límites y ownership pasan.
-- [ ] Formato, tipos, lint, build y suite relevante pasan.
+- [x] Las pruebas de rol, datos, límites y ownership pasan.
+- [x] Formato, tipos, lint, build y suite relevante pasan.
 
 ## 22. Decisiones resueltas
 
@@ -633,7 +634,7 @@ Se adopta la alternativa 2: el resumen incluye `pending`, `in_progress` y `suspe
 
 1. El prompt referencia `docs/ux`, pero el repositorio usa `doc/ux`.
 2. El prompt solicita pruebas Pest, pero el proyecto utiliza PHPUnit. Se conserva PHPUnit.
-3. UX-01 figura documentalmente como pendiente de implementación, aunque su infraestructura y pruebas ya están presentes en el código. UX-02 depende del estado real verificado.
+3. UX-01 está implementada y verificada automáticamente; UX-02 reutiliza esa infraestructura. Ambas conservan pendiente su validación manual indicada.
 4. “Abrir catálogo clínico” no tiene una landing propia; se usa la ruta existente de Servicios clínicos.
 5. El error parcial no se implementa con consultas síncronas en una única respuesta; no se silencian fallos backend.
 
