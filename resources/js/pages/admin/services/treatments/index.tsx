@@ -13,27 +13,27 @@ export default function TreatmentsIndex({
 }) {
     return (
         <>
-            <Head title="Tratamientos" />
+            <Head title="Plantillas" />
             <div className="space-y-6 p-4">
                 <div className="flex justify-between gap-4">
                     <Heading
-                        title={`Tratamientos de ${service.name}`}
+                        title={`Plantillas de ${service.name}`}
                         description="Plantillas reutilizables del catálogo."
                     />
                     <Button asChild>
-                        <Link href={create(service.id)}>Crear tratamiento</Link>
+                        <Link href={create(service.id)}>Crear plantilla</Link>
                     </Button>
                 </div>
                 {treatments.length === 0 ? (
                     <p className="rounded-xl border p-6 text-muted-foreground">
-                        No hay tratamientos.
+                        No hay plantillas para este servicio.
                     </p>
                 ) : (
                     <div className="overflow-x-auto rounded-xl border">
                         <table className="w-full text-left text-sm">
                             <thead className="bg-muted/50">
                                 <tr>
-                                    <th className="p-3">Tratamiento</th>
+                                    <th className="p-3">Plantilla</th>
                                     <th className="p-3">Sesiones</th>
                                     <th className="p-3">Procedimientos</th>
                                     <th className="p-3">Estado</th>
@@ -50,6 +50,16 @@ export default function TreatmentsIndex({
                                             {t.estimated_sessions}
                                         </td>
                                         <td className="p-3">
+                                            {t.procedures_count}
+                                        </td>
+                                        <td className="p-3">
+                                            <Badge variant="outline">
+                                                {t.is_active
+                                                    ? 'Activo'
+                                                    : 'Inactivo'}
+                                            </Badge>
+                                        </td>
+                                        <td className="p-3">
                                             <Button
                                                 asChild
                                                 size="sm"
@@ -64,16 +74,6 @@ export default function TreatmentsIndex({
                                                     Editar
                                                 </Link>
                                             </Button>
-                                        </td>
-                                        <td className="p-3">
-                                            {t.procedures_count}
-                                        </td>
-                                        <td className="p-3">
-                                            <Badge variant="outline">
-                                                {t.is_active
-                                                    ? 'Activo'
-                                                    : 'Inactivo'}
-                                            </Badge>
                                         </td>
                                     </tr>
                                 ))}

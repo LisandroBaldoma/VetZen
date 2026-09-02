@@ -20,20 +20,33 @@ class PetTreatmentController extends Controller
     public function index(Pet $pet): Response
     {
         Gate::authorize('viewAny', PetTreatment::class);
+        $pet->load('client.user:id,name');
 
         return Inertia::render('admin/pets/treatments/index', [
-            'pet' => $pet,
-            'petTreatments' => $pet->treatments()->withCount(['sessions', 'sessions as completed_sessions_count' => fn ($query) => $query->where('status', 'completed')])->latest()->get(),
+            'pet' => $this->petData($pet),
+            'petTreatments' => $pet->treatments()
+                ->withCount(['sessions as completed_sessions_count' => fn ($query) => $query->where('status', 'completed')])
+                ->latest()
+                ->get(['id', 'pet_id', 'treatment_name', 'planned_sessions', 'status', 'starts_on'])
+                ->makeHidden('pet_id'),
         ]);
     }
 
     public function create(Pet $pet): Response
     {
         Gate::authorize('create', PetTreatment::class);
+        $pet->load('client.user:id,name');
 
         return Inertia::render('admin/pets/treatments/create', [
-            'pet' => $pet,
-            'treatments' => Treatment::query()->where('is_active', true)->with('service:id,name')->orderBy('name')->get(),
+            'pet' => $this->petData($pet),
+            'treatments' => Treatment::query()
+                ->where('is_active', true)
+                ->whereHas('service', fn ($query) => $query->where('is_active', true))
+                ->whereHas('procedures', fn ($query) => $query->where('is_active', true))
+                ->whereDoesntHave('procedures', fn ($query) => $query->where('is_active', false))
+                ->with('service:id,name')
+                ->orderBy('name')
+                ->get(['id', 'service_id', 'name', 'estimated_sessions']),
         ]);
     }
 
@@ -49,17 +62,21 @@ class PetTreatmentController extends Controller
     public function show(Pet $pet, PetTreatment $petTreatment): Response
     {
         Gate::authorize('view', $petTreatment);
+        $pet->load('client.user:id,name');
+        $petTreatment->load([
+            'procedureSnapshots:id,pet_treatment_id,procedure_name,procedure_description',
+            'sessions' => fn ($query) => $query->orderBy('session_number')->select(['id', 'pet_treatment_id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes']),
+        ]);
 
         return Inertia::render('admin/pets/treatments/show', [
-            'pet' => $pet,
-            'petTreatment' => $petTreatment->load(['procedureSnapshots', 'sessions' => fn ($query) => $query->orderBy('session_number')]),
+            'pet' => $this->petData($pet),
+            'petTreatment' => $this->treatmentData($petTreatment),
         ]);
     }
 
     public function update(UpdatePetTreatmentRequest $request, Pet $pet, PetTreatment $petTreatment, TreatmentAssignmentService $service): RedirectResponse
     {
-        $updated = $service->resize($petTreatment, $request->integer('planned_sessions'));
-        $updated->update($request->safe()->only(['default_session_price', 'currency', 'notes']));
+        $service->updateConditions($petTreatment, $request->validated());
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Tratamiento actualizado.')]);
 
         return back();
@@ -71,5 +88,41 @@ class PetTreatmentController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 
         return back();
+    }
+
+    /** @return array<string, mixed> */
+    private function petData(Pet $pet): array
+    {
+        return [
+            'id' => $pet->id,
+            'name' => $pet->name,
+            'species' => $pet->species,
+            'breed' => $pet->breed,
+            'sex' => $pet->sex,
+            'birth_date' => $pet->birth_date?->toDateString(),
+            'weight' => $pet->weight,
+            'color' => $pet->color,
+            'notes' => $pet->notes,
+            'has_photo' => $pet->photo !== null,
+            'client' => ['id' => $pet->client->id, 'name' => $pet->client->user->name],
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function treatmentData(PetTreatment $petTreatment): array
+    {
+        return [
+            'id' => $petTreatment->id,
+            'treatment_name' => $petTreatment->treatment_name,
+            'treatment_description' => $petTreatment->treatment_description,
+            'planned_sessions' => $petTreatment->planned_sessions,
+            'default_session_price' => $petTreatment->default_session_price,
+            'currency' => $petTreatment->currency,
+            'starts_on' => $petTreatment->starts_on->toDateString(),
+            'status' => $petTreatment->status,
+            'notes' => $petTreatment->notes,
+            'procedure_snapshots' => $petTreatment->procedureSnapshots->map->only(['id', 'procedure_name', 'procedure_description']),
+            'sessions' => $petTreatment->sessions->map->only(['id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes']),
+        ];
     }
 }

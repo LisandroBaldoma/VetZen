@@ -7,7 +7,13 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { index as servicesIndex } from '@/routes/admin/services';
 import { create, edit } from '@/routes/admin/services/procedures';
-import type { Procedure, Service } from '@/types';
+type Service = { id: number; name: string };
+type Procedure = {
+    id: number;
+    name: string;
+    duration_minutes: number | null;
+    is_active: boolean;
+};
 
 export default function AdminProceduresIndex({
     service,
@@ -43,53 +49,102 @@ export default function AdminProceduresIndex({
                         Este servicio todavía no tiene procedimientos.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto rounded-xl border">
-                        <table className="w-full min-w-2xl text-left text-sm">
-                            <thead className="bg-muted/50 text-muted-foreground">
-                                <tr>
-                                    <th className="px-4 py-3">Procedimiento</th>
-                                    <th className="px-4 py-3">Duración</th>
-                                    <th className="px-4 py-3">Estado</th>
-                                    <th className="px-4 py-3 text-right">
-                                        Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {procedures.map((procedure) => (
-                                    <tr key={procedure.id} className="border-t">
-                                        <td className="px-4 py-3 font-medium">
+                    <>
+                        <div className="grid gap-3 md:hidden">
+                            {procedures.map((procedure) => (
+                                <article
+                                    key={procedure.id}
+                                    className="space-y-4 rounded-xl border p-4"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <h2 className="font-semibold">
                                             {procedure.name}
-                                        </td>
-                                        <td className="px-4 py-3 text-muted-foreground">
+                                        </h2>
+                                        <CatalogStatusForm
+                                            form={ProcedureStatusController.update.form(
+                                                [service.id, procedure.id],
+                                            )}
+                                            isActive={procedure.is_active}
+                                            subject={`el procedimiento ${procedure.name}`}
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between gap-3 text-sm">
+                                        <span className="text-muted-foreground">
+                                            Duración:{' '}
                                             {procedure.duration_minutes
                                                 ? `${procedure.duration_minutes} min`
                                                 : 'Sin especificar'}
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <CatalogStatusForm
-                                                form={ProcedureStatusController.update.form(
-                                                    [service.id, procedure.id],
-                                                )}
-                                                isActive={procedure.is_active}
-                                                subject={`el procedimiento ${procedure.name}`}
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <CatalogIconLink
-                                                href={edit([
-                                                    service.id,
-                                                    procedure.id,
-                                                ])}
-                                                label={`Editar procedimiento ${procedure.name}`}
-                                                icon={Pencil}
-                                            />
-                                        </td>
+                                        </span>
+                                        <CatalogIconLink
+                                            href={edit([
+                                                service.id,
+                                                procedure.id,
+                                            ])}
+                                            label={`Editar procedimiento ${procedure.name}`}
+                                            icon={Pencil}
+                                        />
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                        <div className="hidden overflow-x-auto rounded-xl border md:block">
+                            <table className="w-full min-w-2xl text-left text-sm">
+                                <thead className="bg-muted/50 text-muted-foreground">
+                                    <tr>
+                                        <th className="px-4 py-3">
+                                            Procedimiento
+                                        </th>
+                                        <th className="px-4 py-3">Duración</th>
+                                        <th className="px-4 py-3">Estado</th>
+                                        <th className="px-4 py-3 text-right">
+                                            Acciones
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {procedures.map((procedure) => (
+                                        <tr
+                                            key={procedure.id}
+                                            className="border-t"
+                                        >
+                                            <td className="px-4 py-3 font-medium">
+                                                {procedure.name}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {procedure.duration_minutes
+                                                    ? `${procedure.duration_minutes} min`
+                                                    : 'Sin especificar'}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <CatalogStatusForm
+                                                    form={ProcedureStatusController.update.form(
+                                                        [
+                                                            service.id,
+                                                            procedure.id,
+                                                        ],
+                                                    )}
+                                                    isActive={
+                                                        procedure.is_active
+                                                    }
+                                                    subject={`el procedimiento ${procedure.name}`}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 text-right">
+                                                <CatalogIconLink
+                                                    href={edit([
+                                                        service.id,
+                                                        procedure.id,
+                                                    ])}
+                                                    label={`Editar procedimiento ${procedure.name}`}
+                                                    icon={Pencil}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
             </div>
         </>

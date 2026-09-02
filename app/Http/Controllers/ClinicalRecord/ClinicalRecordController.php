@@ -19,13 +19,13 @@ class ClinicalRecordController extends Controller
         Gate::authorize('viewAny', ClinicalRecord::class);
 
         $records = $pet->clinicalRecords()
-            ->where('is_visible_to_client', true)
             ->orderByDesc('occurred_at')
             ->orderByDesc('created_at')
-            ->get();
+            ->get(['id', 'type', 'title', 'occurred_at', 'created_at'])
+            ->map(fn (ClinicalRecord $clinicalRecord): array => $this->recordSummaryData($clinicalRecord));
 
         return Inertia::render('pets/medical-records/index', [
-            'pet' => $pet,
+            'pet' => $this->petData($pet),
             'records' => $records,
         ]);
     }
@@ -38,8 +38,11 @@ class ClinicalRecordController extends Controller
         Gate::authorize('view', $clinicalRecord);
 
         return Inertia::render('pets/medical-records/show', [
-            'pet' => $pet,
-            'record' => $clinicalRecord,
+            'pet' => $this->petData($pet),
+            'record' => [
+                ...$this->recordSummaryData($clinicalRecord),
+                'content' => $clinicalRecord->content,
+            ],
         ]);
     }
 
@@ -51,5 +54,37 @@ class ClinicalRecordController extends Controller
     private function ensureRecordBelongsToPet(ClinicalRecord $clinicalRecord, Pet $pet): void
     {
         abort_unless($clinicalRecord->pet_id === $pet->id, 403);
+    }
+
+    /**
+     * @return array<string, bool|int|string|null>
+     */
+    private function petData(Pet $pet): array
+    {
+        return [
+            'id' => $pet->id,
+            'name' => $pet->name,
+            'species' => $pet->species,
+            'breed' => $pet->breed,
+            'sex' => $pet->sex,
+            'birth_date' => $pet->birth_date?->toDateString(),
+            'weight' => $pet->weight,
+            'color' => $pet->color,
+            'notes' => $pet->notes,
+            'has_photo' => $pet->photo !== null,
+        ];
+    }
+
+    /**
+     * @return array<string, int|string>
+     */
+    private function recordSummaryData(ClinicalRecord $clinicalRecord): array
+    {
+        return [
+            'id' => $clinicalRecord->id,
+            'type' => $clinicalRecord->type,
+            'title' => $clinicalRecord->title,
+            'occurred_at' => $clinicalRecord->occurred_at->toISOString(),
+        ];
     }
 }

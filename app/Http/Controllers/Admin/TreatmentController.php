@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Treatment\StoreTreatmentRequest;
-use App\Http\Requests\Treatment\UpdateTreatmentRequest;
+use App\Http\Requests\Treatment\UpdateTreatmentTemplateRequest;
 use App\Models\Service;
 use App\Models\Treatment;
 use Illuminate\Http\RedirectResponse;
@@ -24,6 +24,7 @@ class TreatmentController extends Controller
     public function create(Service $service): Response
     {
         Gate::authorize('create', Treatment::class);
+        abort_unless($service->is_active, 403);
 
         return Inertia::render('admin/services/treatments/create', ['service' => $service, 'procedures' => $service->procedures()->where('is_active', true)->orderBy('name')->get()]);
     }
@@ -44,11 +45,17 @@ class TreatmentController extends Controller
         return Inertia::render('admin/services/treatments/edit', [
             'service' => $service,
             'treatment' => $treatment->load('procedures:id'),
-            'procedures' => $service->procedures()->where('is_active', true)->orderBy('name')->get(),
+            'procedures' => $service->procedures()
+                ->where(fn ($query) => $query
+                    ->where('is_active', true)
+                    ->orWhereIn('id', $treatment->procedures()->select('procedures.id')))
+                ->orderBy('name')
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 
-    public function update(UpdateTreatmentRequest $request, Service $service, Treatment $treatment): RedirectResponse
+    public function update(UpdateTreatmentTemplateRequest $request, Service $service, Treatment $treatment): RedirectResponse
     {
         $treatment->update($request->safe()->only(['name', 'description', 'estimated_sessions', 'is_active']));
         $treatment->procedures()->sync($request->validated('procedure_ids'));

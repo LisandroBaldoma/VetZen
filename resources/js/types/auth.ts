@@ -37,20 +37,40 @@ export type Pet = {
     photo: string | null;
 };
 
-export type ClinicalRecord = {
+export type PetCard = Pick<Pet, 'id' | 'name' | 'species' | 'breed'> & {
+    has_photo: boolean;
+};
+
+export type PetContext = Omit<Pet, 'client_id' | 'photo'> & {
+    client_id?: number;
+    photo?: string | null;
+    has_photo?: boolean;
+    client?: {
+        id: number;
+        name?: string;
+        user?: Pick<User, 'name'>;
+    };
+};
+
+export type ClinicalRecordSummary = {
     id: number;
-    pet_id: number;
-    created_by: number;
-    updated_by: number;
     type: 'consultation' | 'evaluation' | 'evolution' | 'session' | 'other';
     title: string;
-    content: string;
     occurred_at: string;
+    is_visible_to_client?: boolean;
+    creator?: Pick<User, 'name'> | null;
+};
+
+export type ClinicalRecordDetail = ClinicalRecordSummary & {
+    content: string;
+    updater?: Pick<User, 'name'> | null;
+};
+
+export type ClinicalRecordFormData = Pick<
+    ClinicalRecordDetail,
+    'id' | 'type' | 'title' | 'content' | 'occurred_at'
+> & {
     is_visible_to_client: boolean;
-    created_at: string;
-    updated_at: string;
-    creator?: Pick<User, 'id' | 'name'>;
-    updater?: Pick<User, 'id' | 'name'>;
 };
 
 export type Auth = {

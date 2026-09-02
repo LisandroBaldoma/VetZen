@@ -10,6 +10,7 @@ import ManageTwoFactor from '@/components/manage-two-factor';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { dashboard } from '@/routes';
 import { edit } from '@/routes/security';
 
 type Props = {
@@ -23,15 +24,13 @@ export default function Security(props: Props) {
 
     return (
         <>
-            <Head title="Security settings" />
-
-            <h1 className="sr-only">Security settings</h1>
+            <Head title="Seguridad" />
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    title="Actualizar contraseña"
+                    description="Usá una contraseña larga y segura para proteger tu cuenta."
                 />
 
                 <Form
@@ -139,8 +138,9 @@ export default function Security(props: Props) {
 
 Security.layout = {
     breadcrumbs: [
+        { title: 'Inicio', href: dashboard() },
         {
-            title: 'Security settings',
+            title: 'Cuenta',
             href: edit(),
         },
     ],

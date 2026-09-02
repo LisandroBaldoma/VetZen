@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Service;
 
+use App\Models\Client;
+use App\Models\Pet;
 use App\Models\Procedure;
 use App\Models\Service;
 use App\Models\User;
 use Database\Seeders\ServiceSeeder;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -35,6 +38,29 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($client)->get(route('services.show', $inactive))->assertForbidden();
     }
 
+    public function test_service_catalog_exposes_only_the_authenticated_clients_pets_for_request_entry(): void
+    {
+        $this->withoutVite();
+
+        $clientA = Client::factory()->create();
+        $clientB = Client::factory()->create();
+        $petA = Pet::factory()->for($clientA)->create(['name' => 'Mora']);
+        Pet::factory()->for($clientB)->create(['name' => 'Ajena']);
+        $service = Service::factory()->create();
+
+        $this->actingAs($clientA->user)->get(route('services.index'))
+            ->assertInertia(fn ($page) => $page
+                ->has('pets', 1)
+                ->where('pets.0.id', $petA->id)
+                ->where('pets.0.name', 'Mora')
+                ->missing('pets.0.client_id'));
+
+        $this->actingAs($clientA->user)->get(route('services.show', $service))
+            ->assertInertia(fn ($page) => $page
+                ->has('pets', 1)
+                ->where('pets.0.id', $petA->id));
+    }
+
     public function test_admin_can_list_create_view_update_and_change_service_status(): void
     {
         $admin = User::factory()->admin()->create();
@@ -44,9 +70,11 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($admin)->get(route('admin.services.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                ->has('services', 1)
-                ->where('services.0.is_active', false)
-                ->where('services.0.procedures_count', 2));
+                ->has('services.data', 1)
+                ->where('services.data.0.is_active', false)
+                ->where('services.data.0.procedures_count', 2)
+                ->where('filters.search', '')
+                ->where('filters.status', ''));
 
         $response = $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Acupuncture',
@@ -156,10 +184,45 @@ class ServiceManagementTest extends TestCase
 
         $this->actingAs($admin)->get(route('admin.services.index'))
             ->assertInertia(fn ($page) => $page
-                ->where('services.0.id', $firstAlpha->id)
-                ->where('services.1.name', 'Zulu'));
+                ->where('services.data.0.id', $firstAlpha->id)
+                ->where('services.data.1.name', 'Zulu'));
 
         $this->assertFalse(Route::has('admin.services.destroy'));
+    }
+
+    public function test_admin_service_catalog_filters_and_preserves_filters_in_pagination_links(): void
+    {
+        $admin = User::factory()->admin()->create();
+        Service::factory()->inactive()->create(['name' => 'Rehabilitación oculta']);
+        Service::factory()
+            ->count(11)
+            ->state(new Sequence(fn (Sequence $sequence) => [
+                'name' => 'Rehabilitación '.$sequence->index,
+                'is_active' => true,
+            ]))
+            ->create();
+
+        $this->actingAs($admin)->get(route('admin.services.index', [
+            'search' => 'Rehabilitación',
+            'status' => 'active',
+        ]))->assertOk()->assertInertia(fn ($page) => $page
+            ->has('services.data', 10)
+            ->where('services.total', 11)
+            ->where('services.last_page', 2)
+            ->where('filters.search', 'Rehabilitación')
+            ->where('filters.status', 'active')
+            ->where('services.links.2.url', fn ($url) => str_contains($url, 'search=Rehabilitaci%C3%B3n')
+                && str_contains($url, 'status=active')));
+    }
+
+    public function test_admin_service_catalog_rejects_invalid_filters(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.services.index', [
+            'search' => str_repeat('a', 256),
+            'status' => 'archived',
+        ]))->assertSessionHasErrors(['search', 'status']);
     }
 
     public function test_guests_are_redirected_to_login(): void

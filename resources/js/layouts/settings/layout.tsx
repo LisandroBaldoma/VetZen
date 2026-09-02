@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
-import Heading from '@/components/heading';
+import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -12,53 +12,49 @@ import { edit as editSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
 import type { Auth } from '@/types';
 
-const accountNavItems: NavItem[] = [
-    {
-        title: 'Account',
-        href: edit(),
-        icon: null,
-    },
-    {
-        title: 'Security',
-        href: editSecurity(),
-        icon: null,
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-        icon: null,
-    },
-];
-
 export default function SettingsLayout({ children }: PropsWithChildren) {
-    const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { isCurrentUrl } = useCurrentUrl();
     const { auth } = usePage<{ auth: Auth }>().props;
-    const sidebarNavItems = [
-        ...accountNavItems.slice(0, 1),
+    const isClient = auth.roles.includes('client');
+    const sidebarNavItems: NavItem[] = [
+        {
+            title: isClient ? 'Datos de acceso' : 'Perfil',
+            href: edit(),
+            icon: null,
+        },
         ...(auth.user.client
             ? [
                   {
-                      title: 'Client profile',
+                      title: 'Datos personales',
                       href: editClient(auth.user.client.id),
                       icon: null,
                   },
               ]
             : []),
-        ...accountNavItems.slice(1),
+        {
+            title: 'Seguridad',
+            href: editSecurity(),
+            icon: null,
+        },
+        {
+            title: 'Apariencia',
+            href: editAppearance(),
+            icon: null,
+        },
     ];
 
     return (
         <div className="px-4 py-6">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
+            <PageHeader
+                title="Cuenta"
+                description="Administrá tus datos, seguridad y preferencias de apariencia."
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
                         className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Settings"
+                        aria-label="Secciones de la cuenta"
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Button
@@ -67,10 +63,17 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentOrParentUrl(item.href),
+                                    'bg-muted': isCurrentUrl(item.href),
                                 })}
                             >
-                                <Link href={item.href}>
+                                <Link
+                                    href={item.href}
+                                    aria-current={
+                                        isCurrentUrl(item.href)
+                                            ? 'page'
+                                            : undefined
+                                    }
+                                >
                                     {item.icon && (
                                         <item.icon className="h-4 w-4" />
                                     )}

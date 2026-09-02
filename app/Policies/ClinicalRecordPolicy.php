@@ -20,7 +20,6 @@ class ClinicalRecordPolicy
         }
 
         return $user->hasRole('client')
-            && $clinicalRecord->is_visible_to_client
             && $user->id === $clinicalRecord->pet->client->user_id;
     }
 

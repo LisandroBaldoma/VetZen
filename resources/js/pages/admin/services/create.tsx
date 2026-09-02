@@ -1,9 +1,19 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import AdminServiceController from '@/actions/App/Http/Controllers/Admin/ServiceController';
 import Heading from '@/components/heading';
 import ServiceFormFields from '@/components/service-form-fields';
+import { dashboard } from '@/routes';
+import { create, index } from '@/routes/admin/services';
 
 export default function AdminServiceCreate() {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Servicios clínicos', href: index() },
+            { title: 'Crear servicio', href: create() },
+        ],
+    });
+
     return (
         <>
             <Head title="Crear servicio" />

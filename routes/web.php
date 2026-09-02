@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
-use App\Http\Controllers\Admin\ClinicalRecordController as AdminClinicalRecordController;
+use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
 use App\Http\Controllers\Admin\PetTreatmentController as AdminPetTreatmentController;
 use App\Http\Controllers\Admin\ProcedureCatalogController as AdminProcedureCatalogController;
@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ServiceStatusController as AdminServiceStatusCont
 use App\Http\Controllers\Admin\TreatmentCatalogController as AdminTreatmentCatalogController;
 use App\Http\Controllers\Admin\TreatmentController as AdminTreatmentController;
 use App\Http\Controllers\Admin\TreatmentSessionController as AdminTreatmentSessionController;
+use App\Http\Controllers\Admin\TreatmentStatusController as AdminTreatmentStatusController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
@@ -21,10 +22,11 @@ use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 Route::inertia('/', 'welcome')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('services', [ServiceController::class, 'index'])->name('services.index');
@@ -51,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('pets/{pet}/treatments/{petTreatment}', [PetTreatmentController::class, 'show'])->name('pets.treatments.show');
     });
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware(RoleMiddleware::using('admin'))->group(function () {
         Route::get('services', [AdminServiceController::class, 'index'])->name('services.index');
         Route::get('services/create', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('services', [AdminServiceController::class, 'store'])->name('services.store');
@@ -87,6 +89,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('services/{service}/treatments', [AdminTreatmentController::class, 'store'])->name('services.treatments.store');
             Route::get('services/{service}/treatments/{treatment}/edit', [AdminTreatmentController::class, 'edit'])->name('services.treatments.edit');
             Route::patch('services/{service}/treatments/{treatment}', [AdminTreatmentController::class, 'update'])->name('services.treatments.update');
+            Route::patch('services/{service}/treatments/{treatment}/status', [AdminTreatmentStatusController::class, 'update'])
+                ->name('services.treatments.status.update');
         });
         Route::get('clients', [AdminClientController::class, 'index'])
             ->can('viewAny', Client::class)

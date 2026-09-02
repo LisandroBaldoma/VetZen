@@ -1,18 +1,14 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
-    BookOpen,
     ClipboardList,
     ClipboardPlus,
-    FolderGit2,
     LayoutGrid,
     PawPrint,
     Stethoscope,
     Syringe,
-    UserRound,
     Users,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -24,6 +20,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useCurrentUrl } from '@/hooks/use-current-url';
+import { getNavigationSection } from '@/lib/navigation';
 import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
@@ -31,82 +29,110 @@ import { index as proceduresIndex } from '@/routes/admin/procedures';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
-import { edit as clientProfile } from '@/routes/clients';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
-import type { Auth, NavItem } from '@/types';
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+import type { Auth, NavGroup } from '@/types';
 
 export function AppSidebar() {
     const { auth } = usePage<{ auth: Auth }>().props;
     const isAdmin = auth.roles.includes('admin');
-    const mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
+    const isClient = auth.roles.includes('client');
+    const role = isAdmin ? 'admin' : isClient ? 'client' : null;
+    const { currentUrl } = useCurrentUrl();
+    const activeSection = getNavigationSection(currentUrl, role);
+    const mainNavGroups: NavGroup[] = [
+        ...(role
+            ? [
+                  {
+                      title: 'General',
+                      items: [
+                          {
+                              title: 'Inicio',
+                              href: dashboard(),
+                              icon: LayoutGrid,
+                              isActive: activeSection === 'dashboard',
+                          },
+                      ],
+                  },
+              ]
+            : []),
         ...(isAdmin
             ? [
                   {
-                      title: 'Clientes',
-                      href: clientsIndex(),
-                      icon: Users,
+                      title: 'Pacientes',
+                      items: [
+                          {
+                              title: 'Clientes',
+                              href: clientsIndex(),
+                              icon: Users,
+                              isActive: activeSection === 'clients',
+                          },
+                          {
+                              title: 'Pacientes',
+                              href: petsIndex(),
+                              icon: PawPrint,
+                              isActive: activeSection === 'pets',
+                          },
+                      ],
                   },
                   {
-                      title: 'Mascotas',
-                      href: petsIndex(),
-                      icon: PawPrint,
+                      title: 'Atención',
+                      items: [
+                          {
+                              title: 'Solicitudes de atención',
+                              href: serviceRequestsIndex(),
+                              icon: ClipboardPlus,
+                              isActive: activeSection === 'service-requests',
+                          },
+                      ],
                   },
                   {
-                      title: 'Servicios',
-                      href: adminServicesIndex(),
-                      icon: Stethoscope,
-                  },
-                  {
-                      title: 'Procedimientos',
-                      href: proceduresIndex(),
-                      icon: ClipboardList,
-                  },
-                  {
-                      title: 'Tratamientos',
-                      href: treatmentsIndex(),
-                      icon: Syringe,
-                  },
-                  {
-                      title: 'Solicitudes',
-                      href: serviceRequestsIndex(),
-                      icon: ClipboardPlus,
+                      title: 'Catálogo clínico',
+                      items: [
+                          {
+                              title: 'Servicios clínicos',
+                              href: adminServicesIndex(),
+                              icon: Stethoscope,
+                              isActive: activeSection === 'services',
+                          },
+                          {
+                              title: 'Procedimientos clínicos',
+                              href: proceduresIndex(),
+                              icon: ClipboardList,
+                              isActive: activeSection === 'procedures',
+                          },
+                          {
+                              title: 'Plantillas de tratamiento',
+                              href: treatmentsIndex(),
+                              icon: Syringe,
+                              isActive: activeSection === 'treatments',
+                          },
+                      ],
                   },
               ]
-            : auth.user.client
+            : isClient
               ? [
                     {
-                        title: 'My details',
-                        href: clientProfile(auth.user.client.id),
-                        icon: UserRound,
+                        title: 'Mis mascotas',
+                        items: [
+                            {
+                                title: 'Mis mascotas',
+                                href: myPetsIndex(),
+                                icon: PawPrint,
+                                isActive: activeSection === 'pets',
+                            },
+                        ],
                     },
                     {
-                        title: 'My pets',
-                        href: myPetsIndex(),
-                        icon: PawPrint,
-                    },
-                    {
-                        title: 'Services',
-                        href: servicesIndex(),
-                        icon: Stethoscope,
+                        title: 'Atención',
+                        items: [
+                            {
+                                title: 'Servicios disponibles',
+                                href: servicesIndex(),
+                                icon: Stethoscope,
+                                isActive: activeSection === 'services',
+                            },
+                        ],
                     },
                 ]
               : []),
@@ -127,11 +153,10 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={mainNavGroups} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

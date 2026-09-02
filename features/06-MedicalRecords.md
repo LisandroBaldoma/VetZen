@@ -1,5 +1,8 @@
 # Feature 06 — Historia clínica
 
+> Estado: implementada. El cliente puede leer toda la historia clínica de sus
+> propias mascotas; la consulta, Policy y pruebas fueron alineadas en UX-05.
+
 ## 1. Objetivo
 
 Centralizar la información clínica y la evolución de cada paciente veterinario.
@@ -22,8 +25,8 @@ tratamientos, turnos o seguimiento que aún no existen.
 
 ### Cliente
 
-Puede consultar, en modo solo lectura, los registros clínicos disponibles de
-sus propias mascotas. No puede crear, editar, eliminar ni reasignar registros
+Puede consultar, en modo solo lectura, todos los registros clínicos de sus
+propias mascotas. No puede crear, editar, eliminar ni reasignar registros
 clínicos.
 
 ### Administrador
@@ -45,8 +48,9 @@ sin reemplazar el ownership existente.
 * Stack Laravel + React + Inertia y convenciones de Form Requests, Policies,
   Wayfinder y pruebas PHPUnit del proyecto.
 
-No existen actualmente tablas, modelos, rutas ni pantallas de historia clínica;
-esta feature los incorporará según las decisiones aprobadas en el apartado 19.
+La implementación existente incorpora tablas, modelos, rutas, Policies,
+pantallas y pruebas de historia clínica, incluida la lectura completa para el
+cliente propietario.
 
 ## 5. Modelo de dominio
 
@@ -89,7 +93,7 @@ derivable de relaciones existentes.
 
 ## 6. Alcance
 
-La primera implementación deberá incluir:
+La implementación incluye:
 
 * Consultar el historial clínico cronológico de una mascota autorizada.
 * Consultar un registro clínico individual autorizado.
@@ -125,8 +129,8 @@ No se implementan:
 2. La historia clínica de una mascota es el historial de sus múltiples
    registros, ordenado por `occurred_at DESC` y, como desempate,
    `created_at DESC`.
-3. Un `client` solo puede leer registros con `is_visible_to_client = true` de
-   mascotas cuyo `Pet → Client → User` corresponde al usuario autenticado.
+3. Un `client` puede leer todos los registros clínicos de mascotas cuyo
+   `Pet → Client → User` corresponde al usuario autenticado.
 4. Un `client` nunca puede crear, editar, eliminar ni reasignar registros
    clínicos, aunque envíe solicitudes HTTP manuales.
 5. Un `admin` puede crear, consultar y editar registros de cualquier mascota.
@@ -139,8 +143,9 @@ No se implementan:
    de trazabilidad de la información clínica.
 9. `occurred_at` representa cuándo ocurrió clínicamente el evento, admite
    cargas tardías y no puede ser una fecha futura.
-10. El administrador debe elegir explícitamente `is_visible_to_client` al crear
-    o editar; la visibilidad no se infiere automáticamente desde `type`.
+10. `is_visible_to_client` se conserva como atributo histórico mientras siga
+    presente en el esquema, pero no limita la lectura del cliente propietario
+    ni forma parte de la autorización.
 
 ## 9. Autorización
 
@@ -149,13 +154,13 @@ el recurso concreto. La primera versión tiene el siguiente contrato cerrado:
 
 | Acción | `client` propietario | Otro `client` | `admin` |
 | --- | --- | --- | --- |
-| Ver historial de una Pet | Permitido solo para registros visibles | Denegado | Permitido |
-| Ver Clinical Record | Permitido solo si es visible | Denegado | Permitido |
+| Ver historial de una Pet | Permitido completo | Denegado | Permitido |
+| Ver Clinical Record | Permitido | Denegado | Permitido |
 | Crear Clinical Record | Denegado | Denegado | Permitido |
 | Editar Clinical Record | Denegado | Denegado | Permitido |
 | Eliminar Clinical Record | No incluido | No incluido | No incluido |
 
-La futura `ClinicalRecordPolicy` debe evaluar el ownership atravesando
+`ClinicalRecordPolicy` evalúa el ownership atravesando
 `ClinicalRecord → Pet → Client → User`. Para crear, el backend debe resolver la
 mascota desde la ruta autorizada, no adoptar un `pet_id` de un payload como
 fuente de acceso. El autor también debe obtenerse del usuario autenticado.
@@ -235,9 +240,10 @@ registro, campos requeridos, formatos, fechas, longitudes y consistencia de los
 datos clínicos aprobados.
 
 `type`, `title`, `content` y `occurred_at` son requeridos.
-`is_visible_to_client` debe ser booleano y debe ser elegido explícitamente por
-el administrador. `title` debe ser un string de hasta 255 caracteres y
-`content` debe ser texto. `occurred_at` no puede ser futuro.
+Mientras el atributo heredado `is_visible_to_client` permanezca en los
+formularios y en el esquema, debe validarse como booleano. No puede utilizarse
+para denegar lectura al cliente propietario. `title` debe ser un string de hasta
+255 caracteres, `content` debe ser texto y `occurred_at` no puede ser futuro.
 
 `type` es controlado por la aplicación, sin ENUM de base de datos, y admite
 inicialmente estos valores:
@@ -259,9 +265,9 @@ prescripción.
 ### Cliente
 
 Desde el detalle de una mascota propia deberá acceder a una sección de Historia
-clínica. Verá únicamente los registros con `is_visible_to_client = true`, en
-orden cronológico, con fecha, tipo, título y contenido, además del detalle
-cuando corresponda. No tendrá controles de alta, edición ni eliminación.
+clínica. Verá todos sus registros en orden cronológico, con fecha, tipo, título
+y contenido, además del detalle cuando corresponda. No tendrá controles de
+alta, edición ni eliminación.
 
 ### Administrador
 
@@ -297,10 +303,10 @@ Su alcance se limita a los recursos clínicos de esta feature.
 
 ## 16. Testing
 
-Las pruebas HTTP de la futura implementación deberán cubrir, como mínimo:
+Las pruebas HTTP deben cubrir, como mínimo:
 
-* Cliente A puede consultar los registros visibles de Pet A y no puede
-  consultar sus registros no visibles.
+* Cliente A puede consultar todos los registros de Pet A, independientemente
+  del valor histórico de `is_visible_to_client`.
 * Cliente A no puede crear ni editar registros de Pet A.
 * Con Client A → Pet A → Record A y Client B → Pet B → Record B, Client A no
   puede consultar ni editar Record B ni el historial de Pet B.
@@ -319,19 +325,18 @@ Las pruebas HTTP de la futura implementación deberán cubrir, como mínimo:
 
 La implementación estará completa cuando:
 
-* [ ] La historia clínica sea un historial de registros asociado a `Pet`.
-* [ ] Cliente pueda consultar solo los registros visibles de sus propias
-  mascotas.
-* [ ] Cliente no pueda crear ni editar registros, tampoco mediante requests
+* [x] La historia clínica sea un historial de registros asociado a `Pet`.
+* [x] Cliente pueda consultar todos los registros de sus propias mascotas.
+* [x] Cliente no pueda crear ni editar registros, tampoco mediante requests
   directas.
-* [ ] Admin pueda crear, consultar y editar registros de cualquier mascota.
-* [ ] La autorización opere en backend y cubra URLs, bindings y payloads
+* [x] Admin pueda crear, consultar y editar registros de cualquier mascota.
+* [x] La autorización opere en backend y cubra URLs, bindings y payloads
   manipulados.
-* [ ] Los registros guarden `created_by` y `updated_by` desde el usuario
+* [x] Los registros guarden `created_by` y `updated_by` desde el usuario
   autenticado, y sus creaciones y ediciones queden auditadas.
-* [ ] La UI clínica esté contextualizada por mascota y respete los roles.
-* [ ] No exista eliminación de registros en esta versión.
-* [ ] Validaciones, pruebas de autorización y controles de calidad del proyecto
+* [x] La UI clínica esté contextualizada por mascota y respete los roles.
+* [x] No exista eliminación de registros en esta versión.
+* [x] Validaciones, pruebas de autorización y controles de calidad del proyecto
   pasen satisfactoriamente.
 
 ## 18. Dependencias futuras
@@ -362,9 +367,9 @@ ownership de esta especificación.
   creación y edición.
 * **Cronología:** `occurred_at DESC`, con `created_at DESC` como desempate; se
   permiten cargas tardías y se prohíben fechas clínicas futuras.
-* **Visibilidad:** `is_visible_to_client` debe ser elegido explícitamente por el
-  administrador; el cliente solo accede a registros visibles de sus propias
-  mascotas.
+* **Acceso cliente:** el cliente consulta toda la historia clínica de sus
+  propias mascotas. `is_visible_to_client` no restringe ese acceso y se conserva
+  únicamente como atributo histórico mientras siga presente en el esquema.
 * **Eliminación:** no se implementan `delete`, Soft Deletes, invalidación,
   anulación ni correcciones versionadas adicionales en esta versión.
 

@@ -1,10 +1,26 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import AdminServiceController from '@/actions/App/Http/Controllers/Admin/ServiceController';
 import Heading from '@/components/heading';
 import ServiceFormFields from '@/components/service-form-fields';
-import type { Service } from '@/types';
+import { dashboard } from '@/routes';
+import { edit, index } from '@/routes/admin/services';
+
+type Service = {
+    id: number;
+    name: string;
+    description: string;
+    is_active: boolean;
+};
 
 export default function AdminServiceEdit({ service }: { service: Service }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Servicios clínicos', href: index() },
+            { title: service.name, href: edit(service.id) },
+        ],
+    });
+
     return (
         <>
             <Head title={`Editar ${service.name}`} />

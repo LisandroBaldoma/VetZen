@@ -40,30 +40,91 @@ class PetTreatmentManagementTest extends TestCase
         $this->assertSame($procedure->name, $assigned->procedureSnapshots()->sole()->procedure_name);
     }
 
-    public function test_client_can_only_read_own_pet_treatment(): void
+    public function test_admin_can_view_administrative_pet_treatment_list_and_detail(): void
     {
         $this->withoutVite();
 
-        $clientA = Client::factory()->create();
-        $clientB = Client::factory()->create();
-        $petA = Pet::factory()->for($clientA)->create();
-        $petB = Pet::factory()->for($clientB)->create();
-        $catalogTreatment = Treatment::factory()->create();
-        $treatmentB = app(TreatmentAssignmentService::class)->assign($petB, $catalogTreatment, [
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $catalogTreatment = $this->catalogTreatment();
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $catalogTreatment, [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
         ]);
 
-        $this->actingAs($clientA->user)->get(route('pets.treatments.index', $petA))->assertOk();
-        $this->actingAs($clientA->user)->get(route('pets.treatments.show', [$petA, $treatmentB]))->assertNotFound();
-        $this->actingAs($clientA->user)->post(route('admin.pets.treatments.store', $petA), [])->assertForbidden();
+        $this->actingAs($admin)->get(route('admin.pets.treatments.index', $pet))->assertOk();
+        $this->actingAs($admin)->get(route('admin.pets.treatments.show', [$pet, $petTreatment]))->assertOk();
+    }
+
+    public function test_client_cannot_view_treatments_through_administrative_routes(): void
+    {
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+
+        $this->actingAs($client->user)->get(route('admin.pets.treatments.index', $pet))->assertForbidden();
+        $this->actingAs($client->user)->get(route('admin.pets.treatments.show', [$pet, $petTreatment]))->assertForbidden();
+    }
+
+    public function test_client_cannot_view_another_pets_treatments(): void
+    {
+        $client = Client::factory()->create();
+        $otherPet = Pet::factory()->create();
+
+        $this->actingAs($client->user)->get(route('pets.treatments.index', $otherPet))->assertForbidden();
+        $this->actingAs($client->user)->get(route('admin.pets.treatments.index', $otherPet))->assertForbidden();
+    }
+
+    public function test_client_can_view_own_treatments_through_client_routes(): void
+    {
+        $this->withoutVite();
+
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+
+        $this->actingAs($client->user)->get(route('pets.treatments.index', $pet))->assertOk();
+        $this->actingAs($client->user)->get(route('pets.treatments.show', [$pet, $petTreatment]))->assertOk();
+    }
+
+    public function test_nested_treatment_route_rejects_treatment_from_another_pet(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $otherPet = Pet::factory()->create();
+        $otherTreatment = app(TreatmentAssignmentService::class)->assign($otherPet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.treatments.show', [$pet, $otherTreatment]))
+            ->assertNotFound();
+    }
+
+    public function test_guest_is_redirected_from_administrative_treatment_routes(): void
+    {
+        $pet = Pet::factory()->create();
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+
+        $this->get(route('admin.pets.treatments.index', $pet))->assertRedirect(route('login'));
+        $this->get(route('admin.pets.treatments.show', [$pet, $petTreatment]))->assertRedirect(route('login'));
     }
 
     public function test_admin_session_update_enforces_replacement_rule(): void
     {
         $admin = User::factory()->admin()->create();
         $pet = Pet::factory()->create();
-        $catalogTreatment = Treatment::factory()->create();
+        $catalogTreatment = $this->catalogTreatment();
         $assigned = app(TreatmentAssignmentService::class)->assign($pet, $catalogTreatment, [
             'planned_sessions' => 1, 'default_session_price' => '5000',
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
@@ -76,5 +137,68 @@ class PetTreatmentManagementTest extends TestCase
 
         $this->assertSame([1, 2], $assigned->sessions()->orderBy('session_number')->pluck('session_number')->all());
         $this->assertSame('cancelled', $session->fresh()->status);
+    }
+
+    public function test_client_cannot_mutate_own_treatment_or_session(): void
+    {
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $assigned = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+            'notes' => null,
+        ]);
+        $session = $assigned->sessions()->sole();
+
+        $this->actingAs($client->user)->patch(route('admin.pets.treatments.update', [$pet, $assigned]), [
+            'planned_sessions' => 2,
+            'default_session_price' => '1.00',
+            'currency' => 'ARS',
+            'notes' => 'Forged',
+        ])->assertForbidden();
+
+        $this->actingAs($client->user)->patch(route('admin.treatment-sessions.update', $session), [
+            'scheduled_at' => null,
+            'price' => '1.00',
+            'currency' => 'ARS',
+            'status' => 'completed',
+            'notes' => 'Forged',
+        ])->assertForbidden();
+
+        $this->assertSame(1, $assigned->fresh()->planned_sessions);
+        $this->assertSame('5000.00', $session->fresh()->price);
+        $this->assertSame('pending', $session->fresh()->status);
+    }
+
+    public function test_direct_assignment_rejects_treatment_from_inactive_service(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $treatment = $this->catalogTreatment(serviceActive: false);
+
+        $this->actingAs($admin)->post(route('admin.pets.treatments.store', $pet), [
+            'treatment_id' => $treatment->id,
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+        ])->assertSessionHasErrors('treatment_id');
+
+        $this->assertDatabaseCount('pet_treatments', 0);
+        $this->assertDatabaseCount('treatment_sessions', 0);
+    }
+
+    private function catalogTreatment(bool $serviceActive = true): Treatment
+    {
+        $service = Service::factory()->create(['is_active' => $serviceActive]);
+        $procedure = Procedure::factory()->for($service)->create();
+        $treatment = Treatment::factory()->for($service)->create();
+        $treatment->procedures()->attach($procedure);
+
+        return $treatment;
     }
 }

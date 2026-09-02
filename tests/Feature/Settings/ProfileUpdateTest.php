@@ -10,9 +10,9 @@ class ProfileUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed()
+    public function test_profile_page_is_displayed_for_an_unverified_user()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->unverified()->create();
 
         $response = $this
             ->actingAs($user)

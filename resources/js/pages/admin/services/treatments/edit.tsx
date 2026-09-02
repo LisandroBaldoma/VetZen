@@ -1,11 +1,27 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import TreatmentController from '@/actions/App/Http/Controllers/Admin/TreatmentController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Procedure, Service, Treatment } from '@/types';
+import { dashboard } from '@/routes';
+import {
+    edit,
+    index as serviceTemplatesIndex,
+} from '@/routes/admin/services/treatments';
+import { index as templatesIndex } from '@/routes/admin/treatments';
+
+type Service = { id: number; name: string };
+type Procedure = { id: number; name: string; is_active: boolean };
+type Treatment = {
+    id: number;
+    name: string;
+    description: string;
+    estimated_sessions: number;
+    is_active: boolean;
+    procedures?: Pick<Procedure, 'id'>[];
+};
 
 export default function TreatmentEdit({
     service,
@@ -19,14 +35,22 @@ export default function TreatmentEdit({
     const selected = new Set(
         treatment.procedures?.map((procedure) => procedure.id),
     );
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Plantillas', href: templatesIndex() },
+            { title: service.name, href: serviceTemplatesIndex(service.id) },
+            { title: treatment.name, href: edit([service.id, treatment.id]) },
+        ],
+    });
 
     return (
         <>
-            <Head title="Editar tratamiento" />
+            <Head title="Editar plantilla" />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title={`Editar tratamiento — ${service.name}`}
-                    description="Los cambios no alteran asignaciones históricas."
+                    title={`Editar ${treatment.name}`}
+                    description={`Servicio: ${service.name}. Los cambios no alteran asignaciones históricas.`}
                 />
                 <Form
                     {...TreatmentController.update.form([
@@ -53,6 +77,8 @@ export default function TreatmentEdit({
                                     id="description"
                                     name="description"
                                     defaultValue={treatment.description}
+                                    required
+                                    maxLength={5000}
                                     className="min-h-28 rounded-md border p-3"
                                 />
                                 <InputError message={errors.description} />
@@ -87,7 +113,15 @@ export default function TreatmentEdit({
                                                 procedure.id,
                                             )}
                                         />
-                                        {procedure.name}
+                                        <span>
+                                            {procedure.name}
+                                            {!procedure.is_active &&
+                                                selected.has(procedure.id) && (
+                                                    <span className="ml-2 text-xs text-muted-foreground">
+                                                        Inactivo, ya asociado
+                                                    </span>
+                                                )}
+                                        </span>
                                     </label>
                                 ))}
                                 <InputError message={errors.procedure_ids} />
@@ -107,7 +141,7 @@ export default function TreatmentEdit({
                                 Activo
                             </label>
                             <Button disabled={processing}>
-                                Guardar cambios
+                                Guardar plantilla
                             </Button>
                         </>
                     )}
