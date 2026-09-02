@@ -1,5 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, setLayoutProps } from '@inertiajs/react';
 import Heading from '@/components/heading';
+import PetContextHeader from '@/components/pet-context-header';
+import { dashboard } from '@/routes';
+import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
+import { index, show } from '@/routes/pets/treatments';
 import type { Pet, PetTreatment } from '@/types';
 
 export default function Treatment({
@@ -9,10 +13,29 @@ export default function Treatment({
     pet: Pet;
     petTreatment: PetTreatment;
 }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Mis mascotas', href: petsIndex() },
+            { title: pet.name, href: petShow(pet.id) },
+            { title: 'Tratamientos', href: index(pet.id) },
+            {
+                title: petTreatment.treatment_name,
+                href: show([pet.id, petTreatment.id]),
+            },
+        ],
+    });
+
     return (
         <>
             <Head title={petTreatment.treatment_name} />
             <div className="mx-auto max-w-3xl space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="client"
+                    active="treatments"
+                    editHref={edit.url(pet.id)}
+                />
                 <Heading
                     title={petTreatment.treatment_name}
                     description={`${pet.name} · ${petTreatment.status}`}

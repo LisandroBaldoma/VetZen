@@ -1,8 +1,11 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, setLayoutProps } from '@inertiajs/react';
 import Heading from '@/components/heading';
+import PetContextHeader from '@/components/pet-context-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { create, show } from '@/routes/pets/service-requests';
+import { dashboard } from '@/routes';
+import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
+import { create, index, show } from '@/routes/pets/service-requests';
 import type { Pet, ServiceRequest } from '@/types';
 
 export default function RequestsIndex({
@@ -12,10 +15,25 @@ export default function RequestsIndex({
     pet: Pet;
     requests: ServiceRequest[];
 }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Mis mascotas', href: petsIndex() },
+            { title: pet.name, href: petShow(pet.id) },
+            { title: 'Solicitudes de atención', href: index(pet.id) },
+        ],
+    });
+
     return (
         <>
             <Head title={`Solicitudes de ${pet.name}`} />
             <div className="space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="client"
+                    active="service-requests"
+                    editHref={edit.url(pet.id)}
+                />
                 <div className="flex justify-between gap-4">
                     <Heading
                         title={`Solicitudes de ${pet.name}`}

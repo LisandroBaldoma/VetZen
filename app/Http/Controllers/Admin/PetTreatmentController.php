@@ -22,7 +22,7 @@ class PetTreatmentController extends Controller
         Gate::authorize('viewAny', PetTreatment::class);
 
         return Inertia::render('admin/pets/treatments/index', [
-            'pet' => $pet,
+            'pet' => $pet->load('client.user:id,name'),
             'petTreatments' => $pet->treatments()->withCount(['sessions', 'sessions as completed_sessions_count' => fn ($query) => $query->where('status', 'completed')])->latest()->get(),
         ]);
     }
@@ -51,7 +51,7 @@ class PetTreatmentController extends Controller
         Gate::authorize('view', $petTreatment);
 
         return Inertia::render('admin/pets/treatments/show', [
-            'pet' => $pet,
+            'pet' => $pet->load('client.user:id,name'),
             'petTreatment' => $petTreatment->load(['procedureSnapshots', 'sessions' => fn ($query) => $query->orderBy('session_number')]),
         ]);
     }

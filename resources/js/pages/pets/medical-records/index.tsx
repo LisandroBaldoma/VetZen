@@ -1,7 +1,10 @@
-import { Head } from '@inertiajs/react';
+import { Head, setLayoutProps } from '@inertiajs/react';
 import ClinicalRecordSummary from '@/components/clinical-record-summary';
 import Heading from '@/components/heading';
-import { show } from '@/routes/pets/medical-records';
+import PetContextHeader from '@/components/pet-context-header';
+import { dashboard } from '@/routes';
+import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
+import { index, show } from '@/routes/pets/medical-records';
 import type { ClinicalRecord, Pet } from '@/types';
 
 export default function MedicalRecordsIndex({
@@ -11,10 +14,25 @@ export default function MedicalRecordsIndex({
     pet: Pet;
     records: ClinicalRecord[];
 }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Mis mascotas', href: petsIndex() },
+            { title: pet.name, href: petShow(pet.id) },
+            { title: 'Historia clínica', href: index(pet.id) },
+        ],
+    });
+
     return (
         <>
             <Head title={`${pet.name} · Medical records`} />
             <div className="mx-auto max-w-3xl space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="client"
+                    active="medical-records"
+                    editHref={edit.url(pet.id)}
+                />
                 <Heading
                     title="Medical records"
                     description={`Visible clinical history for ${pet.name}.`}

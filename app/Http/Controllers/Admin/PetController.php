@@ -22,7 +22,21 @@ class PetController extends Controller
         Gate::authorize('viewAny', Pet::class);
 
         return Inertia::render('admin/pets/index', [
-            'pets' => Pet::query()->with('client.user')->orderBy('name')->get(),
+            'pets' => Pet::query()
+                ->with('client.user:id,name')
+                ->orderBy('name')
+                ->get(['id', 'client_id', 'name', 'species', 'breed', 'photo'])
+                ->map(fn (Pet $pet): array => [
+                    'id' => $pet->id,
+                    'name' => $pet->name,
+                    'species' => $pet->species,
+                    'breed' => $pet->breed,
+                    'has_photo' => $pet->photo !== null,
+                    'client' => [
+                        'id' => $pet->client->id,
+                        'name' => $pet->client->user->name,
+                    ],
+                ]),
         ]);
     }
 
@@ -56,7 +70,17 @@ class PetController extends Controller
         $this->authorizeAdmin();
         Gate::authorize('view', $pet);
 
-        return Inertia::render('admin/pets/show', ['pet' => $pet->load('client.user')]);
+        $pet->load('client.user:id,name');
+
+        return Inertia::render('admin/pets/show', [
+            'pet' => [
+                ...$this->petData($pet),
+                'client' => [
+                    'id' => $pet->client->id,
+                    'name' => $pet->client->user->name,
+                ],
+            ],
+        ]);
     }
 
     public function edit(Pet $pet): Response
@@ -84,5 +108,24 @@ class PetController extends Controller
     private function authorizeAdmin(): void
     {
         abort_unless(auth()->user()?->hasRole('admin'), 403);
+    }
+
+    /**
+     * @return array<string, bool|int|string|null>
+     */
+    private function petData(Pet $pet): array
+    {
+        return [
+            'id' => $pet->id,
+            'name' => $pet->name,
+            'species' => $pet->species,
+            'breed' => $pet->breed,
+            'sex' => $pet->sex,
+            'birth_date' => $pet->birth_date?->toDateString(),
+            'weight' => $pet->weight,
+            'color' => $pet->color,
+            'notes' => $pet->notes,
+            'has_photo' => $pet->photo !== null,
+        ];
     }
 }

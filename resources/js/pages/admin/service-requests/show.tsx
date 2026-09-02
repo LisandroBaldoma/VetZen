@@ -1,11 +1,15 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import AdminServiceRequestController from '@/actions/App/Http/Controllers/Admin/ServiceRequestController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import PetContextHeader from '@/components/pet-context-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { dashboard } from '@/routes';
+import { edit as editPet } from '@/routes/admin/pets';
+import { index, show } from '@/routes/admin/service-requests';
 import type { ServiceRequest, Treatment } from '@/types';
 export default function AdminRequestShow({
     serviceRequest,
@@ -14,10 +18,29 @@ export default function AdminRequestShow({
     serviceRequest: ServiceRequest;
     treatments: Treatment[];
 }) {
+    const pet = serviceRequest.pet!;
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Solicitudes de atención', href: index() },
+            {
+                title: `Solicitud #${serviceRequest.id}`,
+                href: show(serviceRequest.id),
+            },
+        ],
+    });
+
     return (
         <>
             <Head title="Solicitud" />
             <div className="mx-auto max-w-3xl space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="admin"
+                    active="service-requests"
+                    editHref={editPet.url(pet.id)}
+                />
                 <Heading
                     title={`${serviceRequest.pet?.name} — ${serviceRequest.service?.name}`}
                     description="Solicitud de atención"

@@ -1,9 +1,13 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import PetTreatmentController from '@/actions/App/Http/Controllers/Admin/PetTreatmentController';
 import TreatmentSessionController from '@/actions/App/Http/Controllers/Admin/TreatmentSessionController';
 import Heading from '@/components/heading';
+import PetContextHeader from '@/components/pet-context-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { dashboard } from '@/routes';
+import { edit, index as petsIndex, show as petShow } from '@/routes/admin/pets';
+import { index, show } from '@/routes/admin/pets/treatments';
 import type { Pet, PetTreatment } from '@/types';
 
 export default function TreatmentShow({
@@ -13,10 +17,29 @@ export default function TreatmentShow({
     pet: Pet;
     petTreatment: PetTreatment;
 }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Pacientes', href: petsIndex() },
+            { title: pet.name, href: petShow(pet.id) },
+            { title: 'Tratamientos', href: index(pet.id) },
+            {
+                title: petTreatment.treatment_name,
+                href: show([pet.id, petTreatment.id]),
+            },
+        ],
+    });
+
     return (
         <>
             <Head title={petTreatment.treatment_name} />
             <div className="mx-auto max-w-4xl space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="admin"
+                    active="treatments"
+                    editHref={edit.url(pet.id)}
+                />
                 <Heading
                     title={petTreatment.treatment_name}
                     description={`${pet.name} · ${petTreatment.status}`}

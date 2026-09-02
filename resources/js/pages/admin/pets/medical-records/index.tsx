@@ -1,8 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, setLayoutProps } from '@inertiajs/react';
 import ClinicalRecordSummary from '@/components/clinical-record-summary';
 import Heading from '@/components/heading';
+import PetContextHeader from '@/components/pet-context-header';
 import { Button } from '@/components/ui/button';
-import { create, show } from '@/routes/admin/pets/medical-records';
+import { dashboard } from '@/routes';
+import { edit, index as petsIndex, show as petShow } from '@/routes/admin/pets';
+import {
+    create,
+    index as medicalRecordsIndex,
+    show,
+} from '@/routes/admin/pets/medical-records';
 import type { ClinicalRecord, Pet } from '@/types';
 
 export default function AdminMedicalRecordsIndex({
@@ -12,10 +19,25 @@ export default function AdminMedicalRecordsIndex({
     pet: Pet;
     records: ClinicalRecord[];
 }) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Pacientes', href: petsIndex() },
+            { title: pet.name, href: petShow(pet.id) },
+            { title: 'Historia clínica', href: medicalRecordsIndex(pet.id) },
+        ],
+    });
+
     return (
         <>
             <Head title={`${pet.name} · Medical records`} />
             <div className="mx-auto max-w-3xl space-y-6 p-4">
+                <PetContextHeader
+                    pet={pet}
+                    variant="admin"
+                    active="medical-records"
+                    editHref={edit.url(pet.id)}
+                />
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Medical records"

@@ -37,6 +37,21 @@ export type Pet = {
     photo: string | null;
 };
 
+export type PetCard = Pick<Pet, 'id' | 'name' | 'species' | 'breed'> & {
+    has_photo: boolean;
+};
+
+export type PetContext = Omit<Pet, 'client_id' | 'photo'> & {
+    client_id?: number;
+    photo?: string | null;
+    has_photo?: boolean;
+    client?: {
+        id: number;
+        name?: string;
+        user?: Pick<User, 'name'>;
+    };
+};
+
 export type ClinicalRecord = {
     id: number;
     pet_id: number;

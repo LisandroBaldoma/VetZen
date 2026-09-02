@@ -24,7 +24,16 @@ class PetController extends Controller
         Gate::authorize('viewAny', Pet::class);
 
         return Inertia::render('pets/index', [
-            'pets' => $request->user()->client->pets()->orderBy('name')->get(),
+            'pets' => $request->user()->client->pets()
+                ->orderBy('name')
+                ->get(['id', 'name', 'species', 'breed', 'photo'])
+                ->map(fn (Pet $pet): array => [
+                    'id' => $pet->id,
+                    'name' => $pet->name,
+                    'species' => $pet->species,
+                    'breed' => $pet->breed,
+                    'has_photo' => $pet->photo !== null,
+                ]),
         ]);
     }
 
@@ -54,7 +63,9 @@ class PetController extends Controller
     {
         Gate::authorize('view', $pet);
 
-        return Inertia::render('pets/show', ['pet' => $pet]);
+        return Inertia::render('pets/show', [
+            'pet' => $this->petData($pet),
+        ]);
     }
 
     public function edit(Pet $pet): Response
@@ -98,5 +109,24 @@ class PetController extends Controller
     private function authorizeClient(Request $request): void
     {
         abort_unless($request->user()?->hasRole('client'), 403);
+    }
+
+    /**
+     * @return array<string, bool|int|string|null>
+     */
+    private function petData(Pet $pet): array
+    {
+        return [
+            'id' => $pet->id,
+            'name' => $pet->name,
+            'species' => $pet->species,
+            'breed' => $pet->breed,
+            'sex' => $pet->sex,
+            'birth_date' => $pet->birth_date?->toDateString(),
+            'weight' => $pet->weight,
+            'color' => $pet->color,
+            'notes' => $pet->notes,
+            'has_photo' => $pet->photo !== null,
+        ];
     }
 }
