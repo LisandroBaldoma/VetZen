@@ -15,7 +15,20 @@ class TreatmentAssignmentService
     public function assign(Pet $pet, Treatment $treatment, array $attributes): PetTreatment
     {
         return DB::transaction(function () use ($pet, $treatment, $attributes): PetTreatment {
-            $treatment->load('procedures');
+            $treatment = Treatment::query()
+                ->with(['service', 'procedures'])
+                ->lockForUpdate()
+                ->findOrFail($treatment->id);
+
+            if (! $treatment->is_active || ! $treatment->service->is_active) {
+                throw ValidationException::withMessages(['treatment_id' => __('The selected treatment is not available.')]);
+            }
+
+            if ($treatment->procedures->isEmpty() || $treatment->procedures->contains(
+                fn ($procedure): bool => ! $procedure->is_active || $procedure->service_id !== $treatment->service_id,
+            )) {
+                throw ValidationException::withMessages(['treatment_id' => __('The selected treatment has no valid procedures for its service.')]);
+            }
 
             $petTreatment = new PetTreatment([
                 'treatment_name' => $treatment->name,
@@ -40,13 +53,15 @@ class TreatmentAssignmentService
         });
     }
 
-    public function resize(PetTreatment $petTreatment, int $plannedSessions): PetTreatment
+    /** @param array{planned_sessions: int, default_session_price: string, currency: string, notes?: string|null} $attributes */
+    public function updateConditions(PetTreatment $petTreatment, array $attributes): PetTreatment
     {
-        return DB::transaction(function () use ($petTreatment, $plannedSessions): PetTreatment {
+        return DB::transaction(function () use ($petTreatment, $attributes): PetTreatment {
             $locked = PetTreatment::query()->lockForUpdate()->findOrFail($petTreatment->id);
+            $plannedSessions = $attributes['planned_sessions'];
 
             if (! in_array($locked->status, ['pending', 'in_progress'], true)) {
-                throw ValidationException::withMessages(['planned_sessions' => __('This treatment cannot change its planned sessions in its current status.')]);
+                throw ValidationException::withMessages(['planned_sessions' => __('This treatment cannot change its conditions in its current status.')]);
             }
 
             $completed = $locked->sessions()->where('status', 'completed')->count();
@@ -55,6 +70,8 @@ class TreatmentAssignmentService
             }
 
             $coverage = $locked->sessions()->whereIn('status', ['pending', 'completed'])->count();
+            $locked->update($attributes);
+
             if ($plannedSessions > $coverage) {
                 $next = ((int) $locked->sessions()->max('session_number')) + 1;
                 $this->createPendingSessions($locked, $plannedSessions - $coverage, $next);
@@ -69,8 +86,6 @@ class TreatmentAssignmentService
                 $locked->sessions()->whereIn('id', $pendingIds)->delete();
             }
 
-            $locked->update(['planned_sessions' => $plannedSessions]);
-
             return $locked->load('sessions');
         });
     }
@@ -82,8 +97,12 @@ class TreatmentAssignmentService
             $locked = TreatmentSession::query()->lockForUpdate()->findOrFail($session->id);
             $petTreatment = PetTreatment::query()->lockForUpdate()->findOrFail($locked->pet_treatment_id);
 
-            if (in_array($petTreatment->status, ['suspended', 'cancelled'], true)) {
-                throw ValidationException::withMessages(['status' => __('Suspended or cancelled treatments cannot have their sessions modified.')]);
+            if (! in_array($petTreatment->status, ['pending', 'in_progress'], true)) {
+                throw ValidationException::withMessages(['status' => __('Only pending or in-progress treatments can have their sessions modified.')]);
+            }
+
+            if (in_array($locked->status, ['completed', 'cancelled'], true) && $attributes['status'] !== $locked->status) {
+                throw ValidationException::withMessages(['status' => __('Completed or cancelled sessions cannot change status.')]);
             }
 
             $locked->update($attributes);
@@ -91,17 +110,15 @@ class TreatmentAssignmentService
             $completed = $petTreatment->sessions()->where('status', 'completed')->count();
             $pending = $petTreatment->sessions()->where('status', 'pending')->count();
 
-            if ($locked->status === 'cancelled' && ! in_array($petTreatment->status, ['suspended', 'cancelled'], true) && $completed + $pending < $petTreatment->planned_sessions) {
+            if ($locked->status === 'cancelled' && $completed + $pending < $petTreatment->planned_sessions) {
                 $next = ((int) $petTreatment->sessions()->max('session_number')) + 1;
                 $this->createPendingSessions($petTreatment, 1, $next);
             }
 
-            if (! in_array($petTreatment->status, ['suspended', 'cancelled'], true)) {
-                $status = $completed >= $petTreatment->planned_sessions
-                    ? 'completed'
-                    : ($completed > 0 ? 'in_progress' : 'pending');
-                $petTreatment->update(['status' => $status]);
-            }
+            $status = $completed >= $petTreatment->planned_sessions
+                ? 'completed'
+                : ($completed > 0 ? 'in_progress' : 'pending');
+            $petTreatment->update(['status' => $status]);
 
             return $locked->load('petTreatment');
         });
@@ -112,8 +129,8 @@ class TreatmentAssignmentService
         return DB::transaction(function () use ($petTreatment, $requestedStatus): PetTreatment {
             $locked = PetTreatment::query()->lockForUpdate()->findOrFail($petTreatment->id);
 
-            if ($locked->status === 'cancelled') {
-                throw ValidationException::withMessages(['status' => __('Cancelled treatments cannot be reopened.')]);
+            if (in_array($locked->status, ['completed', 'cancelled'], true)) {
+                throw ValidationException::withMessages(['status' => __('Completed or cancelled treatments cannot change status.')]);
             }
 
             if ($requestedStatus === 'resume') {

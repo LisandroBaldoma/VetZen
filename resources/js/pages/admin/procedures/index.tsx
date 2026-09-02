@@ -22,17 +22,29 @@ import {
     edit,
     index as serviceProceduresIndex,
 } from '@/routes/admin/services/procedures';
-import type { Paginated, Procedure, Service } from '@/types';
-
 type Filters = { search: string; service: string; status: string };
+type Service = { id: number; name: string };
+type Procedure = {
+    id: number;
+    name: string;
+    duration_minutes: number | null;
+    is_active: boolean;
+    service: Service;
+};
+type PaginatedProcedures = {
+    data: Procedure[];
+    links: { url: string | null; label: string; active: boolean }[];
+    last_page: number;
+    total: number;
+};
 
 export default function AdminProcedureCatalog({
     procedures,
     services,
     filters,
 }: {
-    procedures: Paginated<Procedure>;
-    services: Pick<Service, 'id' | 'name'>[];
+    procedures: PaginatedProcedures;
+    services: Service[];
     filters: Filters;
 }) {
     const [search, setSearch] = useState(filters.search);
@@ -168,7 +180,57 @@ export default function AdminProcedureCatalog({
                     </p>
                 ) : (
                     <>
-                        <div className="overflow-x-auto rounded-xl border">
+                        <div className="grid gap-3 md:hidden">
+                            {procedures.data.map((procedure) => (
+                                <article
+                                    key={procedure.id}
+                                    className="space-y-4 rounded-xl border p-4"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <h2 className="font-semibold">
+                                                {procedure.name}
+                                            </h2>
+                                            <Link
+                                                href={serviceProceduresIndex(
+                                                    procedure.service.id,
+                                                )}
+                                                className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                                            >
+                                                {procedure.service.name}
+                                            </Link>
+                                        </div>
+                                        <CatalogStatusForm
+                                            form={ProcedureStatusController.update.form(
+                                                [
+                                                    procedure.service.id,
+                                                    procedure.id,
+                                                ],
+                                            )}
+                                            isActive={procedure.is_active}
+                                            subject={`el procedimiento ${procedure.name}`}
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between gap-3 text-sm">
+                                        <span className="text-muted-foreground">
+                                            Duración:{' '}
+                                            {procedure.duration_minutes
+                                                ? `${procedure.duration_minutes} min`
+                                                : 'Sin especificar'}
+                                        </span>
+                                        <CatalogIconLink
+                                            href={edit([
+                                                procedure.service.id,
+                                                procedure.id,
+                                            ])}
+                                            label={`Editar procedimiento ${procedure.name}`}
+                                            icon={Pencil}
+                                        />
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                        <div className="hidden overflow-x-auto rounded-xl border md:block">
                             <table className="w-full min-w-3xl text-left text-sm">
                                 <thead className="bg-muted/50 text-muted-foreground">
                                     <tr>

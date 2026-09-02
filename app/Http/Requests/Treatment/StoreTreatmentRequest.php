@@ -10,7 +10,8 @@ class StoreTreatmentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('create', Treatment::class) ?? false;
+        return ($this->user()?->can('create', Treatment::class) ?? false)
+            && $this->route('service')->is_active;
     }
 
     public function rules(): array

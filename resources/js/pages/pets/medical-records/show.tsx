@@ -5,14 +5,17 @@ import PetContextHeader from '@/components/pet-context-header';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
 import { index, show } from '@/routes/pets/medical-records';
-import type { ClinicalRecord, Pet } from '@/types';
+import type {
+    ClinicalRecordDetail as ClinicalRecordDetailData,
+    PetContext,
+} from '@/types';
 
 export default function MedicalRecordShow({
     pet,
     record,
 }: {
-    pet: Pet;
-    record: ClinicalRecord;
+    pet: PetContext;
+    record: ClinicalRecordDetailData;
 }) {
     setLayoutProps({
         breadcrumbs: [
@@ -35,8 +38,8 @@ export default function MedicalRecordShow({
                     editHref={edit.url(pet.id)}
                 />
                 <Heading
-                    title="Medical record"
-                    description={`Clinical history for ${pet.name}.`}
+                    title="Registro clínico"
+                    description={`Información clínica registrada para ${pet.name}.`}
                 />
                 <ClinicalRecordDetail record={record} />
             </div>

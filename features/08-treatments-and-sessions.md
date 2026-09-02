@@ -1,7 +1,7 @@
 # Feature 08 — Tratamientos y sesiones
 
-> Estado: implementada en su contrato funcional base. El rediseño de solicitudes,
-> tratamientos y sesiones continúa en etapas UX posteriores.
+> Estado: implementada y verificada automáticamente en su contrato funcional. La
+> revisión visual manual responsive y de teclado permanece pendiente.
 
 ## 1. Objetivo
 
@@ -46,7 +46,7 @@ Este modelo representa la práctica real sin anticipar protocolos, facturación 
 
 F08 depende de:
 
-* Feature 03: autenticación y verificación de email;
+* Feature 03 y UX-04: autenticación e infraestructura latente de verificación de email;
 * Feature 04: roles `admin` y `client`, Spatie Laravel Permission, Policies y separación de áreas;
 * Feature 05: relaciones `User → Client → Pet`, ownership y administración de mascotas;
 * Feature 06: protección de información clínica y convenciones de autorización;
@@ -341,6 +341,14 @@ Al generarse, cada sesión copia precio y moneda de `PetTreatment`. Su precio pu
 33. La resolución crea PetTreatment y TreatmentSession atómicamente, cambia la
     solicitud a `resolved` y conserva `pet_treatment_id`.
 34. Una solicitud `cancelled` permanece como historial y no puede resolverse.
+35. Una solicitud pendiente no puede resolverse mientras su Service esté
+    inactivo; el servicio debe reactivarse primero.
+36. Si `planned_sessions` y `default_session_price` cambian en la misma
+    operación, las sesiones nuevas usan el precio nuevo y las sesiones existentes
+    conservan su precio propio.
+37. Una TreatmentSession `completed` o `cancelled` no puede cambiar de estado.
+    Su fecha, precio, moneda y notas pueden corregirse mientras el PetTreatment
+    padre continúe `pending` o `in_progress`.
 
 ## 13. Estados y transiciones
 
@@ -385,6 +393,10 @@ Los estados son valores controlados por la aplicación. Se aplican estas reglas:
 * una reapertura de tratamientos cancelados queda fuera de F08;
 * un tratamiento `completed` es final y no puede reabrirse ni aumentar sus
   sesiones; una continuidad requiere una asignación nueva.
+* una sesión `completed` o `cancelled` conserva su estado, aunque admite
+  correcciones de sus demás datos mientras el tratamiento padre esté activo;
+* un tratamiento `suspended` no admite modificaciones de sesiones hasta su
+  reanudación manual.
 
 ## 14. Flujos principales
 
@@ -419,9 +431,10 @@ Los estados son valores controlados por la aplicación. Se aplican estas reglas:
 1. Admin consulta solicitudes `pending` y abre una en contexto de la Pet.
 2. Después de la evaluación profesional, selecciona un Treatment activo del
    mismo Service solicitado.
-3. Configura las condiciones de PetTreatment sin intervención del cliente.
-4. Una transacción valida compatibilidad, crea PetTreatment, snapshots y sesiones.
-5. La misma transacción marca ServiceRequest como `resolved` y asigna
+3. El backend vuelve a comprobar que el Service solicitado continúe activo.
+4. Configura las condiciones de PetTreatment sin intervención del cliente.
+5. Una transacción valida compatibilidad, crea PetTreatment, snapshots y sesiones.
+6. La misma transacción marca ServiceRequest como `resolved` y asigna
    `pet_treatment_id`.
 
 ### Administrar una sesión
@@ -713,27 +726,28 @@ nuevos reemplazos. Cambiar el catálogo tampoco altera la composición acordada.
 
 ## 22. Criterios de aceptación
 
-* [ ] Treatment pertenece a Service, requiere procedimientos compatibles y sesiones estimadas positivas.
-* [ ] Client crea ServiceRequest únicamente para Service activo y Pet propia.
-* [ ] Client no selecciona Treatment ni controla la resolución.
-* [ ] Admin resuelve una solicitud solo con Treatment compatible y conserva la
+* [x] Treatment pertenece a Service, requiere procedimientos compatibles y sesiones estimadas positivas.
+* [x] Client crea ServiceRequest únicamente para Service activo y Pet propia.
+* [x] Client no selecciona Treatment ni controla la resolución.
+* [x] Admin resuelve una solicitud solo con Service activo y Treatment compatible y conserva la
   relación ServiceRequest–PetTreatment.
-* [ ] El catálogo se administra sin eliminación física.
-* [ ] PetTreatment vincula Pet con Treatment y conserva las condiciones acordadas.
-* [ ] Una asignación genera sus TreatmentSession atómicamente.
-* [ ] Cada sesión conserva precio, moneda y estado propios.
-* [ ] Cambios de catálogo o precio predeterminado no reescriben sesiones.
-* [ ] El progreso se calcula desde sesiones completadas.
-* [ ] Una sesión cancelada se conserva, no modifica `planned_sessions`, no
+* [x] El catálogo se administra sin eliminación física.
+* [x] PetTreatment vincula Pet con Treatment y conserva las condiciones acordadas.
+* [x] Una asignación genera sus TreatmentSession atómicamente.
+* [x] Cada sesión conserva precio, moneda y estado propios.
+* [x] Cambios de catálogo o precio predeterminado no reescriben sesiones.
+* [x] El progreso se calcula desde sesiones completadas.
+* [x] Una sesión cancelada se conserva, no modifica `planned_sessions`, no
   cuenta para el progreso y genera el reemplazo necesario con numeración nueva.
-* [ ] Admin administra tratamientos, asignaciones y sesiones.
-* [ ] Client solo crea solicitudes `pending`; no modifica asignaciones, sesiones
+* [x] Admin administra tratamientos, asignaciones y sesiones.
+* [x] Client solo crea solicitudes `pending`; no modifica asignaciones, sesiones
   ni estados profesionales de F08.
-* [ ] Client consulta únicamente solicitudes, asignaciones y sesiones de sus
+* [x] Client consulta únicamente solicitudes, asignaciones y sesiones de sus
   propias mascotas, con ownership completo.
-* [ ] Backend aplica autenticación, autorización, validación e integridad.
-* [ ] No existen precio de servicio/procedimiento, protocolos, pagos ni facturación.
-* [ ] Pruebas y controles de calidad pasan antes de declarar la implementación completa.
+* [x] Backend aplica autenticación, autorización, validación e integridad.
+* [x] No existen precio de servicio/procedimiento, protocolos, pagos ni facturación.
+* [x] Las pruebas funcionales enfocadas pasan.
+* [ ] La revisión visual manual responsive y de teclado está completada.
 
 ## 23. Fuera de alcance
 
@@ -785,7 +799,7 @@ correspondientes.
   relación histórica propia.
 * La cantidad prevista puede aumentar o reducirse transaccionalmente en estados
   `pending` e `in_progress`, respetando sesiones históricas.
-* `completed` es un estado final e inmutable. La continuidad de atención se
+* PetTreatment `completed` es un estado final e inmutable. La continuidad de atención se
   registra mediante un nuevo PetTreatment.
 * Los estados combinan cambios administrativos y automatismos por sesiones
   completadas según la sección 13.
@@ -793,6 +807,12 @@ correspondientes.
   reemplazos pendientes sin cambiar `planned_sessions`.
 * `session_number` identifica el orden de registros generados, no el ordinal de
   una sesión clínica completada; por eso puede superar `planned_sessions`.
+* Resolver una ServiceRequest exige que su Service continúe activo al momento de
+  la resolución.
+* Si cantidad y precio predeterminado cambian juntos, solo las sesiones creadas
+  por ese aumento copian el precio nuevo.
+* Las sesiones completadas o canceladas conservan su estado; sus metadatos pueden
+  corregirse mientras el tratamiento padre esté pendiente o en curso.
 
 ## 26. Impacto documental y de implementación
 

@@ -46,7 +46,8 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 * Registro de clientes.  
 * Inicio de sesión.  
 * Recuperación de contraseña.  
-* Verificación de identidad.  
+* Infraestructura de verificación de identidad, activable cuando exista un
+  proveedor de correo configurado.
 * Gestión de perfiles.  
 * Gestión de profesionales.  
 * Roles y permisos.  
@@ -55,6 +56,7 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 ## **Reglas principales**
 
 * Los usuarios deberán autenticarse para acceder a las funcionalidades protegidas.  
+* La verificación de correo no condiciona el acceso en la versión actual.
 * Los permisos determinarán qué acciones puede realizar cada usuario.  
 * Los profesionales podrán tener diferentes niveles de acceso.  
 * Los profesionales autorizados podrán modificar información clínica.  

@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Service;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ServiceController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         Gate::authorize('viewAny', Service::class);
 
@@ -25,10 +26,11 @@ class ServiceController extends Controller
                 ->orderBy('id')
                 ->get()
                 ->map(fn (Service $service): array => $this->commercialData($service)),
+            'pets' => $this->clientPets($request),
         ]);
     }
 
-    public function show(Service $service): Response
+    public function show(Request $request, Service $service): Response
     {
         Gate::authorize('view', $service);
 
@@ -39,6 +41,7 @@ class ServiceController extends Controller
 
         return Inertia::render('services/show', [
             'service' => $this->commercialData($service),
+            'pets' => $this->clientPets($request),
         ]);
     }
 
@@ -54,5 +57,19 @@ class ServiceController extends Controller
                 'duration_minutes',
             ]))->values()->all(),
         ];
+    }
+
+    /** @return array<int, array{id: int, name: string}> */
+    private function clientPets(Request $request): array
+    {
+        if (! $request->user()->hasRole('client') || ! $request->user()->client) {
+            return [];
+        }
+
+        return $request->user()->client->pets()
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn ($pet): array => $pet->only(['id', 'name']))
+            ->all();
     }
 }

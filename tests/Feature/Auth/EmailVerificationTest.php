@@ -30,37 +30,6 @@ class EmailVerificationTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_unverified_user_cannot_access_the_dashboard(): void
-    {
-        $user = User::factory()->unverified()->create();
-
-        $this->actingAs($user)
-            ->get(route('dashboard'))
-            ->assertRedirect(route('verification.notice'));
-    }
-
-    public function test_unverified_user_cannot_access_account_settings(): void
-    {
-        $user = User::factory()->unverified()->create();
-
-        $this->actingAs($user)
-            ->get(route('profile.edit'))
-            ->assertRedirect(route('verification.notice'));
-    }
-
-    public function test_verified_user_can_access_the_dashboard_and_account_settings(): void
-    {
-        $user = User::factory()->create();
-
-        $this->actingAs($user)
-            ->get(route('dashboard'))
-            ->assertOk();
-
-        $this->actingAs($user)
-            ->get(route('profile.edit'))
-            ->assertOk();
-    }
-
     public function test_email_can_be_verified()
     {
         $user = User::factory()->unverified()->create();

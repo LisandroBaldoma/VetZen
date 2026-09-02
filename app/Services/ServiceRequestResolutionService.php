@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Service;
 use App\Models\ServiceRequest;
 use App\Models\Treatment;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,16 @@ class ServiceRequestResolutionService
         return DB::transaction(function () use ($serviceRequest, $treatment, $attributes): ServiceRequest {
             $locked = ServiceRequest::query()->lockForUpdate()->findOrFail($serviceRequest->id);
             if ($locked->status !== 'pending') {
-                throw ValidationException::withMessages(['status' => __('Only pending requests can be resolved.')]);
+                throw ValidationException::withMessages(['status' => __('Solo se pueden resolver solicitudes pendientes.')]);
             }
+
+            $service = Service::query()->lockForUpdate()->findOrFail($locked->service_id);
+            if (! $service->is_active) {
+                throw ValidationException::withMessages(['service' => __('El servicio solicitado está inactivo. Reactivalo antes de resolver la solicitud.')]);
+            }
+
             if (! $treatment->is_active || $treatment->service_id !== $locked->service_id) {
-                throw ValidationException::withMessages(['treatment_id' => __('The treatment must belong to the requested service.')]);
+                throw ValidationException::withMessages(['treatment_id' => __('La plantilla debe estar activa y pertenecer al servicio solicitado.')]);
             }
 
             $petTreatment = $this->assignments->assign($locked->pet, $treatment, $attributes);

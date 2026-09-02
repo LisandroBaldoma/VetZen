@@ -21,20 +21,30 @@ class ClinicalRecordManagementTest extends TestCase
         $this->withoutVite();
     }
 
-    public function test_client_can_view_only_visible_records_for_an_owned_pet(): void
+    public function test_client_can_view_all_records_for_an_owned_pet(): void
     {
         $client = Client::factory()->create();
         $pet = Pet::factory()->for($client)->create();
-        $visibleRecord = ClinicalRecord::factory()->for($pet)->visibleToClient()->create();
-        $hiddenRecord = ClinicalRecord::factory()->for($pet)->hiddenFromClient()->create();
+        $visibleRecord = ClinicalRecord::factory()->for($pet)->visibleToClient()->create([
+            'occurred_at' => '2026-08-22 10:00:00',
+        ]);
+        $hiddenRecord = ClinicalRecord::factory()->for($pet)->hiddenFromClient()->create([
+            'occurred_at' => '2026-08-21 10:00:00',
+        ]);
 
         $this->actingAs($client->user)
             ->get(route('pets.medical-records.index', $pet))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('pets/medical-records/index')
-                ->has('records', 1)
-                ->where('records.0.id', $visibleRecord->id));
+                ->has('records', 2)
+                ->where('records.0.id', $visibleRecord->id)
+                ->where('records.1.id', $hiddenRecord->id)
+                ->missing('records.0.content')
+                ->missing('records.0.is_visible_to_client')
+                ->missing('records.0.created_by')
+                ->missing('pet.client_id')
+                ->missing('pet.photo'));
 
         $this->actingAs($client->user)
             ->get(route('pets.medical-records.show', [$pet, $visibleRecord]))
@@ -42,7 +52,13 @@ class ClinicalRecordManagementTest extends TestCase
 
         $this->actingAs($client->user)
             ->get(route('pets.medical-records.show', [$pet, $hiddenRecord]))
-            ->assertForbidden();
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('pets/medical-records/show')
+                ->where('record.id', $hiddenRecord->id)
+                ->where('record.content', $hiddenRecord->content)
+                ->missing('record.is_visible_to_client')
+                ->missing('record.created_by'));
     }
 
     public function test_client_cannot_create_or_update_clinical_records(): void
@@ -53,6 +69,14 @@ class ClinicalRecordManagementTest extends TestCase
 
         $this->actingAs($client->user)
             ->post(route('admin.pets.medical-records.store', $pet), $this->validPayload())
+            ->assertForbidden();
+
+        $this->actingAs($client->user)
+            ->get(route('admin.pets.medical-records.create', $pet))
+            ->assertForbidden();
+
+        $this->actingAs($client->user)
+            ->get(route('admin.pets.medical-records.edit', [$pet, $record]))
             ->assertForbidden();
 
         $this->actingAs($client->user)
@@ -70,7 +94,7 @@ class ClinicalRecordManagementTest extends TestCase
         $petA = Pet::factory()->for($clientA)->create();
         $clientB = Client::factory()->create();
         $petB = Pet::factory()->for($clientB)->create();
-        $recordB = ClinicalRecord::factory()->for($petB)->visibleToClient()->create();
+        $recordB = ClinicalRecord::factory()->for($petB)->hiddenFromClient()->create();
 
         $this->actingAs($clientA->user)
             ->get(route('pets.medical-records.index', $petB))
@@ -104,6 +128,10 @@ class ClinicalRecordManagementTest extends TestCase
 
         $this->actingAs($creator)
             ->get(route('admin.pets.medical-records.index', $pet))
+            ->assertOk();
+
+        $this->actingAs($creator)
+            ->get(route('admin.pets.medical-records.create', $pet))
             ->assertOk();
 
         $this->actingAs($creator)
@@ -142,6 +170,7 @@ class ClinicalRecordManagementTest extends TestCase
             ->patch(route('admin.pets.medical-records.update', [$pet, $record]), $this->validPayload([
                 'title' => 'Updated consultation',
                 'content' => 'The patient responded well.',
+                'is_visible_to_client' => false,
                 'created_by' => $forgedUser->id,
                 'updated_by' => $forgedUser->id,
                 'pet_id' => Pet::factory()->create()->id,
@@ -154,6 +183,7 @@ class ClinicalRecordManagementTest extends TestCase
         $this->assertSame($creator->id, $record->created_by);
         $this->assertSame($updater->id, $record->updated_by);
         $this->assertSame('Updated consultation', $record->title);
+        $this->assertFalse($record->is_visible_to_client);
 
         $updatedAudit = $record->audits()->where('action', 'updated')->firstOrFail();
         $this->assertSame($updater->id, $updatedAudit->user_id);
@@ -161,6 +191,98 @@ class ClinicalRecordManagementTest extends TestCase
         $this->assertSame($creator->id, $updatedAudit->old_values['updated_by']);
         $this->assertSame('Updated consultation', $updatedAudit->new_values['title']);
         $this->assertSame($updater->id, $updatedAudit->new_values['updated_by']);
+        $this->assertTrue($updatedAudit->old_values['is_visible_to_client']);
+        $this->assertFalse($updatedAudit->new_values['is_visible_to_client']);
+
+        $this->actingAs($pet->client->user)
+            ->get(route('pets.medical-records.show', [$pet, $record]))
+            ->assertOk();
+    }
+
+    public function test_admin_clinical_pages_receive_minimal_context_and_metadata(): void
+    {
+        $admin = User::factory()->admin()->create(['name' => 'Dra. Laura']);
+        $pet = Pet::factory()->create(['name' => 'Mora']);
+        $record = ClinicalRecord::factory()->for($pet)->hiddenFromClient()->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'title' => 'Evaluación inicial',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.index', $pet))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/pets/medical-records/index')
+                ->where('pet.name', 'Mora')
+                ->where('pet.client.name', $pet->client->user->name)
+                ->where('records.0.id', $record->id)
+                ->where('records.0.creator.name', 'Dra. Laura')
+                ->where('records.0.is_visible_to_client', false)
+                ->missing('pet.client_id')
+                ->missing('pet.client.user')
+                ->missing('records.0.content')
+                ->missing('records.0.created_by')
+                ->missing('records.0.creator.email'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.create', $pet))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/pets/medical-records/create')
+                ->where('pet.name', 'Mora')
+                ->where('types', ClinicalRecord::TYPES)
+                ->missing('pet.client_id')
+                ->missing('pet.client.user'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.edit', [$pet, $record]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/pets/medical-records/edit')
+                ->where('record.id', $record->id)
+                ->where('record.content', $record->content)
+                ->missing('record.pet_id')
+                ->missing('record.created_by')
+                ->missing('record.created_at'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.show', [$pet, $record]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/pets/medical-records/show')
+                ->where('record.id', $record->id)
+                ->where('record.creator.name', 'Dra. Laura')
+                ->where('record.updater.name', 'Dra. Laura')
+                ->missing('record.pet_id')
+                ->missing('record.creator.email'));
+    }
+
+    public function test_admin_clinical_record_create_prefills_an_allowed_type_without_persisting(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.create', [
+                'pet' => $pet,
+                'type' => 'evolution',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/pets/medical-records/create')
+                ->where('pet.id', $pet->id)
+                ->where('prefill.type', 'evolution'));
+
+        $this->assertDatabaseCount('clinical_records', 0);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.create', [
+                'pet' => $pet,
+                'type' => 'diagnosis',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('prefill.type', null));
     }
 
     public function test_admin_cannot_use_a_record_under_a_different_pet_route(): void
@@ -172,6 +294,10 @@ class ClinicalRecordManagementTest extends TestCase
 
         $this->actingAs($admin)
             ->get(route('admin.pets.medical-records.show', [$pet, $record]))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.medical-records.edit', [$pet, $record]))
             ->assertForbidden();
 
         $this->actingAs($admin)
@@ -213,7 +339,7 @@ class ClinicalRecordManagementTest extends TestCase
             'occurred_at' => '2026-08-22 10:00:00',
             'created_at' => '2026-08-22 12:00:00',
         ]);
-        $earlierCreatedTie = ClinicalRecord::factory()->for($pet)->visibleToClient()->create([
+        $earlierCreatedTie = ClinicalRecord::factory()->for($pet)->hiddenFromClient()->create([
             'occurred_at' => '2026-08-22 10:00:00',
             'created_at' => '2026-08-22 11:00:00',
         ]);

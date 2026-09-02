@@ -507,7 +507,9 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 ## **Autenticación**
 
 * ¿Qué mecanismo de autenticación se utilizará?  
-* ¿Se requerirá verificación de email obligatoria?  
+* La verificación de email no será obligatoria en la etapa actual. Su
+  infraestructura permanece inactiva hasta disponer de correo saliente y una
+  decisión explícita de reactivación.
 * ¿Se utilizará autenticación de dos factores?
 
 ## **Roles y permisos**

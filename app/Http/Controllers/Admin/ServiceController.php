@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Service\ListServicesRequest;
 use App\Http\Requests\Service\StoreServiceRequest;
 use App\Http\Requests\Service\UpdateServiceRequest;
 use App\Models\Service;
@@ -13,17 +14,28 @@ use Inertia\Response;
 
 class ServiceController extends Controller
 {
-    public function index(): Response
+    public function index(ListServicesRequest $request): Response
     {
         $this->authorizeAdmin();
         Gate::authorize('viewAny', Service::class);
 
+        $filters = $request->safe()->only(['search', 'status']);
+
         return Inertia::render('admin/services/index', [
             'services' => Service::query()
                 ->withCount('procedures')
+                ->when($filters['search'] ?? null, fn ($query, $search) => $query
+                    ->where('name', 'like', '%'.$search.'%'))
+                ->when($filters['status'] ?? null, fn ($query, $status) => $query
+                    ->where('is_active', $status === 'active'))
                 ->orderBy('name')
                 ->orderBy('id')
-                ->get(),
+                ->paginate(10)
+                ->withQueryString(),
+            'filters' => [
+                'search' => $filters['search'] ?? '',
+                'status' => $filters['status'] ?? '',
+            ],
         ]);
     }
 

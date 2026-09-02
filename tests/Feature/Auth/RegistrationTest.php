@@ -3,7 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -27,6 +29,8 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register()
     {
+        Notification::fake();
+
         $response = $this->post(route('register.store'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -43,6 +47,9 @@ class RegistrationTest extends TestCase
             'phone' => '+54 11 5555 5555',
         ]);
 
-        $this->assertTrue(User::findOrFail(auth()->id())->hasRole('client'));
+        $user = User::findOrFail(auth()->id());
+
+        $this->assertTrue($user->hasRole('client'));
+        Notification::assertNotSentTo($user, VerifyEmail::class);
     }
 }

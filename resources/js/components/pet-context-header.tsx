@@ -10,7 +10,22 @@ import { photo, show as petShow } from '@/routes/pets';
 import { index as medicalRecordsIndex } from '@/routes/pets/medical-records';
 import { index as serviceRequestsIndex } from '@/routes/pets/service-requests';
 import { index as treatmentsIndex } from '@/routes/pets/treatments';
-import type { PetContext } from '@/types';
+
+type PetContext = {
+    id: number;
+    name: string;
+    species: string;
+    breed: string | null;
+    sex: string;
+    birth_date: string | null;
+    has_photo?: boolean;
+    photo?: string | null;
+    client?: {
+        id: number;
+        name?: string;
+        user?: { name: string };
+    };
+};
 
 type Section =
     'summary' | 'medical-records' | 'service-requests' | 'treatments';

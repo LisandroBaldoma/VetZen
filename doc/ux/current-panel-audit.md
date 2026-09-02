@@ -2,6 +2,10 @@
 
 Fecha de auditoría: 2026-09-01
 
+> Resolución posterior: la verificación de correo no es obligatoria en la etapa
+> actual. La infraestructura se conserva inactiva y el panel requiere
+> autenticación, sin middleware `verified`.
+
 ## 1. Resumen ejecutivo
 
 VetZen ya dispone de una base funcional considerable para dos perfiles: cliente y administrador. Están implementados autenticación, configuración de cuenta, clientes, mascotas, historias clínicas, catálogo de servicios y procedimientos, solicitudes de atención, plantillas de tratamiento, tratamientos asignados y sesiones. Sin embargo, el frontend conserva una arquitectura de starter kit, presenta navegación fragmentada y no comunica con claridad la diferencia entre catálogo clínico, atención solicitada y atención efectivamente asignada.

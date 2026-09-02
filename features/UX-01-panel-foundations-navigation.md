@@ -112,7 +112,7 @@ UX-01 no incluye:
 - rediseño de tablas, tarjetas o formularios de dominio;
 - búsqueda, filtros, paginación o endpoints nuevos;
 - cambios de historia clínica;
-- verificación obligatoria de correo;
+- activación o rediseño de la verificación de correo;
 - rediseño funcional de solicitudes, tratamientos o sesiones;
 - landing, login, registro u otras pantallas de autenticación;
 - cambios de base de datos, modelos o migraciones;

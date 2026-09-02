@@ -46,7 +46,7 @@ class PetTreatmentManagementTest extends TestCase
 
         $admin = User::factory()->admin()->create();
         $pet = Pet::factory()->create();
-        $catalogTreatment = Treatment::factory()->create();
+        $catalogTreatment = $this->catalogTreatment();
         $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $catalogTreatment, [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
@@ -60,7 +60,7 @@ class PetTreatmentManagementTest extends TestCase
     {
         $client = Client::factory()->create();
         $pet = Pet::factory()->for($client)->create();
-        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, Treatment::factory()->create(), [
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
         ]);
@@ -84,7 +84,7 @@ class PetTreatmentManagementTest extends TestCase
 
         $client = Client::factory()->create();
         $pet = Pet::factory()->for($client)->create();
-        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, Treatment::factory()->create(), [
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
         ]);
@@ -98,7 +98,7 @@ class PetTreatmentManagementTest extends TestCase
         $admin = User::factory()->admin()->create();
         $pet = Pet::factory()->create();
         $otherPet = Pet::factory()->create();
-        $otherTreatment = app(TreatmentAssignmentService::class)->assign($otherPet, Treatment::factory()->create(), [
+        $otherTreatment = app(TreatmentAssignmentService::class)->assign($otherPet, $this->catalogTreatment(), [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
         ]);
@@ -111,7 +111,7 @@ class PetTreatmentManagementTest extends TestCase
     public function test_guest_is_redirected_from_administrative_treatment_routes(): void
     {
         $pet = Pet::factory()->create();
-        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, Treatment::factory()->create(), [
+        $petTreatment = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
             'planned_sessions' => 1, 'default_session_price' => 0,
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
         ]);
@@ -124,7 +124,7 @@ class PetTreatmentManagementTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $pet = Pet::factory()->create();
-        $catalogTreatment = Treatment::factory()->create();
+        $catalogTreatment = $this->catalogTreatment();
         $assigned = app(TreatmentAssignmentService::class)->assign($pet, $catalogTreatment, [
             'planned_sessions' => 1, 'default_session_price' => '5000',
             'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
@@ -137,5 +137,68 @@ class PetTreatmentManagementTest extends TestCase
 
         $this->assertSame([1, 2], $assigned->sessions()->orderBy('session_number')->pluck('session_number')->all());
         $this->assertSame('cancelled', $session->fresh()->status);
+    }
+
+    public function test_client_cannot_mutate_own_treatment_or_session(): void
+    {
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create();
+        $assigned = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+            'notes' => null,
+        ]);
+        $session = $assigned->sessions()->sole();
+
+        $this->actingAs($client->user)->patch(route('admin.pets.treatments.update', [$pet, $assigned]), [
+            'planned_sessions' => 2,
+            'default_session_price' => '1.00',
+            'currency' => 'ARS',
+            'notes' => 'Forged',
+        ])->assertForbidden();
+
+        $this->actingAs($client->user)->patch(route('admin.treatment-sessions.update', $session), [
+            'scheduled_at' => null,
+            'price' => '1.00',
+            'currency' => 'ARS',
+            'status' => 'completed',
+            'notes' => 'Forged',
+        ])->assertForbidden();
+
+        $this->assertSame(1, $assigned->fresh()->planned_sessions);
+        $this->assertSame('5000.00', $session->fresh()->price);
+        $this->assertSame('pending', $session->fresh()->status);
+    }
+
+    public function test_direct_assignment_rejects_treatment_from_inactive_service(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $treatment = $this->catalogTreatment(serviceActive: false);
+
+        $this->actingAs($admin)->post(route('admin.pets.treatments.store', $pet), [
+            'treatment_id' => $treatment->id,
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+        ])->assertSessionHasErrors('treatment_id');
+
+        $this->assertDatabaseCount('pet_treatments', 0);
+        $this->assertDatabaseCount('treatment_sessions', 0);
+    }
+
+    private function catalogTreatment(bool $serviceActive = true): Treatment
+    {
+        $service = Service::factory()->create(['is_active' => $serviceActive]);
+        $procedure = Procedure::factory()->for($service)->create();
+        $treatment = Treatment::factory()->for($service)->create();
+        $treatment->procedures()->attach($procedure);
+
+        return $treatment;
     }
 }

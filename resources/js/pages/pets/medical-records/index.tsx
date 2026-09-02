@@ -5,14 +5,17 @@ import PetContextHeader from '@/components/pet-context-header';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
 import { index, show } from '@/routes/pets/medical-records';
-import type { ClinicalRecord, Pet } from '@/types';
+import type {
+    ClinicalRecordSummary as ClinicalRecordSummaryData,
+    PetContext,
+} from '@/types';
 
 export default function MedicalRecordsIndex({
     pet,
     records,
 }: {
-    pet: Pet;
-    records: ClinicalRecord[];
+    pet: PetContext;
+    records: ClinicalRecordSummaryData[];
 }) {
     setLayoutProps({
         breadcrumbs: [
@@ -25,8 +28,8 @@ export default function MedicalRecordsIndex({
 
     return (
         <>
-            <Head title={`${pet.name} · Medical records`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <Head title={`${pet.name} · Historia clínica`} />
+            <div className="mx-auto max-w-5xl space-y-6 p-4">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -34,23 +37,28 @@ export default function MedicalRecordsIndex({
                     editHref={edit.url(pet.id)}
                 />
                 <Heading
-                    title="Medical records"
-                    description={`Visible clinical history for ${pet.name}.`}
+                    title="Historia clínica"
+                    description={`Todos los registros clínicos disponibles de ${pet.name}.`}
                 />
                 {records.length === 0 ? (
                     <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                        No clinical records are currently available.
+                        Todavía no hay registros clínicos para esta mascota.
                     </div>
                 ) : (
-                    <div className="grid gap-4">
+                    <ol className="grid gap-4 md:ml-3 md:gap-0 md:border-l md:border-border">
                         {records.map((record) => (
-                            <ClinicalRecordSummary
+                            <li
                                 key={record.id}
-                                record={record}
-                                href={show.url([pet.id, record.id])}
-                            />
+                                className="relative md:pb-8 md:pl-8 last:md:pb-0"
+                            >
+                                <span className="absolute top-8 -left-[5px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
+                                <ClinicalRecordSummary
+                                    record={record}
+                                    href={show.url([pet.id, record.id])}
+                                />
+                            </li>
                         ))}
-                    </div>
+                    </ol>
                 )}
             </div>
         </>

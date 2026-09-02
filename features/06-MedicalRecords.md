@@ -1,8 +1,7 @@
 # Feature 06 — Historia clínica
 
-> Estado: implementada con actualización de acceso cliente pendiente. El
-> contrato vigente permite al cliente leer toda la historia clínica de sus
-> propias mascotas; la consulta, Policy y pruebas deben alinearse en UX-05.
+> Estado: implementada. El cliente puede leer toda la historia clínica de sus
+> propias mascotas; la consulta, Policy y pruebas fueron alineadas en UX-05.
 
 ## 1. Objetivo
 
@@ -50,8 +49,8 @@ sin reemplazar el ownership existente.
   Wayfinder y pruebas PHPUnit del proyecto.
 
 La implementación existente incorpora tablas, modelos, rutas, Policies,
-pantallas y pruebas de historia clínica. La ampliación de lectura cliente definida
-en este contrato permanece pendiente según el estado indicado al inicio.
+pantallas y pruebas de historia clínica, incluida la lectura completa para el
+cliente propietario.
 
 ## 5. Modelo de dominio
 
@@ -326,18 +325,18 @@ Las pruebas HTTP deben cubrir, como mínimo:
 
 La implementación estará completa cuando:
 
-* [ ] La historia clínica sea un historial de registros asociado a `Pet`.
-* [ ] Cliente pueda consultar todos los registros de sus propias mascotas.
-* [ ] Cliente no pueda crear ni editar registros, tampoco mediante requests
+* [x] La historia clínica sea un historial de registros asociado a `Pet`.
+* [x] Cliente pueda consultar todos los registros de sus propias mascotas.
+* [x] Cliente no pueda crear ni editar registros, tampoco mediante requests
   directas.
-* [ ] Admin pueda crear, consultar y editar registros de cualquier mascota.
-* [ ] La autorización opere en backend y cubra URLs, bindings y payloads
+* [x] Admin pueda crear, consultar y editar registros de cualquier mascota.
+* [x] La autorización opere en backend y cubra URLs, bindings y payloads
   manipulados.
-* [ ] Los registros guarden `created_by` y `updated_by` desde el usuario
+* [x] Los registros guarden `created_by` y `updated_by` desde el usuario
   autenticado, y sus creaciones y ediciones queden auditadas.
-* [ ] La UI clínica esté contextualizada por mascota y respete los roles.
-* [ ] No exista eliminación de registros en esta versión.
-* [ ] Validaciones, pruebas de autorización y controles de calidad del proyecto
+* [x] La UI clínica esté contextualizada por mascota y respete los roles.
+* [x] No exista eliminación de registros en esta versión.
+* [x] Validaciones, pruebas de autorización y controles de calidad del proyecto
   pasen satisfactoriamente.
 
 ## 18. Dependencias futuras

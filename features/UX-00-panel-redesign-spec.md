@@ -261,9 +261,8 @@ El primer segmento siempre es un enlace. El recurso actual no lo es. En móvil p
 flowchart LR
     W[Landing VetZen] -->|Ingresar| L[Login]
     W -->|Crear cuenta| R[Registro cliente]
-    R --> V{Verificación requerida y efectiva}
+    R --> A
     L --> A{Autenticación válida}
-    V --> A
     A -->|admin| DA[Inicio profesional]
     A -->|client| DC[Inicio cliente]
     A -->|2FA activo| TF[Desafío 2FA]
@@ -275,7 +274,7 @@ La landing explica qué permite VetZen sin prometer módulos no implementados. L
 
 El rol determina el dashboard y la navegación: `admin` recibe la experiencia profesional y `client` la experiencia cliente. Los permisos controlan las capacidades disponibles dentro de la experiencia correspondiente. El sidebar y `DashboardController` deben aplicar esta misma regla; actualmente usan fuentes diferentes y deben alinearse antes de implementar los dashboards.
 
-La verificación de correo es obligatoria y debe bloquear el acceso al panel hasta completarse. La implementación debe hacer efectivo el middleware `verified`, incorporar el contrato requerido en `User`, conservar el reenvío de verificación y cubrir el flujo con pruebas HTTP.
+La verificación de correo no es obligatoria en la etapa actual porque el sistema utiliza cuentas de prueba y no dispone de correo saliente configurado. Su infraestructura se conserva fuera del flujo normal: el panel exige autenticación sin middleware `verified`, `User` no implementa `MustVerifyEmail` y Fortify mantiene sus rutas para preservar la pantalla y los tipos Wayfinder existentes. El registro no envía verificación automáticamente. Una reactivación futura requiere proveedor real, decisión explícita y pruebas completas del flujo.
 
 ## 7. Flujos principales de atención
 
@@ -730,7 +729,7 @@ No se crea una biblioteca abstracta antes de usar estos patrones en dos pantalla
 | --------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Historia clínica completa para cliente        | Decidida; actualización requerida     | Actualizar Feature 06, consultas, autorización y pruebas para retirar el filtro de lectura cliente sin debilitar ownership |
 | Rol para elegir dashboard y navegación        | Decidida; alineación requerida        | El rol elige experiencia; los permisos controlan capacidades internas. Sidebar y controlador deben aplicar la misma regla  |
-| Verificación de correo obligatoria            | Decidida; implementación requerida    | Hacer efectivo `verified` mediante el contrato de `User` y cubrir bloqueo, verificación y reenvío con pruebas              |
+| Infraestructura de verificación de correo     | Decidida; inactiva en esta etapa      | Conservar implementación sin bloquear el panel ni enviar correos hasta configurar proveedor y aprobar su reactivación      |
 | Dashboard admin con solicitudes               | Backend requerido                     | Necesita props agregadas y pruebas; puede reutilizar modelos actuales                                                      |
 | Dashboard cliente                             | Backend requerido                     | Necesita mascotas, solicitudes y tratamientos acotados por ownership                                                       |
 | Listados globales de solicitudes/tratamientos | Fuera de alcance de v1                | Se usan resúmenes en Inicio y navegación contextual por mascota o paciente                                                 |
@@ -820,7 +819,7 @@ Cada tarea debe cerrarse con verificación responsive, tipos, lint y tests relev
 | ------------------------- | ------------------------------------------------- | ------------------------------------------------- | --------------------------- | ---------------------------------------------------- |
 | A1. Marca VetZen          | Reemplazar starter kit en landing/auth/logo       | `welcome.tsx`, layouts auth, logo                 | Copy institucional aprobado | Sin Laravel/repository copy visible                  |
 | A2. Auth responsive       | Corregir overflow y traducir flujos               | pages auth, auth layouts                          | Fortify/passkeys actuales   | Funciona a 320 px y teclado                          |
-| A3. Verificación          | Hacer obligatorio y efectivo el correo verificado | `User.php`, Fortify, config, routes, tests y docs | Decisión definitiva         | Usuario no verificado no accede al panel             |
+| A3. Verificación          | Conservar infraestructura inactiva               | `User.php`, Fortify, config, routes, tests y docs | Proveedor de correo futuro  | Usuario no verificado accede; registro no envía email |
 | A4. Cuenta compuesta      | Separar claramente identidad y perfil cliente     | settings pages/components/controllers             | Endpoints actuales          | Ninguna falsa atomicidad                             |
 | A5. Eliminación de cuenta | Ocultar hasta política aprobada                   | `delete-user.tsx`, backend asociado               | Decisión de retención       | No ofrece acción que falle o elimine datos sensibles |
 
@@ -846,7 +845,7 @@ Cada tarea debe cerrarse con verificación responsive, tipos, lint y tests relev
 ## 18. Decisiones cerradas para la primera versión
 
 1. El cliente consulta toda la historia clínica de sus mascotas en modo lectura. Feature 06, consultas, autorización y pruebas deben actualizarse antes de implementar esa experiencia.
-2. La verificación de correo es obligatoria y efectiva.
+2. La verificación de correo no es obligatoria en esta etapa; su infraestructura permanece inactiva hasta disponer de correo saliente y aprobar la reactivación.
 3. El rol determina dashboard y navegación; los permisos controlan capacidades dentro de la experiencia del rol.
 4. No hay entradas globales “Mis solicitudes”, “Mis tratamientos” ni “Tratamientos de pacientes”. Inicio resume actividad y la navegación detallada permanece contextual a mascota o paciente.
 5. Completar una sesión puede abrir el alta de una evolución con paciente y tipo preseleccionados, sin crear una relación persistente con la sesión.
@@ -869,7 +868,7 @@ El rediseño estará implementado cuando:
 - Solicitudes y tratamientos se consultan contextualmente por mascota o paciente, sin entradas globales en la primera versión.
 - Servicios disponibles permiten iniciar una solicitud eligiendo mascota propia.
 - El cliente consulta toda la historia clínica de sus mascotas y no puede acceder a registros de mascotas ajenas.
-- El correo no verificado bloquea el acceso al panel.
+- El correo no verificado no bloquea el acceso al panel en la etapa actual.
 - Un tratamiento completado no admite nuevas sesiones; la continuidad se registra como un tratamiento nuevo.
 - Registrar evolución desde una sesión preselecciona paciente y tipo sin persistir una relación entre recursos.
 - Estados vacíos ofrecen el siguiente paso real.
@@ -883,7 +882,7 @@ El rediseño estará implementado cuando:
 
 ## 20. Orden recomendado de entrega
 
-1. Actualizar Feature 06 y F08 con las decisiones cerradas, y hacer efectiva la verificación obligatoria de correo.
+1. Actualizar Feature 06 y F08 con las decisiones cerradas, y conservar inactiva la infraestructura de verificación de correo.
 2. Alinear dashboard y navegación por rol, manteniendo capacidades internas por permisos.
 3. Implementar fundamentos, vocabulario y navegación sin entradas globales de solicitudes o tratamientos.
 4. Implementar dashboards mínimos con resúmenes autorizados y enlaces contextuales.

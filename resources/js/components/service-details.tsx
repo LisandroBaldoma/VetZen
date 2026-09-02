@@ -1,4 +1,12 @@
-import type { Service } from '@/types';
+type Service = {
+    description: string;
+    procedures?: {
+        id: number;
+        name: string;
+        description: string | null;
+        duration_minutes: number | null;
+    }[];
+};
 
 export default function ServiceDetails({ service }: { service: Service }) {
     return (
@@ -8,10 +16,11 @@ export default function ServiceDetails({ service }: { service: Service }) {
             </p>
             {service.procedures !== undefined && (
                 <div className="space-y-3 border-t pt-5">
-                    <h2 className="font-medium">Available procedures</h2>
+                    <h2 className="font-medium">Procedimientos disponibles</h2>
                     {service.procedures.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
-                            There are no procedures available for this service.
+                            Este servicio no tiene procedimientos disponibles en
+                            este momento.
                         </p>
                     ) : (
                         <div className="grid gap-3">
@@ -24,9 +33,13 @@ export default function ServiceDetails({ service }: { service: Service }) {
                                         <h3 className="font-medium">
                                             {procedure.name}
                                         </h3>
-                                        {procedure.duration_minutes && (
+                                        {procedure.duration_minutes ? (
                                             <span className="text-xs text-muted-foreground">
                                                 {procedure.duration_minutes} min
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground">
+                                                Duración no especificada
                                             </span>
                                         )}
                                     </div>

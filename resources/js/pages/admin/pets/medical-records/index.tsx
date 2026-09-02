@@ -10,14 +10,17 @@ import {
     index as medicalRecordsIndex,
     show,
 } from '@/routes/admin/pets/medical-records';
-import type { ClinicalRecord, Pet } from '@/types';
+import type {
+    ClinicalRecordSummary as ClinicalRecordSummaryData,
+    PetContext,
+} from '@/types';
 
 export default function AdminMedicalRecordsIndex({
     pet,
     records,
 }: {
-    pet: Pet;
-    records: ClinicalRecord[];
+    pet: PetContext;
+    records: ClinicalRecordSummaryData[];
 }) {
     setLayoutProps({
         breadcrumbs: [
@@ -30,8 +33,8 @@ export default function AdminMedicalRecordsIndex({
 
     return (
         <>
-            <Head title={`${pet.name} · Medical records`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <Head title={`${pet.name} · Historia clínica`} />
+            <div className="mx-auto max-w-5xl space-y-6 p-4">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -40,28 +43,32 @@ export default function AdminMedicalRecordsIndex({
                 />
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
-                        title="Medical records"
-                        description={`Complete clinical history for ${pet.name}.`}
+                        title="Historia clínica"
+                        description={`Cronología clínica completa de ${pet.name}.`}
                     />
                     <Button asChild>
-                        <Link href={create.url(pet.id)}>Add record</Link>
+                        <Link href={create.url(pet.id)}>Nuevo registro</Link>
                     </Button>
                 </div>
                 {records.length === 0 ? (
                     <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                        No clinical records have been added yet.
+                        No hay registros clínicos para este paciente.
                     </div>
                 ) : (
-                    <div className="grid gap-4">
+                    <ol className="grid gap-4 md:ml-3 md:gap-0 md:border-l md:border-border">
                         {records.map((record) => (
-                            <ClinicalRecordSummary
+                            <li
                                 key={record.id}
-                                record={record}
-                                href={show.url([pet.id, record.id])}
-                                showVisibility
-                            />
+                                className="relative md:pb-8 md:pl-8 last:md:pb-0"
+                            >
+                                <span className="absolute top-8 -left-[5px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
+                                <ClinicalRecordSummary
+                                    record={record}
+                                    href={show.url([pet.id, record.id])}
+                                />
+                            </li>
                         ))}
-                    </div>
+                    </ol>
                 )}
             </div>
         </>

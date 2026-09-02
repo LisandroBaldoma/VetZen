@@ -163,6 +163,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
+        // Routes and UI remain available, but User does not trigger automatic verification.
         Features::emailVerification(),
         Features::twoFactorAuthentication([
             'confirm' => true,

@@ -24,6 +24,28 @@ class DashboardTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
+    public function test_unverified_client_can_access_the_dashboard(): void
+    {
+        $client = Client::factory()
+            ->for(User::factory()->unverified())
+            ->create();
+
+        $this->actingAs($client->user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('client/dashboard'));
+    }
+
+    public function test_unverified_admin_can_access_the_dashboard(): void
+    {
+        $admin = User::factory()->unverified()->admin()->create();
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('admin/dashboard'));
+    }
+
     public function test_client_without_resources_receives_empty_dashboard_collections(): void
     {
         $client = Client::factory()->create();
