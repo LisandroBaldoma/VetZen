@@ -14,14 +14,14 @@ export default function AdminProcedureCreate({
     return (
         <>
             <Head title={`Crear procedimiento — ${service.name}`} />
-            <div className="mx-auto max-w-2xl space-y-6 p-4">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title="Crear procedimiento"
                     description={`Agregá una práctica dentro de ${service.name}.`}
                 />
                 <Form
                     {...AdminProcedureController.store.form(service.id)}
-                    className="space-y-6 rounded-xl border p-6"
+                    className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ processing, errors }) => (
                         <ProcedureFormFields

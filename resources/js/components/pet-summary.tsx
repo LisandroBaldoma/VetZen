@@ -22,43 +22,59 @@ function formatDate(date: string): string {
 
 export default function PetSummary({ pet }: { pet: PetContext }) {
     return (
-        <section className="space-y-4 rounded-xl border p-5 sm:p-6">
+        <section className="space-y-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6">
             <div>
                 <h2 className="text-lg font-semibold">Información general</h2>
                 <p className="text-sm text-muted-foreground">
                     Datos básicos y de identificación.
                 </p>
             </div>
-            <dl className="grid gap-3 sm:grid-cols-2">
+            <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                 <div>
-                    <dt className="text-sm text-muted-foreground">Especie</dt>
-                    <dd>{pet.species}</dd>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Especie
+                    </dt>
+                    <dd className="mt-1 font-medium">{pet.species}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-muted-foreground">Sexo</dt>
-                    <dd>{formatSex(pet.sex)}</dd>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Sexo
+                    </dt>
+                    <dd className="mt-1 font-medium">{formatSex(pet.sex)}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-muted-foreground">Raza</dt>
-                    <dd>{pet.breed ?? 'No informada'}</dd>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Raza
+                    </dt>
+                    <dd className="mt-1 font-medium">
+                        {pet.breed ?? 'No informada'}
+                    </dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-muted-foreground">Color</dt>
-                    <dd>{pet.color ?? 'No informado'}</dd>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Color
+                    </dt>
+                    <dd className="mt-1 font-medium">
+                        {pet.color ?? 'No informado'}
+                    </dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-muted-foreground">
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                         Nacimiento
                     </dt>
-                    <dd>
+                    <dd className="mt-1 font-medium">
                         {pet.birth_date
                             ? formatDate(pet.birth_date)
                             : 'No informado'}
                     </dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-muted-foreground">Peso</dt>
-                    <dd>{pet.weight ? `${pet.weight} kg` : 'No informado'}</dd>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Peso
+                    </dt>
+                    <dd className="mt-1 font-medium">
+                        {pet.weight ? `${pet.weight} kg` : 'No informado'}
+                    </dd>
                 </div>
             </dl>
             {pet.notes && (

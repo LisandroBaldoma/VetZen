@@ -51,7 +51,7 @@ export default function AssignTreatment({
     return (
         <>
             <Head title={`Iniciar tratamiento · ${pet.name}`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -62,14 +62,14 @@ export default function AssignTreatment({
                     title="Iniciar tratamiento"
                     description={`Definí las condiciones acordadas para ${pet.name}.`}
                 />
-                <div className="rounded-xl border bg-muted/30 p-4 text-sm text-muted-foreground">
+                <div className="rounded-xl border border-l-4 border-l-primary bg-card p-4 text-sm text-muted-foreground shadow-sm">
                     Esta es una asignación directa realizada por el profesional.
                     No requiere una solicitud previa. Al confirmar se congelan
                     el nombre, la descripción y los procedimientos de la
                     plantilla, y se crean las sesiones pendientes.
                 </div>
                 {treatments.length === 0 ? (
-                    <div className="space-y-3 rounded-xl border p-6">
+                    <div className="space-y-3 rounded-xl border border-dashed bg-card p-6 shadow-sm">
                         <p className="font-medium">
                             No hay plantillas disponibles.
                         </p>
@@ -86,7 +86,7 @@ export default function AssignTreatment({
                 ) : (
                     <Form
                         {...PetTreatmentController.store.form(pet.id)}
-                        className="grid gap-5 rounded-xl border p-5 sm:p-6"
+                        className="grid gap-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                     >
                         {({ errors, processing }) => (
                             <>
@@ -98,7 +98,7 @@ export default function AssignTreatment({
                                         id="treatment_id"
                                         name="treatment_id"
                                         required
-                                        className="h-9 rounded-md border bg-background px-3"
+                                        className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         <option value="">Seleccionar…</option>
                                         {treatments.map((item) => (
@@ -175,7 +175,7 @@ export default function AssignTreatment({
                                     <textarea
                                         id="notes"
                                         name="notes"
-                                        className="min-h-28 rounded-md border bg-transparent p-3"
+                                        className="min-h-28 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     />
                                     <InputError message={errors.notes} />
                                 </div>

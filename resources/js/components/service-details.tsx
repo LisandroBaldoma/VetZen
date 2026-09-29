@@ -10,7 +10,7 @@ type Service = {
 
 export default function ServiceDetails({ service }: { service: Service }) {
     return (
-        <div className="space-y-6 rounded-xl border p-6">
+        <div className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6">
             <p className="text-sm leading-6 whitespace-pre-wrap">
                 {service.description}
             </p>
@@ -27,7 +27,7 @@ export default function ServiceDetails({ service }: { service: Service }) {
                             {service.procedures.map((procedure) => (
                                 <div
                                     key={procedure.id}
-                                    className="space-y-1 rounded-lg border p-4"
+                                    className="space-y-1 rounded-lg border bg-muted/35 p-4"
                                 >
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <h3 className="font-medium">

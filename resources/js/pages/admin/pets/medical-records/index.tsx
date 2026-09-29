@@ -34,7 +34,7 @@ export default function AdminMedicalRecordsIndex({
     return (
         <>
             <Head title={`${pet.name} · Historia clínica`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4">
+            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -51,17 +51,14 @@ export default function AdminMedicalRecordsIndex({
                     </Button>
                 </div>
                 {records.length === 0 ? (
-                    <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+                    <div className="rounded-xl border border-dashed bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
                         No hay registros clínicos para este paciente.
                     </div>
                 ) : (
-                    <ol className="grid gap-4 md:ml-3 md:gap-0 md:border-l md:border-border">
+                    <ol className="grid gap-4 md:ml-3 md:gap-5 md:border-l md:border-border md:pl-8">
                         {records.map((record) => (
-                            <li
-                                key={record.id}
-                                className="relative md:pb-8 md:pl-8 last:md:pb-0"
-                            >
-                                <span className="absolute top-8 -left-[5px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
+                            <li key={record.id} className="relative">
+                                <span className="absolute top-8 -left-[37px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
                                 <ClinicalRecordSummary
                                     record={record}
                                     href={show.url([pet.id, record.id])}

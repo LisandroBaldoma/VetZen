@@ -29,6 +29,7 @@ export default function CatalogStatusForm({ form, isActive, subject }: Props) {
                         type="submit"
                         size="sm"
                         variant={isActive ? 'default' : 'outline'}
+                        className="min-h-10"
                         disabled={processing}
                         aria-label={`${isActive ? 'Desactivar' : 'Activar'} ${accessibleSubject}`}
                     >

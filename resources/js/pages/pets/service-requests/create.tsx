@@ -46,7 +46,7 @@ export default function RequestCreate({
     return (
         <>
             <Head title={`Solicitar atención para ${pet.name}`} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -61,7 +61,7 @@ export default function RequestCreate({
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
                     <Form
                         {...ServiceRequestController.store.form(pet.id)}
-                        className="space-y-5 rounded-xl border p-5 sm:p-6"
+                        className="space-y-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                     >
                         {({ errors, processing }) => (
                             <>
@@ -81,7 +81,7 @@ export default function RequestCreate({
                                         name="service_id"
                                         required
                                         defaultValue={selectedServiceId ?? ''}
-                                        className="h-10 rounded-md border bg-background px-3"
+                                        className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     >
                                         <option value="">Seleccionar…</option>
                                         {services.map((service) => (
@@ -101,7 +101,7 @@ export default function RequestCreate({
                                         id="notes"
                                         name="notes"
                                         maxLength={2000}
-                                        className="min-h-32 rounded-md border bg-background p-3"
+                                        className="min-h-32 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         placeholder="Contanos brevemente el motivo de la consulta."
                                     />
                                     <InputError message={errors.notes} />
@@ -122,7 +122,7 @@ export default function RequestCreate({
                         )}
                     </Form>
 
-                    <aside className="space-y-3 rounded-xl border bg-muted/20 p-5">
+                    <aside className="space-y-3 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
                         <h2 className="font-semibold">Resumen</h2>
                         <dl className="grid gap-3 text-sm">
                             <div>

@@ -68,13 +68,13 @@ export default function AdminProcedureCatalog({
     return (
         <>
             <Head title="Procedimientos clínicos" />
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Procedimientos clínicos"
                     description="Consultá y administrá todos los procedimientos del catálogo."
                 />
 
-                <div className="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
+                <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
                     <form onSubmit={submitSearch} className="flex gap-2">
                         <div className="grid flex-1 gap-2">
                             <Label
@@ -184,7 +184,7 @@ export default function AdminProcedureCatalog({
                             {procedures.data.map((procedure) => (
                                 <article
                                     key={procedure.id}
-                                    className="space-y-4 rounded-xl border p-4"
+                                    className="space-y-4 rounded-xl border bg-card p-4 shadow-sm"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div>
@@ -230,9 +230,9 @@ export default function AdminProcedureCatalog({
                                 </article>
                             ))}
                         </div>
-                        <div className="hidden overflow-x-auto rounded-xl border md:block">
+                        <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block">
                             <table className="w-full min-w-3xl text-left text-sm">
-                                <thead className="bg-muted/50 text-muted-foreground">
+                                <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
                                         <th className="px-4 py-3">
                                             Procedimiento
@@ -252,7 +252,7 @@ export default function AdminProcedureCatalog({
                                         return (
                                             <tr
                                                 key={procedure.id}
-                                                className="border-t"
+                                                className="border-t transition-colors hover:bg-muted/40"
                                             >
                                                 <td className="px-4 py-3 font-medium">
                                                     {procedure.name}

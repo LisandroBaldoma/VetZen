@@ -28,7 +28,7 @@ export default function ClinicalRecordFormFields({
 }: Props) {
     return (
         <>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2">
                 <div className="grid gap-2">
                     <Label htmlFor="type">Tipo de registro</Label>
                     <select
@@ -37,7 +37,7 @@ export default function ClinicalRecordFormFields({
                         required
                         aria-invalid={Boolean(errors.type)}
                         defaultValue={record?.type ?? defaultType ?? ''}
-                        className="h-9 rounded-md border bg-transparent px-3 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        className="h-10 rounded-md border bg-input/55 px-3 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     >
                         <option value="">Seleccionar tipo</option>
                         {types.map((type) => (
@@ -85,12 +85,12 @@ export default function ClinicalRecordFormFields({
                     required
                     aria-invalid={Boolean(errors.content)}
                     defaultValue={record?.content ?? ''}
-                    className="min-h-48 rounded-md border bg-transparent px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    className="min-h-48 rounded-md border bg-input/55 px-3 py-2 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 />
                 <InputError message={errors.content} />
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2 border-t pt-5">
                 <Label htmlFor="is_visible_to_client">
                     Visibilidad histórica
                 </Label>
@@ -107,7 +107,7 @@ export default function ClinicalRecordFormFields({
                               ? '1'
                               : '0'
                     }
-                    className="h-9 rounded-md border bg-transparent px-3 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    className="h-10 rounded-md border bg-input/55 px-3 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                     <option value="">Seleccionar referencia</option>
                     <option value="1">Marcado visible</option>
@@ -124,9 +124,11 @@ export default function ClinicalRecordFormFields({
                 <InputError message={errors.is_visible_to_client} />
             </div>
 
-            <Button disabled={processing}>
-                {processing ? 'Guardando...' : submitLabel}
-            </Button>
+            <div className="flex justify-end border-t pt-5">
+                <Button disabled={processing}>
+                    {processing ? 'Guardando...' : submitLabel}
+                </Button>
+            </div>
         </>
     );
 }

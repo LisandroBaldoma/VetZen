@@ -110,9 +110,9 @@ export default function PetContextHeader({
           ];
 
     return (
-        <header className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <div className="flex flex-col gap-5 p-4 sm:flex-row sm:items-center sm:p-6">
-                <Avatar className="size-20 rounded-2xl border sm:size-24">
+        <header className="overflow-hidden rounded-2xl border border-l-4 border-l-primary bg-card shadow-sm">
+            <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
+                <Avatar className="size-20 rounded-2xl border bg-secondary/50 sm:size-24">
                     {hasPhoto && (
                         <AvatarImage
                             src={photo.url(pet.id)}
@@ -130,10 +130,10 @@ export default function PetContextHeader({
 
                 <div className="min-w-0 flex-1 space-y-2">
                     <div>
-                        <p className="text-sm font-medium text-muted-foreground">
+                        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                             {isAdmin ? 'Paciente' : 'Mascota'}
                         </p>
-                        <h1 className="text-2xl font-semibold tracking-tight break-words">
+                        <h1 className="text-2xl font-semibold tracking-tight break-words sm:text-3xl">
                             {pet.name}
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -142,8 +142,10 @@ export default function PetContextHeader({
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                        <span>{formatSex(pet.sex)}</span>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                        <span className="text-foreground">
+                            {formatSex(pet.sex)}
+                        </span>
                         {pet.birth_date && (
                             <span>
                                 Nacimiento: {formatBirthDate(pet.birth_date)}
@@ -176,7 +178,7 @@ export default function PetContextHeader({
 
             <nav
                 aria-label={`Secciones de ${pet.name}`}
-                className="overflow-x-auto border-t px-2 sm:px-4"
+                className="overflow-x-auto border-t bg-muted/30 px-2 sm:px-4"
             >
                 <div className="flex min-w-max gap-1">
                     {navItems.map((item) => {
@@ -190,8 +192,8 @@ export default function PetContextHeader({
                                 className={cn(
                                     'flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                                     isActive
-                                        ? 'border-primary bg-muted/60 font-semibold text-foreground'
-                                        : 'border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
+                                        ? 'border-primary bg-card font-semibold text-foreground shadow-xs'
+                                        : 'border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground',
                                 )}
                             >
                                 {item.label}

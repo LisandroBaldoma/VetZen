@@ -71,7 +71,7 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
     return (
         <>
             <Head title="Pacientes" />
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Pacientes"
                     description="Localizá pacientes y accedé a su información clínica y de atención."
@@ -97,25 +97,25 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
                     </section>
                 ) : (
                     <>
-                        <div className="hidden overflow-hidden rounded-xl border md:block">
+                        <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-muted/50 text-muted-foreground">
+                                <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
-                                        <th scope="col" className="px-4 py-3">
+                                        <th scope="col" className="px-5 py-3">
                                             Paciente
                                         </th>
-                                        <th scope="col" className="px-4 py-3">
+                                        <th scope="col" className="px-5 py-3">
                                             Especie
                                         </th>
-                                        <th scope="col" className="px-4 py-3">
+                                        <th scope="col" className="px-5 py-3">
                                             Raza
                                         </th>
-                                        <th scope="col" className="px-4 py-3">
+                                        <th scope="col" className="px-5 py-3">
                                             Responsable
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-4 py-3 text-right"
+                                            className="px-5 py-3 text-right"
                                         >
                                             <span className="sr-only">
                                                 Acciones
@@ -125,8 +125,11 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
                                 </thead>
                                 <tbody>
                                     {pets.map((pet) => (
-                                        <tr key={pet.id} className="border-t">
-                                            <td className="px-4 py-3">
+                                        <tr
+                                            key={pet.id}
+                                            className="border-t transition-colors hover:bg-muted/40"
+                                        >
+                                            <td className="px-5 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <PetAvatar pet={pet} />
                                                     <Link
@@ -137,13 +140,13 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
                                                     </Link>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-5 py-4">
                                                 {pet.species}
                                             </td>
-                                            <td className="px-4 py-3 text-muted-foreground">
+                                            <td className="px-5 py-4 text-muted-foreground">
                                                 {pet.breed ?? 'No informada'}
                                             </td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-5 py-4">
                                                 <Link
                                                     href={editClient(
                                                         pet.client.id,
@@ -153,7 +156,7 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
                                                     {pet.client.name}
                                                 </Link>
                                             </td>
-                                            <td className="px-4 py-2 text-right">
+                                            <td className="px-5 py-2 text-right">
                                                 <PetActions pet={pet} />
                                             </td>
                                         </tr>
@@ -166,7 +169,7 @@ export default function AdminPetsIndex({ pets }: { pets: AdminPetCard[] }) {
                             {pets.map((pet) => (
                                 <article
                                     key={pet.id}
-                                    className="rounded-xl border p-4"
+                                    className="rounded-xl border bg-card p-4 shadow-sm"
                                 >
                                     <div className="flex min-w-0 items-start gap-3">
                                         <PetAvatar pet={pet} />

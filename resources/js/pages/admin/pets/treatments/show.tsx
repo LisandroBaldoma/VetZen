@@ -111,7 +111,7 @@ export default function TreatmentShow({
     return (
         <>
             <Head title={petTreatment.treatment_name} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4">
+            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -129,7 +129,7 @@ export default function TreatmentShow({
                     </Badge>
                 </div>
 
-                <section className="grid gap-4 rounded-xl border p-5 sm:grid-cols-3">
+                <section className="grid gap-4 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm sm:grid-cols-3">
                     <div>
                         <p className="text-sm text-muted-foreground">
                             Progreso
@@ -171,7 +171,7 @@ export default function TreatmentShow({
                     </div>
                 </section>
 
-                <section className="space-y-4 rounded-xl border p-5">
+                <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
                     <div>
                         <h2 className="font-semibold">Condiciones acordadas</h2>
                         <p className="mt-1 text-sm text-muted-foreground">
@@ -221,7 +221,7 @@ export default function TreatmentShow({
                             pet.id,
                             petTreatment.id,
                         ])}
-                        className="grid gap-4 rounded-xl border p-5 sm:grid-cols-2"
+                        className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm sm:grid-cols-2"
                     >
                         {({ processing, errors }) => (
                             <>
@@ -279,7 +279,7 @@ export default function TreatmentShow({
                                         id="treatment_notes"
                                         name="notes"
                                         defaultValue={petTreatment.notes ?? ''}
-                                        className="min-h-24 rounded-md border bg-transparent p-3"
+                                        className="min-h-24 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     />
                                     <InputError message={errors.notes} />
                                     <InputError message={errors.currency} />
@@ -364,7 +364,7 @@ export default function TreatmentShow({
                 )}
 
                 {isFinal && (
-                    <div className="rounded-xl border bg-muted/30 p-5">
+                    <div className="rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
                         <p className="font-medium">
                             Este tratamiento está cerrado y no admite cambios.
                         </p>
@@ -396,7 +396,7 @@ export default function TreatmentShow({
                         return (
                             <article
                                 key={session.id}
-                                className="space-y-4 rounded-xl border p-4 sm:p-5"
+                                className="space-y-4 rounded-xl border bg-card p-4 shadow-sm sm:p-5"
                             >
                                 <div className="flex items-center justify-between gap-3">
                                     <h3 className="font-semibold">
@@ -502,7 +502,7 @@ export default function TreatmentShow({
                                                             defaultValue={
                                                                 session.status
                                                             }
-                                                            className="h-9 rounded-md border bg-background px-3"
+                                                            className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                         >
                                                             <option value="pending">
                                                                 Pendiente
@@ -536,7 +536,7 @@ export default function TreatmentShow({
                                                         defaultValue={
                                                             session.notes ?? ''
                                                         }
-                                                        className="min-h-24 rounded-md border bg-transparent p-3"
+                                                        className="min-h-24 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                     />
                                                     <InputError
                                                         message={errors.notes}

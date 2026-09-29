@@ -14,7 +14,7 @@ export default function TreatmentsIndex({
     return (
         <>
             <Head title="Plantillas" />
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
                 <div className="flex justify-between gap-4">
                     <Heading
                         title={`Plantillas de ${service.name}`}
@@ -29,9 +29,9 @@ export default function TreatmentsIndex({
                         No hay plantillas para este servicio.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto rounded-xl border">
+                    <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
                         <table className="w-full text-left text-sm">
-                            <thead className="bg-muted/50">
+                            <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                 <tr>
                                     <th className="p-3">Plantilla</th>
                                     <th className="p-3">Sesiones</th>
@@ -42,7 +42,10 @@ export default function TreatmentsIndex({
                             </thead>
                             <tbody>
                                 {treatments.map((t) => (
-                                    <tr key={t.id} className="border-t">
+                                    <tr
+                                        key={t.id}
+                                        className="border-t transition-colors hover:bg-muted/40"
+                                    >
                                         <td className="p-3 font-medium">
                                             {t.name}
                                         </td>

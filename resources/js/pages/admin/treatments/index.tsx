@@ -72,13 +72,13 @@ export default function TreatmentCatalog({
     return (
         <>
             <Head title="Plantillas" />
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6">
                 <PageHeader
                     title="Plantillas"
                     description="Configuraciones reutilizables de procedimientos y sesiones estimadas."
                 />
 
-                <section className="rounded-xl border p-5">
+                <section className="rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
                     <h2 className="font-semibold">Crear plantilla</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                         Elegí un servicio activo que tenga procedimientos
@@ -121,7 +121,7 @@ export default function TreatmentCatalog({
                     </div>
                 </section>
 
-                <div className="grid gap-3 rounded-xl border p-4 md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
+                <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
                     <form onSubmit={submitSearch} className="flex gap-2">
                         <Label htmlFor="template-search" className="sr-only">
                             Buscar plantilla
@@ -227,7 +227,7 @@ export default function TreatmentCatalog({
                             {treatments.data.map((treatment) => (
                                 <article
                                     key={treatment.id}
-                                    className="space-y-4 rounded-xl border p-4"
+                                    className="space-y-4 rounded-xl border bg-card p-4 shadow-sm"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <Link
@@ -287,9 +287,9 @@ export default function TreatmentCatalog({
                                 </article>
                             ))}
                         </div>
-                        <div className="hidden overflow-x-auto rounded-xl border md:block">
+                        <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block">
                             <table className="w-full min-w-3xl text-left text-sm">
-                                <thead className="bg-muted/50 text-muted-foreground">
+                                <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
                                         <th className="p-3">Plantilla</th>
                                         <th className="p-3">Servicio</th>
@@ -305,7 +305,7 @@ export default function TreatmentCatalog({
                                     {treatments.data.map((treatment) => (
                                         <tr
                                             key={treatment.id}
-                                            className="border-t"
+                                            className="border-t transition-colors hover:bg-muted/40"
                                         >
                                             <td className="p-3 font-medium">
                                                 <Link

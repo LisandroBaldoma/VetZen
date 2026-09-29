@@ -21,7 +21,7 @@ export default function CatalogIconLink({ href, label, icon: Icon }: Props) {
                 <Button
                     size="icon"
                     variant="outline"
-                    className="size-8"
+                    className="size-10"
                     asChild
                 >
                     <Link href={href} aria-label={label}>

@@ -56,7 +56,7 @@ export default function RequestsIndex({
     return (
         <>
             <Head title={`Solicitudes de ${pet.name}`} />
-            <div className="space-y-6 p-4">
+            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -74,7 +74,7 @@ export default function RequestsIndex({
                 </div>
 
                 {requests.length === 0 ? (
-                    <div className="space-y-4 rounded-xl border p-6">
+                    <div className="space-y-4 rounded-xl border border-dashed bg-card p-6 shadow-sm">
                         <p className="text-sm text-muted-foreground">
                             Todavía no solicitaste atención para {pet.name}.
                         </p>
@@ -89,7 +89,7 @@ export default function RequestsIndex({
                         {requests.map((request) => (
                             <article
                                 key={request.id}
-                                className="flex flex-col gap-4 rounded-xl border p-5"
+                                className="flex flex-col gap-4 rounded-xl border bg-card p-5 shadow-sm"
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div>

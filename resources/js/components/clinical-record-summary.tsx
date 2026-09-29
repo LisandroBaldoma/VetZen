@@ -20,7 +20,7 @@ export default function ClinicalRecordSummary({
         <article>
             <Link
                 href={href}
-                className="group flex min-h-28 items-center justify-between gap-4 rounded-xl border bg-card p-5 transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none md:min-h-24 md:rounded-none md:border-x-0 md:border-t-0 md:bg-transparent md:px-0"
+                className="group flex min-h-28 items-center justify-between gap-4 rounded-xl border bg-card p-5 shadow-sm transition-[background-color,box-shadow] hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -45,7 +45,7 @@ export default function ClinicalRecordSummary({
                             </Badge>
                         )}
                     </div>
-                    <h3 className="font-semibold text-foreground group-hover:underline">
+                    <h3 className="font-semibold text-foreground underline-offset-4 group-hover:underline">
                         {record.title}
                     </h3>
                     {record.creator && (

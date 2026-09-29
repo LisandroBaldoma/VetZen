@@ -54,7 +54,7 @@ export default function Treatments({
     return (
         <>
             <Head title={`Tratamientos de ${pet.name}`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -67,7 +67,7 @@ export default function Treatments({
                 />
                 <div className="grid gap-3">
                     {petTreatments.length === 0 && (
-                        <p className="rounded-xl border p-6">
+                        <p className="rounded-xl border border-dashed bg-card p-6 text-muted-foreground shadow-sm">
                             No hay tratamientos asignados.
                         </p>
                     )}
@@ -75,7 +75,7 @@ export default function Treatments({
                         <Link
                             key={item.id}
                             href={show.url([pet.id, item.id])}
-                            className="rounded-xl border p-5 transition-colors hover:bg-muted/40"
+                            className="rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm transition-colors hover:bg-muted/40"
                         >
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div>

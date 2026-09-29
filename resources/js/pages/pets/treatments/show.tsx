@@ -101,7 +101,7 @@ export default function Treatment({
     return (
         <>
             <Head title={petTreatment.treatment_name} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -119,7 +119,7 @@ export default function Treatment({
                     </Badge>
                 </div>
 
-                <section className="space-y-4 rounded-xl border p-5">
+                <section className="space-y-4 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
                     <div className="flex items-end justify-between gap-4">
                         <div>
                             <p className="text-sm text-muted-foreground">
@@ -147,7 +147,7 @@ export default function Treatment({
                     </div>
                 </section>
 
-                <section className="space-y-4 rounded-xl border p-5">
+                <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
                     <div>
                         <h2 className="font-semibold">Condiciones acordadas</h2>
                         <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">
@@ -224,7 +224,7 @@ export default function Treatment({
                     {petTreatment.sessions.map((session) => (
                         <article
                             key={session.id}
-                            className="rounded-xl border p-4 sm:p-5"
+                            className="rounded-xl border bg-card p-4 shadow-sm sm:p-5"
                         >
                             <div className="flex items-center justify-between gap-3">
                                 <h3 className="font-semibold">

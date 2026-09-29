@@ -35,11 +35,11 @@ export default function ServiceFormFields({
                     name="description"
                     required
                     defaultValue={service?.description ?? ''}
-                    className="min-h-32 rounded-md border bg-transparent px-3 py-2 text-sm"
+                    className="min-h-32 rounded-md border bg-input/55 px-3 py-2 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 />
                 <InputError message={errors.description} />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-t pt-5">
                 <input type="hidden" name="is_active" value="0" />
                 <Checkbox
                     id="is_active"
@@ -52,9 +52,11 @@ export default function ServiceFormFields({
                 </Label>
                 <InputError message={errors.is_active} />
             </div>
-            <Button disabled={processing}>
-                {processing ? 'Guardando…' : 'Guardar servicio'}
-            </Button>
+            <div className="flex justify-end border-t pt-5">
+                <Button disabled={processing}>
+                    {processing ? 'Guardando…' : 'Guardar servicio'}
+                </Button>
+            </div>
         </>
     );
 }
