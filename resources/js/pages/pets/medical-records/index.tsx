@@ -1,6 +1,5 @@
 import { Head, setLayoutProps } from '@inertiajs/react';
 import ClinicalRecordSummary from '@/components/clinical-record-summary';
-import Heading from '@/components/heading';
 import PetContextHeader from '@/components/pet-context-header';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
@@ -29,26 +28,36 @@ export default function MedicalRecordsIndex({
     return (
         <>
             <Head title={`${pet.name} · Historia clínica`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
                     active="medical-records"
                     editHref={edit.url(pet.id)}
                 />
-                <Heading
-                    title="Historia clínica"
-                    description={`Todos los registros clínicos disponibles de ${pet.name}.`}
-                />
+                <div className="max-w-xl space-y-1 border-b border-border pb-6">
+                    <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                        Continuidad clínica
+                    </p>
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                        Historia clínica
+                    </h2>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                        Todos los registros clínicos disponibles de {pet.name}.
+                    </p>
+                </div>
                 {records.length === 0 ? (
-                    <div className="rounded-xl border border-dashed bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
+                    <div className="border-y border-dashed py-10 text-sm text-muted-foreground">
                         Todavía no hay registros clínicos para esta mascota.
                     </div>
                 ) : (
-                    <ol className="grid gap-4 md:ml-3 md:gap-5 md:border-l md:border-border md:pl-8">
+                    <ol className="relative border-l border-clinical-foreground/25 pl-5 sm:pl-7">
                         {records.map((record) => (
-                            <li key={record.id} className="relative">
-                                <span className="absolute top-8 -left-[37px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
+                            <li
+                                key={record.id}
+                                className="relative border-b border-border last:border-b-0"
+                            >
+                                <span className="absolute top-8 -left-[1.8rem] size-2.5 rounded-full border-2 border-background bg-clinical-foreground sm:-left-[2.3rem]" />
                                 <ClinicalRecordSummary
                                     record={record}
                                     href={show.url([pet.id, record.id])}

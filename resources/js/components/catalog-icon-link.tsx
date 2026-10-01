@@ -18,12 +18,7 @@ export default function CatalogIconLink({ href, label, icon: Icon }: Props) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button
-                    size="icon"
-                    variant="outline"
-                    className="size-10"
-                    asChild
-                >
+                <Button size="icon" variant="ghost" className="size-10" asChild>
                     <Link href={href} aria-label={label}>
                         <Icon aria-hidden="true" />
                     </Link>

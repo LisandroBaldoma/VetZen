@@ -63,6 +63,10 @@
     --color-success: var(--success);
     --color-warning: var(--warning);
     --color-info: var(--info);
+    --color-clinical: var(--clinical);
+    --color-clinical-foreground: var(--clinical-foreground);
+    --color-operational: var(--operational);
+    --color-operational-foreground: var(--operational-foreground);
 }
 
 :root {
@@ -88,6 +92,10 @@
     --success: oklch(0.49 0.1 155);
     --warning: oklch(0.66 0.13 75);
     --info: oklch(0.52 0.09 225);
+    --clinical: oklch(0.925 0.03 155);
+    --clinical-foreground: oklch(0.29 0.05 165);
+    --operational: oklch(0.92 0.035 70);
+    --operational-foreground: oklch(0.36 0.07 65);
     --chart-1: oklch(0.5 0.1 165);
     --chart-2: oklch(0.58 0.09 225);
     --chart-3: oklch(0.66 0.13 75);
@@ -127,6 +135,10 @@
     --success: oklch(0.72 0.1 155);
     --warning: oklch(0.78 0.12 80);
     --info: oklch(0.72 0.09 225);
+    --clinical: oklch(0.285 0.042 160);
+    --clinical-foreground: oklch(0.91 0.035 145);
+    --operational: oklch(0.31 0.045 70);
+    --operational-foreground: oklch(0.94 0.07 85);
     --chart-1: oklch(0.75 0.1 160);
     --chart-2: oklch(0.72 0.09 225);
     --chart-3: oklch(0.78 0.12 80);
@@ -149,5 +161,19 @@
 
     body {
         @apply bg-background text-foreground antialiased;
+    }
+}
+
+@layer components {
+    .workspace-operational {
+        @apply mx-auto w-full max-w-7xl space-y-8 px-4 py-6 md:px-8 md:py-8;
+    }
+
+    .workspace-clinical {
+        @apply mx-auto w-full max-w-5xl space-y-8 px-4 py-6 md:px-8 md:py-10;
+    }
+
+    .workspace-reading {
+        @apply mx-auto w-full max-w-4xl space-y-8 px-4 py-6 md:px-8 md:py-10;
     }
 }

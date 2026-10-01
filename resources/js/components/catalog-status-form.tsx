@@ -28,11 +28,15 @@ export default function CatalogStatusForm({ form, isActive, subject }: Props) {
                     <Button
                         type="submit"
                         size="sm"
-                        variant={isActive ? 'default' : 'outline'}
-                        className="min-h-10"
+                        variant="ghost"
+                        className="min-h-9 gap-2 px-2 text-xs font-semibold"
                         disabled={processing}
                         aria-label={`${isActive ? 'Desactivar' : 'Activar'} ${accessibleSubject}`}
                     >
+                        <span
+                            className={`size-1.5 rounded-full ${isActive ? 'bg-clinical-foreground' : 'bg-muted-foreground'}`}
+                            aria-hidden="true"
+                        />
                         {processing
                             ? 'Guardando…'
                             : isActive

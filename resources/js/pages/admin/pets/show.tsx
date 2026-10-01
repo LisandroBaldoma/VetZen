@@ -17,7 +17,7 @@ export default function AdminPetShow({ pet }: { pet: PetContext }) {
     return (
         <>
             <Head title={pet.name} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"

@@ -1,7 +1,6 @@
 import { Head, setLayoutProps } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import PetContextHeader from '@/components/pet-context-header';
-import { Badge } from '@/components/ui/badge';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
 import { index, show } from '@/routes/pets/treatments';
@@ -61,6 +60,20 @@ const sessionStatusLabels: Record<Session['status'], string> = {
     cancelled: 'Cancelada',
 };
 
+const statusStyles: Record<string, string> = {
+    pending: 'bg-operational text-operational-foreground',
+    in_progress: 'bg-clinical text-clinical-foreground',
+    completed: 'bg-clinical text-clinical-foreground',
+    suspended: 'bg-muted text-muted-foreground',
+    cancelled: 'bg-muted text-muted-foreground',
+};
+
+const sessionStatusStyles: Record<Session['status'], string> = {
+    pending: 'text-operational-foreground',
+    completed: 'text-clinical-foreground',
+    cancelled: 'text-muted-foreground',
+};
+
 const dateFormatter = new Intl.DateTimeFormat('es-AR', { dateStyle: 'long' });
 const dateTimeFormatter = new Intl.DateTimeFormat('es-AR', {
     dateStyle: 'medium',
@@ -101,25 +114,33 @@ export default function Treatment({
     return (
         <>
             <Head title={petTreatment.treatment_name} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
+            <div className="workspace-reading">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
                     active="treatments"
                     editHref={edit.url(pet.id)}
                 />
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <Heading
-                        title={petTreatment.treatment_name}
-                        description={`Tratamiento de ${pet.name}`}
-                    />
-                    <Badge variant="outline">
+                <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1">
+                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                            Plan de atención
+                        </p>
+                        <Heading
+                            title={petTreatment.treatment_name}
+                            description={`Tratamiento de ${pet.name}`}
+                        />
+                    </div>
+                    <span
+                        className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${statusStyles[petTreatment.status] ?? 'bg-muted text-muted-foreground'}`}
+                    >
+                        <span className="size-1.5 rounded-full bg-current" />
                         {statusLabels[petTreatment.status] ??
                             petTreatment.status}
-                    </Badge>
+                    </span>
                 </div>
 
-                <section className="space-y-4 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
+                <section className="space-y-4 border-y border-border bg-clinical/20 py-5 sm:px-5">
                     <div className="flex items-end justify-between gap-4">
                         <div>
                             <p className="text-sm text-muted-foreground">
@@ -137,7 +158,7 @@ export default function Treatment({
                             %
                         </p>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                         <div
                             className="h-full rounded-full bg-primary"
                             style={{
@@ -147,7 +168,7 @@ export default function Treatment({
                     </div>
                 </section>
 
-                <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+                <section className="space-y-5 border-b border-border pb-6">
                     <div>
                         <h2 className="font-semibold">Condiciones acordadas</h2>
                         <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">
@@ -194,7 +215,7 @@ export default function Treatment({
                                 (procedure) => (
                                     <li
                                         key={procedure.id}
-                                        className="rounded-lg bg-muted/50 p-3"
+                                        className="border-l-2 border-clinical bg-clinical/15 px-4 py-3"
                                     >
                                         <p className="font-medium">
                                             {procedure.procedure_name}
@@ -219,55 +240,68 @@ export default function Treatment({
                     </div>
                 </section>
 
-                <section className="space-y-3">
-                    <h2 className="text-lg font-semibold">Sesiones</h2>
-                    {petTreatment.sessions.map((session) => (
-                        <article
-                            key={session.id}
-                            className="rounded-xl border bg-card p-4 shadow-sm sm:p-5"
-                        >
-                            <div className="flex items-center justify-between gap-3">
-                                <h3 className="font-semibold">
-                                    Sesión #{session.session_number}
-                                </h3>
-                                <Badge variant="outline">
-                                    {sessionStatusLabels[session.status]}
-                                </Badge>
-                            </div>
-                            <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                                <div>
-                                    <dt className="text-muted-foreground">
-                                        Fecha y hora
-                                    </dt>
-                                    <dd className="font-medium">
-                                        {session.scheduled_at
-                                            ? dateTimeFormatter.format(
-                                                  new Date(
-                                                      session.scheduled_at,
-                                                  ),
-                                              )
-                                            : 'Sin programar'}
-                                    </dd>
+                <section className="space-y-5">
+                    <div>
+                        <h2 className="text-lg font-semibold">Sesiones</h2>
+                        <p className="text-sm text-muted-foreground">
+                            Registro cronológico de la atención realizada.
+                        </p>
+                    </div>
+                    <div className="border-l border-border pl-5 sm:pl-7">
+                        {petTreatment.sessions.map((session) => (
+                            <article
+                                key={session.id}
+                                className="relative border-b border-border py-6 first:pt-0 last:border-b-0 last:pb-0"
+                            >
+                                <span className="absolute top-2 -left-[1.85rem] size-3 rounded-full border-2 border-background bg-clinical sm:-left-[2.35rem]" />
+                                <div className="flex items-center justify-between gap-3">
+                                    <h3 className="font-semibold">
+                                        Sesión #{session.session_number}
+                                    </h3>
+                                    <span
+                                        className={`text-sm font-semibold ${sessionStatusStyles[session.status]}`}
+                                    >
+                                        {sessionStatusLabels[session.status]}
+                                    </span>
                                 </div>
-                                <div>
-                                    <dt className="text-muted-foreground">
-                                        Precio
-                                    </dt>
-                                    <dd className="font-medium">
-                                        {money(session.price, session.currency)}
-                                    </dd>
-                                </div>
-                                <div>
-                                    <dt className="text-muted-foreground">
-                                        Notas
-                                    </dt>
-                                    <dd className="whitespace-pre-wrap">
-                                        {session.notes || 'Sin notas.'}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </article>
-                    ))}
+                                <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                                    <div>
+                                        <dt className="text-muted-foreground">
+                                            Fecha y hora
+                                        </dt>
+                                        <dd className="font-medium">
+                                            {session.scheduled_at
+                                                ? dateTimeFormatter.format(
+                                                      new Date(
+                                                          session.scheduled_at,
+                                                      ),
+                                                  )
+                                                : 'Sin programar'}
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-muted-foreground">
+                                            Precio
+                                        </dt>
+                                        <dd className="font-medium">
+                                            {money(
+                                                session.price,
+                                                session.currency,
+                                            )}
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-muted-foreground">
+                                            Notas
+                                        </dt>
+                                        <dd className="whitespace-pre-wrap">
+                                            {session.notes || 'Sin notas.'}
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </article>
+                        ))}
+                    </div>
                 </section>
             </div>
         </>

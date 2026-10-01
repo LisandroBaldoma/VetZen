@@ -5,9 +5,11 @@ namespace Tests\Feature\Pet;
 use App\Models\Client;
 use App\Models\Pet;
 use App\Models\User;
+use App\Services\PetPhotoService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class PetManagementTest extends TestCase
@@ -154,5 +156,37 @@ class PetManagementTest extends TestCase
         Storage::disk('local')->put($pet->photo, 'private image');
 
         $this->actingAs($otherClient->user)->get(route('pets.photo', $pet))->assertForbidden();
+    }
+
+    public function test_an_unreadable_temporary_photo_does_not_replace_the_existing_photo(): void
+    {
+        Storage::fake('local');
+        $client = Client::factory()->create();
+        $pet = Pet::factory()->for($client)->create([
+            'photo' => "pets/{$client->id}/existing.jpg",
+        ]);
+        Storage::disk('local')->put($pet->photo, 'existing image');
+        $temporaryPath = tempnam(sys_get_temp_dir(), 'pet-photo-');
+        $photo = new UploadedFile(
+            $temporaryPath,
+            'photo.jpg',
+            'image/jpeg',
+            UPLOAD_ERR_OK,
+            true,
+        );
+        unlink($temporaryPath);
+
+        try {
+            app(PetPhotoService::class)->replace($pet, $photo);
+            $this->fail('Expected the unreadable upload to be rejected.');
+        } catch (ValidationException $exception) {
+            $this->assertSame(
+                'No se pudo leer la foto subida. Elegí el archivo nuevamente.',
+                $exception->errors()['photo'][0],
+            );
+        }
+
+        $this->assertSame("pets/{$client->id}/existing.jpg", $pet->fresh()->photo);
+        Storage::disk('local')->assertExists($pet->photo);
     }
 }

@@ -1,7 +1,6 @@
 import { Head, Link, setLayoutProps } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import PetContextHeader from '@/components/pet-context-header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/admin/pets';
@@ -38,6 +37,14 @@ const statusLabels: Record<string, string> = {
     cancelled: 'Cancelado',
 };
 
+const statusStyles: Record<string, string> = {
+    pending: 'bg-operational text-operational-foreground',
+    in_progress: 'bg-clinical text-clinical-foreground',
+    completed: 'bg-clinical text-clinical-foreground',
+    suspended: 'bg-muted text-muted-foreground',
+    cancelled: 'bg-muted text-muted-foreground',
+};
+
 export default function PetTreatments({
     pet,
     petTreatments,
@@ -57,27 +64,32 @@ export default function PetTreatments({
     return (
         <>
             <Head title={`Tratamientos de ${pet.name}`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
                     active="treatments"
                     editHref={edit.url(pet.id)}
                 />
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <Heading
-                        title={`Tratamientos de ${pet.name}`}
-                        description="Seguimiento de condiciones, sesiones y progreso del paciente."
-                    />
+                <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="space-y-1">
+                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                            Continuidad de atención
+                        </p>
+                        <Heading
+                            title={`Tratamientos de ${pet.name}`}
+                            description="Seguimiento de condiciones, sesiones y progreso del paciente."
+                        />
+                    </div>
                     <Button asChild>
                         <Link href={create.url(pet.id)}>
                             Iniciar tratamiento
                         </Link>
                     </Button>
                 </div>
-                <div className="grid gap-3">
+                <div className="border-y border-border">
                     {petTreatments.length === 0 && (
-                        <p className="rounded-xl border border-dashed bg-card p-6 text-muted-foreground shadow-sm">
+                        <p className="border-dashed py-8 text-muted-foreground">
                             Todavía no hay tratamientos asignados.
                         </p>
                     )}
@@ -85,7 +97,7 @@ export default function PetTreatments({
                         <Link
                             key={item.id}
                             href={show.url([pet.id, item.id])}
-                            className="rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm transition-colors hover:bg-muted/40"
+                            className="block border-b border-border py-6 transition-colors last:border-b-0 hover:bg-clinical/25 sm:px-4"
                         >
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div className="min-w-0">
@@ -98,11 +110,17 @@ export default function PetTreatments({
                                         completadas
                                     </div>
                                 </div>
-                                <Badge variant="outline">
+                                <span
+                                    className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${statusStyles[item.status] ?? 'bg-muted text-muted-foreground'}`}
+                                >
+                                    <span
+                                        className="size-1.5 rounded-full bg-current"
+                                        aria-hidden="true"
+                                    />
                                     {statusLabels[item.status] ?? item.status}
-                                </Badge>
+                                </span>
                             </div>
-                            <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
+                            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-muted">
                                 <div
                                     className="h-full rounded-full bg-primary"
                                     style={{

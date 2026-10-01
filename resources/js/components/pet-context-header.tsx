@@ -110,9 +110,9 @@ export default function PetContextHeader({
           ];
 
     return (
-        <header className="overflow-hidden rounded-2xl border border-l-4 border-l-primary bg-card shadow-sm">
-            <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
-                <Avatar className="size-20 rounded-2xl border bg-secondary/50 sm:size-24">
+        <header className="border-b border-border">
+            <div className="grid gap-6 py-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:py-9 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
+                <Avatar className="size-20 rounded-2xl border border-clinical-foreground/15 bg-clinical/55 sm:size-24">
                     {hasPhoto && (
                         <AvatarImage
                             src={photo.url(pet.id)}
@@ -128,47 +128,63 @@ export default function PetContextHeader({
                     </AvatarFallback>
                 </Avatar>
 
-                <div className="min-w-0 flex-1 space-y-2">
-                    <div>
-                        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                            {isAdmin ? 'Paciente' : 'Mascota'}
+                <div className="min-w-0 space-y-4">
+                    <div className="space-y-1.5">
+                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                            {isAdmin
+                                ? 'Expediente del paciente'
+                                : 'Expediente de mi mascota'}
                         </p>
-                        <h1 className="text-2xl font-semibold tracking-tight break-words sm:text-3xl">
+                        <h1 className="text-3xl font-semibold tracking-tight text-balance break-words sm:text-4xl">
                             {pet.name}
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-base text-muted-foreground">
                             {pet.species}
                             {pet.breed ? ` · ${pet.breed}` : ''}
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                        <span className="text-foreground">
-                            {formatSex(pet.sex)}
-                        </span>
+                    <dl className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+                        <div>
+                            <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                                Sexo
+                            </dt>
+                            <dd className="mt-0.5 font-medium text-foreground">
+                                {formatSex(pet.sex)}
+                            </dd>
+                        </div>
                         {pet.birth_date && (
-                            <span>
-                                Nacimiento: {formatBirthDate(pet.birth_date)}
-                            </span>
+                            <div>
+                                <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                                    Nacimiento
+                                </dt>
+                                <dd className="mt-0.5 text-foreground">
+                                    {formatBirthDate(pet.birth_date)}
+                                </dd>
+                            </div>
                         )}
                         {isAdmin && responsibleName && pet.client && (
-                            <span>
-                                Responsable:{' '}
-                                <Link
-                                    href={editClient(pet.client.id)}
-                                    className="font-medium underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                    {responsibleName}
-                                </Link>
-                            </span>
+                            <div>
+                                <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                                    Responsable
+                                </dt>
+                                <dd className="mt-0.5">
+                                    <Link
+                                        href={editClient(pet.client.id)}
+                                        className="font-medium underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    >
+                                        {responsibleName}
+                                    </Link>
+                                </dd>
+                            </div>
                         )}
-                    </div>
+                    </dl>
                 </div>
 
                 <Button
                     asChild
                     variant="outline"
-                    className="min-h-11 sm:self-start"
+                    className="min-h-11 sm:col-start-2 lg:col-start-auto lg:self-start"
                 >
                     <Link href={editHref}>
                         {isAdmin ? 'Editar paciente' : 'Editar mascota'}
@@ -178,9 +194,9 @@ export default function PetContextHeader({
 
             <nav
                 aria-label={`Secciones de ${pet.name}`}
-                className="overflow-x-auto border-t bg-muted/30 px-2 sm:px-4"
+                className="overflow-x-auto"
             >
-                <div className="flex min-w-max gap-1">
+                <div className="flex min-w-max gap-6 sm:gap-8">
                     {navItems.map((item) => {
                         const isActive = active === item.key;
 
@@ -190,10 +206,10 @@ export default function PetContextHeader({
                                 href={item.href}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    'flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                    'flex min-h-12 items-center border-b-2 py-1 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                                     isActive
-                                        ? 'border-primary bg-card font-semibold text-foreground shadow-xs'
-                                        : 'border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                                        ? 'border-clinical-foreground font-semibold text-foreground'
+                                        : 'border-transparent text-muted-foreground hover:text-foreground',
                                 )}
                             >
                                 {item.label}

@@ -1,7 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import ServiceDetails from '@/components/service-details';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { edit, index } from '@/routes/admin/services';
 import { index as proceduresIndex } from '@/routes/admin/services/procedures';
@@ -12,21 +11,23 @@ export default function AdminServiceShow({ service }: { service: Service }) {
     return (
         <>
             <Head title={service.name} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
-                <section className="flex flex-col gap-5 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm sm:p-6">
+            <div className="workspace-operational max-w-5xl">
+                <section className="flex flex-col gap-5 border-y border-border py-6 sm:py-7">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-2">
                             <Heading
                                 title={service.name}
                                 description="Área terapéutica y procedimientos disponibles en el catálogo clínico."
                             />
-                            <Badge
-                                variant={
-                                    service.is_active ? 'secondary' : 'outline'
-                                }
+                            <span
+                                className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${service.is_active ? 'bg-clinical text-clinical-foreground' : 'bg-muted text-muted-foreground'}`}
                             >
+                                <span
+                                    className="size-1.5 rounded-full bg-current"
+                                    aria-hidden="true"
+                                />
                                 {service.is_active ? 'Activo' : 'Inactivo'}
-                            </Badge>
+                            </span>
                         </div>
                         <Button variant="outline" asChild>
                             <Link href={index()}>Volver a servicios</Link>

@@ -4,7 +4,6 @@ import TreatmentSessionController from '@/actions/App/Http/Controllers/Admin/Tre
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import PetContextHeader from '@/components/pet-context-header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -69,6 +68,20 @@ const sessionStatusLabels: Record<Session['status'], string> = {
     cancelled: 'Cancelada',
 };
 
+const statusStyles: Record<string, string> = {
+    pending: 'bg-operational text-operational-foreground',
+    in_progress: 'bg-clinical text-clinical-foreground',
+    completed: 'bg-clinical text-clinical-foreground',
+    suspended: 'bg-muted text-muted-foreground',
+    cancelled: 'bg-muted text-muted-foreground',
+};
+
+const sessionStatusStyles: Record<Session['status'], string> = {
+    pending: 'text-operational-foreground',
+    completed: 'text-clinical-foreground',
+    cancelled: 'text-muted-foreground',
+};
+
 const dateFormatter = new Intl.DateTimeFormat('es-AR', { dateStyle: 'long' });
 const dateTimeFormatter = new Intl.DateTimeFormat('es-AR', {
     dateStyle: 'medium',
@@ -111,7 +124,7 @@ export default function TreatmentShow({
     return (
         <>
             <Head title={petTreatment.treatment_name} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -119,17 +132,25 @@ export default function TreatmentShow({
                     editHref={edit.url(pet.id)}
                 />
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <Heading
-                        title={petTreatment.treatment_name}
-                        description={`Tratamiento asignado a ${pet.name}`}
-                    />
-                    <Badge variant="outline">
+                <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1">
+                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                            Plan clínico activo
+                        </p>
+                        <Heading
+                            title={petTreatment.treatment_name}
+                            description={`Tratamiento asignado a ${pet.name}`}
+                        />
+                    </div>
+                    <span
+                        className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${statusStyles[petTreatment.status]}`}
+                    >
+                        <span className="size-1.5 rounded-full bg-current" />
                         {statusLabels[petTreatment.status]}
-                    </Badge>
+                    </span>
                 </div>
 
-                <section className="grid gap-4 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm sm:grid-cols-3">
+                <section className="grid gap-5 border-y border-border bg-clinical/20 py-5 sm:grid-cols-3 sm:px-5">
                     <div>
                         <p className="text-sm text-muted-foreground">
                             Progreso
@@ -160,7 +181,7 @@ export default function TreatmentShow({
                         </p>
                     </div>
                     <div className="sm:col-span-3">
-                        <div className="h-2 overflow-hidden rounded-full bg-muted">
+                        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                             <div
                                 className="h-full rounded-full bg-primary"
                                 style={{
@@ -171,7 +192,7 @@ export default function TreatmentShow({
                     </div>
                 </section>
 
-                <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+                <section className="space-y-5 border-b border-border pb-6">
                     <div>
                         <h2 className="font-semibold">Condiciones acordadas</h2>
                         <p className="mt-1 text-sm text-muted-foreground">
@@ -190,7 +211,7 @@ export default function TreatmentShow({
                                 (procedure) => (
                                     <li
                                         key={procedure.id}
-                                        className="rounded-lg bg-muted/50 p-3"
+                                        className="border-l-2 border-clinical bg-clinical/15 px-4 py-3"
                                     >
                                         <p className="font-medium">
                                             {procedure.procedure_name}
@@ -221,7 +242,7 @@ export default function TreatmentShow({
                             pet.id,
                             petTreatment.id,
                         ])}
-                        className="grid gap-4 rounded-xl border bg-card p-5 shadow-sm sm:grid-cols-2"
+                        className="grid gap-4 border-b border-border py-6 sm:grid-cols-2"
                     >
                         {({ processing, errors }) => (
                             <>
@@ -302,7 +323,7 @@ export default function TreatmentShow({
                 )}
 
                 {!isFinal && (
-                    <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row">
                         <Form
                             {...PetTreatmentController.updateStatus.form([
                                 pet.id,
@@ -364,7 +385,7 @@ export default function TreatmentShow({
                 )}
 
                 {isFinal && (
-                    <div className="rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm">
+                    <div className="border-l-2 border-clinical bg-clinical/20 px-5 py-4">
                         <p className="font-medium">
                             Este tratamiento está cerrado y no admite cambios.
                         </p>
@@ -380,7 +401,7 @@ export default function TreatmentShow({
                     </div>
                 )}
 
-                <section className="space-y-4">
+                <section className="space-y-5">
                     <div>
                         <h2 className="text-lg font-semibold">Sesiones</h2>
                         <p className="text-sm text-muted-foreground">
@@ -390,250 +411,271 @@ export default function TreatmentShow({
                             requerida.
                         </p>
                     </div>
-                    {petTreatment.sessions.map((session) => {
-                        const sessionIsFinal = session.status !== 'pending';
+                    <div className="border-l border-border pl-5 sm:pl-7">
+                        {petTreatment.sessions.map((session) => {
+                            const sessionIsFinal = session.status !== 'pending';
 
-                        return (
-                            <article
-                                key={session.id}
-                                className="space-y-4 rounded-xl border bg-card p-4 shadow-sm sm:p-5"
-                            >
-                                <div className="flex items-center justify-between gap-3">
-                                    <h3 className="font-semibold">
-                                        Sesión #{session.session_number}
-                                    </h3>
-                                    <Badge variant="outline">
-                                        {sessionStatusLabels[session.status]}
-                                    </Badge>
-                                </div>
+                            return (
+                                <article
+                                    key={session.id}
+                                    className="relative space-y-4 border-b border-border py-6 first:pt-0 last:border-b-0 last:pb-0"
+                                >
+                                    <span className="absolute top-2 -left-[1.85rem] size-3 rounded-full border-2 border-background bg-clinical sm:-left-[2.35rem]" />
+                                    <div className="flex items-center justify-between gap-3">
+                                        <h3 className="font-semibold">
+                                            Sesión #{session.session_number}
+                                        </h3>
+                                        <span
+                                            className={`text-sm font-semibold ${sessionStatusStyles[session.status]}`}
+                                        >
+                                            {
+                                                sessionStatusLabels[
+                                                    session.status
+                                                ]
+                                            }
+                                        </span>
+                                    </div>
 
-                                {canOperate ? (
-                                    <Form
-                                        {...TreatmentSessionController.update.form(
-                                            session.id,
-                                        )}
-                                        className="grid gap-4 sm:grid-cols-2"
-                                    >
-                                        {({ processing, errors }) => (
-                                            <>
-                                                <div className="grid gap-2">
-                                                    <Label
-                                                        htmlFor={`scheduled_at_${session.id}`}
-                                                    >
-                                                        Fecha y hora
-                                                    </Label>
-                                                    <Input
-                                                        id={`scheduled_at_${session.id}`}
-                                                        name="scheduled_at"
-                                                        type="datetime-local"
-                                                        defaultValue={
-                                                            session.scheduled_at?.slice(
-                                                                0,
-                                                                16,
-                                                            ) ?? ''
-                                                        }
-                                                        aria-invalid={Boolean(
-                                                            errors.scheduled_at,
-                                                        )}
+                                    {canOperate ? (
+                                        <Form
+                                            {...TreatmentSessionController.update.form(
+                                                session.id,
+                                            )}
+                                            className="grid gap-4 sm:grid-cols-2"
+                                        >
+                                            {({ processing, errors }) => (
+                                                <>
+                                                    <div className="grid gap-2">
+                                                        <Label
+                                                            htmlFor={`scheduled_at_${session.id}`}
+                                                        >
+                                                            Fecha y hora
+                                                        </Label>
+                                                        <Input
+                                                            id={`scheduled_at_${session.id}`}
+                                                            name="scheduled_at"
+                                                            type="datetime-local"
+                                                            defaultValue={
+                                                                session.scheduled_at?.slice(
+                                                                    0,
+                                                                    16,
+                                                                ) ?? ''
+                                                            }
+                                                            aria-invalid={Boolean(
+                                                                errors.scheduled_at,
+                                                            )}
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.scheduled_at
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div className="grid gap-2">
+                                                        <Label
+                                                            htmlFor={`price_${session.id}`}
+                                                        >
+                                                            Precio de la sesión
+                                                        </Label>
+                                                        <Input
+                                                            id={`price_${session.id}`}
+                                                            name="price"
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            defaultValue={
+                                                                session.price
+                                                            }
+                                                            aria-invalid={Boolean(
+                                                                errors.price,
+                                                            )}
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.price
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="hidden"
+                                                        name="currency"
+                                                        value={session.currency}
                                                     />
-                                                    <InputError
-                                                        message={
-                                                            errors.scheduled_at
-                                                        }
-                                                    />
-                                                </div>
-                                                <div className="grid gap-2">
-                                                    <Label
-                                                        htmlFor={`price_${session.id}`}
-                                                    >
-                                                        Precio de la sesión
-                                                    </Label>
-                                                    <Input
-                                                        id={`price_${session.id}`}
-                                                        name="price"
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        defaultValue={
-                                                            session.price
-                                                        }
-                                                        aria-invalid={Boolean(
-                                                            errors.price,
-                                                        )}
-                                                    />
-                                                    <InputError
-                                                        message={errors.price}
-                                                    />
-                                                </div>
-                                                <input
-                                                    type="hidden"
-                                                    name="currency"
-                                                    value={session.currency}
-                                                />
-                                                <div className="grid gap-2">
-                                                    <Label
-                                                        htmlFor={`status_${session.id}`}
-                                                    >
-                                                        Estado
-                                                    </Label>
-                                                    {sessionIsFinal ? (
-                                                        <>
-                                                            <input
-                                                                type="hidden"
+                                                    <div className="grid gap-2">
+                                                        <Label
+                                                            htmlFor={`status_${session.id}`}
+                                                        >
+                                                            Estado
+                                                        </Label>
+                                                        {sessionIsFinal ? (
+                                                            <>
+                                                                <input
+                                                                    type="hidden"
+                                                                    name="status"
+                                                                    value={
+                                                                        session.status
+                                                                    }
+                                                                />
+                                                                <p className="flex h-9 items-center rounded-md border bg-muted/40 px-3 text-sm">
+                                                                    {
+                                                                        sessionStatusLabels[
+                                                                            session
+                                                                                .status
+                                                                        ]
+                                                                    }{' '}
+                                                                    (final)
+                                                                </p>
+                                                            </>
+                                                        ) : (
+                                                            <select
+                                                                id={`status_${session.id}`}
                                                                 name="status"
-                                                                value={
+                                                                defaultValue={
                                                                     session.status
                                                                 }
-                                                            />
-                                                            <p className="flex h-9 items-center rounded-md border bg-muted/40 px-3 text-sm">
-                                                                {
-                                                                    sessionStatusLabels[
-                                                                        session
-                                                                            .status
-                                                                    ]
-                                                                }{' '}
-                                                                (final)
-                                                            </p>
-                                                        </>
-                                                    ) : (
-                                                        <select
-                                                            id={`status_${session.id}`}
-                                                            name="status"
-                                                            defaultValue={
-                                                                session.status
+                                                                className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                            >
+                                                                <option value="pending">
+                                                                    Pendiente
+                                                                </option>
+                                                                <option value="completed">
+                                                                    Completada
+                                                                </option>
+                                                                <option value="cancelled">
+                                                                    Cancelada
+                                                                </option>
+                                                            </select>
+                                                        )}
+                                                        <InputError
+                                                            message={
+                                                                errors.status
                                                             }
-                                                            className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.currency
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div className="grid gap-2 sm:col-span-2">
+                                                        <Label
+                                                            htmlFor={`notes_${session.id}`}
                                                         >
-                                                            <option value="pending">
-                                                                Pendiente
-                                                            </option>
-                                                            <option value="completed">
-                                                                Completada
-                                                            </option>
-                                                            <option value="cancelled">
-                                                                Cancelada
-                                                            </option>
-                                                        </select>
+                                                            Notas de la sesión
+                                                        </Label>
+                                                        <textarea
+                                                            id={`notes_${session.id}`}
+                                                            name="notes"
+                                                            defaultValue={
+                                                                session.notes ??
+                                                                ''
+                                                            }
+                                                            className="min-h-24 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.notes
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div className="sm:col-span-2">
+                                                        {sessionIsFinal && (
+                                                            <p className="mb-3 text-sm text-muted-foreground">
+                                                                El estado es
+                                                                final. Podés
+                                                                corregir fecha,
+                                                                precio o notas
+                                                                mientras el
+                                                                tratamiento siga
+                                                                activo.
+                                                            </p>
+                                                        )}
+                                                        <Button
+                                                            disabled={
+                                                                processing
+                                                            }
+                                                        >
+                                                            {processing
+                                                                ? 'Guardando...'
+                                                                : 'Guardar sesión'}
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </Form>
+                                    ) : (
+                                        <dl className="grid gap-3 text-sm sm:grid-cols-3">
+                                            <div>
+                                                <dt className="text-muted-foreground">
+                                                    Fecha y hora
+                                                </dt>
+                                                <dd className="font-medium">
+                                                    {session.scheduled_at
+                                                        ? dateTimeFormatter.format(
+                                                              new Date(
+                                                                  session.scheduled_at,
+                                                              ),
+                                                          )
+                                                        : 'Sin programar'}
+                                                </dd>
+                                            </div>
+                                            <div>
+                                                <dt className="text-muted-foreground">
+                                                    Precio
+                                                </dt>
+                                                <dd className="font-medium">
+                                                    {money(
+                                                        session.price,
+                                                        session.currency,
                                                     )}
-                                                    <InputError
-                                                        message={errors.status}
-                                                    />
-                                                    <InputError
-                                                        message={
-                                                            errors.currency
-                                                        }
-                                                    />
-                                                </div>
-                                                <div className="grid gap-2 sm:col-span-2">
-                                                    <Label
-                                                        htmlFor={`notes_${session.id}`}
-                                                    >
-                                                        Notas de la sesión
-                                                    </Label>
-                                                    <textarea
-                                                        id={`notes_${session.id}`}
-                                                        name="notes"
-                                                        defaultValue={
-                                                            session.notes ?? ''
-                                                        }
-                                                        className="min-h-24 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                                    />
-                                                    <InputError
-                                                        message={errors.notes}
-                                                    />
-                                                </div>
-                                                <div className="sm:col-span-2">
-                                                    {sessionIsFinal && (
-                                                        <p className="mb-3 text-sm text-muted-foreground">
-                                                            El estado es final.
-                                                            Podés corregir
-                                                            fecha, precio o
-                                                            notas mientras el
-                                                            tratamiento siga
-                                                            activo.
-                                                        </p>
-                                                    )}
-                                                    <Button
-                                                        disabled={processing}
-                                                    >
-                                                        {processing
-                                                            ? 'Guardando...'
-                                                            : 'Guardar sesión'}
-                                                    </Button>
-                                                </div>
-                                            </>
-                                        )}
-                                    </Form>
-                                ) : (
-                                    <dl className="grid gap-3 text-sm sm:grid-cols-3">
-                                        <div>
-                                            <dt className="text-muted-foreground">
-                                                Fecha y hora
-                                            </dt>
-                                            <dd className="font-medium">
-                                                {session.scheduled_at
-                                                    ? dateTimeFormatter.format(
-                                                          new Date(
-                                                              session.scheduled_at,
-                                                          ),
-                                                      )
-                                                    : 'Sin programar'}
-                                            </dd>
-                                        </div>
-                                        <div>
-                                            <dt className="text-muted-foreground">
-                                                Precio
-                                            </dt>
-                                            <dd className="font-medium">
-                                                {money(
-                                                    session.price,
-                                                    session.currency,
-                                                )}
-                                            </dd>
-                                        </div>
-                                        <div>
-                                            <dt className="text-muted-foreground">
-                                                Notas
-                                            </dt>
-                                            <dd className="whitespace-pre-wrap">
-                                                {session.notes || 'Sin notas.'}
-                                            </dd>
-                                        </div>
-                                    </dl>
-                                )}
+                                                </dd>
+                                            </div>
+                                            <div>
+                                                <dt className="text-muted-foreground">
+                                                    Notas
+                                                </dt>
+                                                <dd className="whitespace-pre-wrap">
+                                                    {session.notes ||
+                                                        'Sin notas.'}
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    )}
 
-                                {session.status === 'completed' && (
-                                    <div className="rounded-lg bg-muted/50 p-3 text-sm">
-                                        <p className="text-muted-foreground">
-                                            Opcional: documentá la evolución
-                                            clínica. Se abrirá un formulario
-                                            preseleccionado, sin crear ni
-                                            vincular registros automáticamente.
-                                        </p>
-                                        <Button
-                                            asChild
-                                            variant="outline"
-                                            size="sm"
-                                            className="mt-3"
-                                        >
-                                            <Link
-                                                href={createClinicalRecord(
-                                                    pet.id,
-                                                    {
-                                                        query: {
-                                                            type: 'evolution',
-                                                        },
-                                                    },
-                                                )}
+                                    {session.status === 'completed' && (
+                                        <div className="border-l-2 border-clinical bg-clinical/15 px-4 py-3 text-sm">
+                                            <p className="text-muted-foreground">
+                                                Opcional: documentá la evolución
+                                                clínica. Se abrirá un formulario
+                                                preseleccionado, sin crear ni
+                                                vincular registros
+                                                automáticamente.
+                                            </p>
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="sm"
+                                                className="mt-3"
                                             >
-                                                Registrar evolución
-                                            </Link>
-                                        </Button>
-                                    </div>
-                                )}
-                            </article>
-                        );
-                    })}
+                                                <Link
+                                                    href={createClinicalRecord(
+                                                        pet.id,
+                                                        {
+                                                            query: {
+                                                                type: 'evolution',
+                                                            },
+                                                        },
+                                                    )}
+                                                >
+                                                    Registrar evolución
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    )}
+                                </article>
+                            );
+                        })}
+                    </div>
                 </section>
             </div>
         </>

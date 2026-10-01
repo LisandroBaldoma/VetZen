@@ -3,7 +3,6 @@ import { Search, X } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import PageHeader from '@/components/page-header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -50,7 +49,24 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
 });
 
 function StatusBadge({ status }: { status: RequestStatus }) {
-    return <Badge variant="outline">{statusLabels[status]}</Badge>;
+    const style =
+        status === 'pending'
+            ? 'bg-operational text-operational-foreground'
+            : status === 'resolved'
+              ? 'bg-clinical text-clinical-foreground'
+              : 'bg-muted text-muted-foreground';
+
+    return (
+        <span
+            className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${style}`}
+        >
+            <span
+                className="size-1.5 rounded-full bg-current"
+                aria-hidden="true"
+            />
+            {statusLabels[status]}
+        </span>
+    );
 }
 
 export default function AdminRequests({
@@ -85,13 +101,13 @@ export default function AdminRequests({
     return (
         <>
             <Head title="Solicitudes de atención" />
-            <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6">
+            <div className="workspace-operational">
                 <PageHeader
                     title="Solicitudes de atención"
                     description="Revisá solicitudes y definí el tratamiento luego de la evaluación profesional."
                 />
 
-                <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
+                <div className="grid gap-3 border-y border-border py-4 md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
                     <form onSubmit={submitSearch} className="flex gap-2">
                         <div className="grid flex-1 gap-2">
                             <Label htmlFor="request-search" className="sr-only">
@@ -192,14 +208,14 @@ export default function AdminRequests({
                 </div>
 
                 {requests.total === 0 ? (
-                    <p className="rounded-xl border p-6 text-sm text-muted-foreground">
+                    <p className="border-y border-dashed py-8 text-sm text-muted-foreground">
                         {hasFilters
                             ? 'No se encontraron solicitudes con los filtros seleccionados.'
                             : 'Todavía no hay solicitudes de atención.'}
                     </p>
                 ) : (
                     <>
-                        <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block">
+                        <div className="hidden overflow-x-auto border-y border-border md:block">
                             <table className="w-full min-w-4xl text-left text-sm">
                                 <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
@@ -286,7 +302,7 @@ export default function AdminRequests({
                             {requests.data.map((request) => (
                                 <article
                                     key={request.id}
-                                    className="space-y-4 rounded-xl border bg-card p-4 shadow-sm"
+                                    className="space-y-4 border-b border-border py-5"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div>

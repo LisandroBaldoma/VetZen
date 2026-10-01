@@ -10,6 +10,7 @@ use App\Services\PetPhotoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -48,11 +49,15 @@ class PetController extends Controller
     public function store(StorePetRequest $request, PetPhotoService $photos): RedirectResponse
     {
         $this->authorizeClient($request);
-        $pet = $request->user()->client->pets()->create(Arr::except($request->validated(), ['client_id', 'photo']));
+        $pet = DB::transaction(function () use ($request, $photos): Pet {
+            $pet = $request->user()->client->pets()->create(Arr::except($request->validated(), ['client_id', 'photo']));
 
-        if ($request->hasFile('photo')) {
-            $photos->replace($pet, $request->file('photo'));
-        }
+            if ($request->hasFile('photo')) {
+                $photos->replace($pet, $request->file('photo'));
+            }
+
+            return $pet;
+        });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Pet created.')]);
 

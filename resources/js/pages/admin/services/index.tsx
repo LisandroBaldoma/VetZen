@@ -61,7 +61,7 @@ export default function AdminServicesIndex({
     return (
         <>
             <Head title="Servicios" />
-            <div className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-6">
+            <div className="workspace-operational">
                 <PageHeader
                     title="Servicios clínicos"
                     description="Administrá las terapias y sus procedimientos disponibles."
@@ -71,7 +71,7 @@ export default function AdminServicesIndex({
                         </Button>
                     }
                 />
-                <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-[minmax(14rem,1fr)_minmax(11rem,auto)_auto] sm:items-end">
+                <div className="grid gap-3 border-y border-border py-4 sm:grid-cols-[minmax(14rem,1fr)_minmax(11rem,auto)_auto] sm:items-end">
                     <form onSubmit={submitSearch} className="flex gap-2">
                         <Label htmlFor="service-search" className="sr-only">
                             Buscar servicio
@@ -131,7 +131,7 @@ export default function AdminServicesIndex({
                     )}
                 </div>
                 {services.total === 0 ? (
-                    <p className="rounded-xl border p-6 text-sm text-muted-foreground">
+                    <p className="border-y border-dashed py-8 text-sm text-muted-foreground">
                         {hasFilters
                             ? 'No se encontraron servicios con los filtros seleccionados.'
                             : 'Todavía no hay servicios. Creá el primero para comenzar.'}
@@ -142,7 +142,7 @@ export default function AdminServicesIndex({
                             {services.data.map((service) => (
                                 <article
                                     key={service.id}
-                                    className="space-y-4 rounded-xl border bg-card p-4 shadow-sm"
+                                    className="space-y-4 border-b border-border py-5"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <Link
@@ -182,7 +182,7 @@ export default function AdminServicesIndex({
                                 </article>
                             ))}
                         </div>
-                        <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block">
+                        <div className="hidden overflow-x-auto border-y border-border md:block">
                             <table className="w-full min-w-2xl text-left text-sm">
                                 <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>

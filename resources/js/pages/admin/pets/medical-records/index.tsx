@@ -1,6 +1,5 @@
 import { Head, Link, setLayoutProps } from '@inertiajs/react';
 import ClinicalRecordSummary from '@/components/clinical-record-summary';
-import Heading from '@/components/heading';
 import PetContextHeader from '@/components/pet-context-header';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
@@ -34,31 +33,41 @@ export default function AdminMedicalRecordsIndex({
     return (
         <>
             <Head title={`${pet.name} · Historia clínica`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
                     active="medical-records"
                     editHref={edit.url(pet.id)}
                 />
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                    <Heading
-                        title="Historia clínica"
-                        description={`Cronología clínica completa de ${pet.name}.`}
-                    />
-                    <Button asChild>
+                <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="max-w-xl space-y-1">
+                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
+                            Continuidad clínica
+                        </p>
+                        <h2 className="text-2xl font-semibold tracking-tight">
+                            Historia clínica
+                        </h2>
+                        <p className="text-sm leading-6 text-muted-foreground">
+                            Cronología clínica completa de {pet.name}.
+                        </p>
+                    </div>
+                    <Button asChild className="min-h-11">
                         <Link href={create.url(pet.id)}>Nuevo registro</Link>
                     </Button>
                 </div>
                 {records.length === 0 ? (
-                    <div className="rounded-xl border border-dashed bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
+                    <div className="border-y border-dashed py-10 text-sm text-muted-foreground">
                         No hay registros clínicos para este paciente.
                     </div>
                 ) : (
-                    <ol className="grid gap-4 md:ml-3 md:gap-5 md:border-l md:border-border md:pl-8">
+                    <ol className="relative border-l border-clinical-foreground/25 pl-5 sm:pl-7">
                         {records.map((record) => (
-                            <li key={record.id} className="relative">
-                                <span className="absolute top-8 -left-[37px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
+                            <li
+                                key={record.id}
+                                className="relative border-b border-border last:border-b-0"
+                            >
+                                <span className="absolute top-8 -left-[1.8rem] size-2.5 rounded-full border-2 border-background bg-clinical-foreground sm:-left-[2.3rem]" />
                                 <ClinicalRecordSummary
                                     record={record}
                                     href={show.url([pet.id, record.id])}
