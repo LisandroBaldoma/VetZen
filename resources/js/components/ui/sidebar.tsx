@@ -266,7 +266,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("size-11 md:size-7", className)}
+      className={cn("size-11 lg:size-8", className)}
       aria-label={label}
       aria-expanded={isMobile ? openMobile : state === "expanded"}
       onClick={(event) => {
