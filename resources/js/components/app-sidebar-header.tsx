@@ -6,7 +6,7 @@ import { getNavigationSection } from '@/lib/navigation';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 const areaLabels: Record<string, string> = {
-    dashboard: 'Espacio de trabajo',
+    dashboard: 'VetZen',
     clients: 'Pacientes',
     pets: 'Pacientes',
     'service-requests': 'Atención',
@@ -31,12 +31,12 @@ export function AppSidebarHeader({
     const area = section ? areaLabels[section] : undefined;
 
     return (
-        <header className="flex min-h-16 shrink-0 items-center gap-3 border-b border-border/70 bg-background/88 px-4 py-3 backdrop-blur-sm transition-[width,height] ease-linear md:px-8">
+        <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-3 border-b border-border bg-surface-base/92 px-4 py-3 shadow-sm backdrop-blur-md transition-[width,height] ease-linear md:px-8 md:shadow-none">
             <div className="flex min-w-0 items-center gap-3">
-                <SidebarTrigger className="-ml-1" />
+                <SidebarTrigger className="-ml-1 text-muted-foreground hover:bg-surface-subtle hover:text-foreground" />
                 <div className="min-w-0 space-y-0.5">
                     {area && (
-                        <p className="text-[0.625rem] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                        <p className="text-meta font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                             {area}
                         </p>
                     )}

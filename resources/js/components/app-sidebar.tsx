@@ -19,6 +19,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { getNavigationSection } from '@/lib/navigation';
@@ -141,12 +142,17 @@ export function AppSidebar() {
     return (
         <Sidebar
             collapsible="icon"
-            className="border-r border-sidebar-border/70"
+            className="border-r border-sidebar-border bg-sidebar"
         >
-            <SidebarHeader className="px-4 pt-5 pb-4 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
+            <SidebarHeader className="relative border-b border-sidebar-border px-4 pt-4 pb-3 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
+                <SidebarTrigger className="absolute top-3 right-3 md:hidden" />
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="pr-12 md:pr-2"
+                            asChild
+                        >
                             <Link href={dashboard()} prefetch>
                                 <AppLogo />
                             </Link>
@@ -155,11 +161,11 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent className="px-2 py-3">
+            <SidebarContent className="px-2 py-4">
                 <NavMain groups={mainNavGroups} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/70 px-4 py-4 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
+            <SidebarFooter className="border-t border-sidebar-border bg-surface-subtle/45 px-4 py-4 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

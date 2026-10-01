@@ -11,7 +11,7 @@ export default function AppLogo() {
                 <AppLogoIcon className="size-5 fill-current" />
             </div>
             <div className="ml-1.5 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold tracking-tight">
+                <span className="mb-0.5 truncate leading-tight font-bold tracking-tight">
                     {name}
                 </span>
             </div>
