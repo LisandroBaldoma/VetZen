@@ -1,45 +1,619 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary": "#43690d", "tertiary": "#894d00", "on-secondary-fixed-variant": "#2f4f00", "tertiary-fixed": "#ffdcc0", "primary-container": "#3b833f", "on-surface": "#121e14", "inverse-on-surface": "#e5f5e4", "on-primary": "#ffffff", "surface-tint": "#236c2b", "inverse-surface": "#263328", "tertiary-container": "#ab630a", "surface-container-highest": "#d7e7d6", "on-error": "#ffffff", "surface-container": "#e3f2e1", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#a7d46f", "primary-fixed-dim": "#8dd889", "on-tertiary-fixed-variant": "#6b3b00", "on-primary-fixed-variant": "#005315", "surface-dim": "#cfdece", "on-tertiary-fixed": "#2d1600", "tertiary-fixed-dim": "#ffb875", "secondary-container": "#bfee85", "secondary-fixed": "#c2f188", "on-secondary-container": "#476d12", "inverse-primary": "#8dd889", "on-secondary": "#ffffff", "surface": "#eefeed", "background": "#eefeed", "on-primary-fixed": "#002204", "on-tertiary-container": "#fffbff", "surface-bright": "#eefeed", "primary": "#206928", "on-primary-container": "#f7fff1", "primary-fixed": "#a8f5a3", "surface-container-high": "#ddecdc", "on-surface-variant": "#40493e", "surface-container-low": "#e8f8e7", "error": "#ba1a1a", "error-container": "#ffdad6", "on-secondary-fixed": "#102000", "outline-variant": "#c0c9bb", "on-tertiary": "#ffffff", "surface-variant": "#d7e7d6", "on-background": "#121e14", "outline": "#707a6d", "on-error-container": "#93000a" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-mobile": "1rem", "margin-mobile": "1rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "margin": "2rem", "space-2xl": "3rem", "gutter": "1.5rem", "space-xl": "2rem", "space-md": "1rem" }, fontFamily: { "headline-lg-mobile": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-lg-mobile": ["1.625rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }], "body-lg": ["1rem", { "lineHeight": "1.6rem", "fontWeight": "400" }], "body-sm": ["0.75rem", { "lineHeight": "1.2rem", "fontWeight": "400" }], "label-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.03em", "fontWeight": "600" }], "body-md": ["0.875rem", { "lineHeight": "1.45rem", "fontWeight": "400" }], "display": ["3rem", { "lineHeight": "3.5rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "600" }], "title-md": ["1.125rem", { "lineHeight": "1.5rem", "fontWeight": "600" }], "headline-md": ["1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-</head><body class="font-body-md flex flex-col min-h-screen bg-[#FDFAF3] text-[#263328]"><header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md pt-safe border-b border-[#EAE4D9] shadow-sm"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Abrir menú de navegación" class="w-11 h-11 flex items-center justify-center rounded-lg text-[#606C5D] hover:bg-[#F4EFE6] transition-colors" type="button"><span class="material-symbols-outlined text-[24px]">menu</span></button><img alt="VetZen Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLLzI-2ln6XJxfhaGvAjn3Qv-f8yCXT0-k34CjaE5gVKLOyrIdBxmPuqFeHyTs8KhYbfuNHXrUCgK3i4NfiB6IK9t66NjEG2WKfLVUB8BCP9pB4BRBKppa51Tp0z_RsR4tn6zId6LrXDRKCnODT8ZSKEkeT123w1sqcpcR99CAiaPUiJ8ppH83swet3P6leatnJlxwLhXBITfvnlqEJLiQFvJPp2qT3a2slRC1WnO64GF0Ubnod098a32lQiscRLxBw-s"><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs text-[#606C5D] font-label-sm text-label-sm"><span class="truncate font-medium">VetZen</span><span class="material-symbols-outlined text-[12px]">chevron_right</span></div><h1 class="font-title-md text-title-md text-[#263328] font-semibold truncate leading-none">Inicio</h1></div></div><div class="flex items-center gap-space-xs"><button aria-label="Solicitudes pendientes" class="w-11 h-11 flex items-center justify-center rounded-full text-[#606C5D] hover:bg-[#F4EFE6] transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-[#478F49] flex items-center justify-center shadow-sm text-white"><span class="material-symbols-outlined text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-[#FDFAF3] px-margin-mobile"><div class="flex flex-col w-full pb-8 space-y-6">
-<!-- PAGE HEADER & WELCOME -->
-<section class="flex flex-col gap-4"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"><div class="space-y-1"><div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF4EC] text-[#478F49] text-label-sm font-label-sm font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span><span class="">Panel Operativo Clínico</span></div><p class="font-body-md text-[#606C5D] leading-relaxed">Bienvenida de nuevo. Gestión diaria de terapias y seguimiento clínico integral.</p></div><button class="inline-flex items-center justify-center gap-2 bg-[#478F49] hover:bg-[#3b793d] active:scale-[0.98] text-white font-label-lg text-label-lg px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span class="">Nuevo paciente</span></button></div></section>
-<!-- OPERATIONAL KPI CARD -->
-<section><div class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"><div class="flex items-center gap-3.5 min-w-0"><div class="w-10 h-10 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49] shrink-0"><span class="material-symbols-outlined text-[22px]">assignment_late</span></div><div class="min-w-0"><div class="flex items-center gap-2"><span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328] leading-none">4</span><span class="font-label-md text-label-md font-semibold text-[#263328]">Solicitudes pendientes</span></div><p class="font-body-sm text-body-sm text-[#606C5D] mt-0.5 truncate">Pacientes esperando confirmación de triage y evaluación inicial</p></div></div><div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#F4EFE6]"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Requieren revisión</span><a class="inline-flex items-center gap-1 font-label-md text-label-md text-[#478F49] font-semibold hover:text-[#3b793d] transition-colors shrink-0" href="#solicitudes"><span class="">Ver todas</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div></div></section>
-<!-- PRIMARY SECTION: PRIORITIZED REQUESTS -->
-<section class="space-y-3" id="solicitudes"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Solicitudes prioritarias</h2><span class="px-2.5 py-1 rounded-full bg-[#EAE4D9] text-[#263328] font-label-md text-label-md font-bold">(4)</span></div><button class="text-[#478F49] font-label-sm text-label-sm flex items-center gap-1 hover:underline" id="btn-toggle-demo" type="button"><span class="material-symbols-outlined text-[16px]">visibility</span><span id="toggle-label" class="">Alternar estado vacío</span></button></div><div class="flex flex-col gap-3" id="cards-feed"><article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3.5 min-w-0"><div class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden"><img class="w-full h-full object-cover" data-alt="Luna golden retriever" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD381ri6VqqseQcHIXnev4R9qMrmnDFi5FjMjSu_im9KAww0EaZsV7mVHA-9iFMbPzZ_wF8M51cBGkYoMOtzaqgZjrnmUk8NC9GUFToGu5rfAlMzMutTSMLMkQr8tcprxuvoXzli_z6w25VOhuK4nNX-gguZTAC6n1WfZ9Z1jaDGebRUoiyKuegNDIui_FF-UCo9q2x6jHDJQnVEB975jKgb--br3L61KfIbRaBrqsSnuASk3orssNMCw"></div><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Luna</h3><span class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span></div><p class="font-body-md text-body-md text-[#606C5D] truncate">Golden Retriever • 4 años</p></div></div><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span></div><div class="border-t border-[#F4EFE6] pt-3"><div class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold"><span class="material-symbols-outlined text-[20px] text-[#478F49]">spa</span><span class="">Acupuntura Veterinaria</span></div><p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Sesión de evaluación preliminar para manejo del dolor articular crónico.</p></div><div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold" type="button">Ficha de Luna</button><button class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold" type="button"><span class="">Ver solicitud</span><span class="material-symbols-outlined text-[18px]">chevron_right</span></button></div></article><article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3.5 min-w-0"><div class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden"><img class="w-full h-full object-cover" data-alt="Milo cat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApAaIMatPiaIn6_-zM-FXf7eppCA5T543xDZbQuxkWTstJg7bDHi_BOc1kMrWmf_IAb4npoociwr2fUnp5F6aNH6rBhdp31R25X5IKESArI-9X0OLQnY3xSX5IUHPJM9D63JMOUMilmrzRwEvD1A0lqq74DLHtjqdwJC_SYcN2hldFC5EnONS7BLj1wGvKkBrz5yL1A53R31WbNUOOWfuMOYjFhQaMwJApktq8LlsGa7jppqretg4Edg"></div><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Milo</h3><span class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Felino</span></div><p class="font-body-md text-body-md text-[#606C5D] truncate">Gato Europeo • 6 años</p></div></div><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span></div><div class="border-t border-[#F4EFE6] pt-3"><div class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold"><span class="material-symbols-outlined text-[20px] text-[#478F49]">accessibility_new</span><span class="">Fisioterapia y Rehabilitación</span></div><p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Control post-quirúrgico de miembro posterior izquierdo con rangos de movimiento.</p></div><div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold" type="button">Ficha de Milo</button><button class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold" type="button"><span class="">Ver solicitud</span><span class="material-symbols-outlined text-[18px]">chevron_right</span></button></div></article><article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3.5 min-w-0"><div class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden"><img class="w-full h-full object-cover" data-alt="Thor bulldog" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB622ZEkcbDdE7PNWVuHdH0hR-vc75tuelwbLyzFHljPllTMdUdUgqBze_FotCy-mRrI_cTmRHTWlAMamDu_UjNOmwoUqSap8jbUuNVOiRdwkKN-O_d6Hq8tW41ku0G8DC-laiLWv7QM66pD6morqQ9R9q0voY0ydP58hUIVVWkGtSPQIRIaeaTsPrjmBUideyuZpsxVun9Xypqs9flikrMkSTnGos5VgFbZmwKupsGt1aYP9ENeU1KEg"></div><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Thor</h3><span class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span></div><p class="font-body-md text-body-md text-[#606C5D] truncate">Bulldog Francés • 2 años</p></div></div><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span></div><div class="border-t border-[#F4EFE6] pt-3"><div class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold"><span class="material-symbols-outlined text-[20px] text-[#478F49]">flare</span><span class="">Terapia Láser</span></div><p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Estimulación de cicatrización dermatológica en pliegues nasolabiales.</p></div><div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold" type="button">Ficha de Thor</button><button class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold" type="button"><span class="">Ver solicitud</span><span class="material-symbols-outlined text-[18px]">chevron_right</span></button></div></article><article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5"><div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3.5 min-w-0"><div class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden"><img class="w-full h-full object-cover" data-alt="Kira mixed dog" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_Wu3DdYO5wANoC_NH7mOzd9ULUHNynwAouV0jiNX5KvMdbB3NNTBvuY_liA9TrZQsRuwxkfm98uWDzUKjGSfN2OQlWyKuP1I_iLmLZeZv5BspCDD9ER-XBQ1FIbm_FknHx43HUG4S538HFtWzhttxCw1NVY_i_AwSNt3T1NDa0RBSiQwtQx9yjCI5JlXLEt98wl0U8kuXLGfC-0Lv4VcnPLldFG-e5Q_zVPXdND3KQeYlIWnLYE_rAA"></div><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Kira</h3><span class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span></div><p class="font-body-md text-body-md text-[#606C5D] truncate">Mestiza • 8 años</p></div></div><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span></div><div class="border-t border-[#F4EFE6] pt-3"><div class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold"><span class="material-symbols-outlined text-[20px] text-[#478F49]">psychiatry</span><span class="">Fitoterapia y Nutrición Clínica</span></div><p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Ajuste de dieta terapéutica botánica para soporte digestivo y hepático.</p></div><div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold" type="button">Ficha de Kira</button><button class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold" type="button"><span class="">Ver solicitud</span><span class="material-symbols-outlined text-[18px]">chevron_right</span></button></div></article></div><div class="hidden bg-white rounded-xl p-8 text-center border border-[#EAE4D9] shadow-sm" id="empty-state-view"><div class="w-16 h-16 rounded-full bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center mx-auto mb-3 text-[#478F49]"><span class="material-symbols-outlined text-[32px]">task_alt</span></div><h3 class="font-title-md text-title-md font-semibold text-[#263328] mb-1">Sin solicitudes pendientes</h3><p class="font-body-sm text-body-sm text-[#606C5D] max-w-xs mx-auto mb-4">Todo el trabajo clínico está al día. No hay revisiones pendientes en la cola de triage.</p><button class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors font-medium" type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span class="">Registrar nueva solicitud manual</span></button></div></section>
-<!-- QUICK ACCESS TO CLINICAL CATALOG -->
-<section class="space-y-3"><div class="flex items-center justify-between"><h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Accesos rápidos</h2><span class="font-label-md text-label-md text-[#606C5D] font-medium">Catálogo y Procesos</span></div><div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3"><a class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group" href="#pacientes"><div class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[20px]">pets</span></div><div><span class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Pacientes</span><span class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Expedientes activos</span></div></a><a class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group" href="#solicitudes-atencion"><div class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[20px]">assignment</span></div><div><span class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Admisiones</span><span class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Solicitudes triage</span></div></a><a class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group" href="#servicios"><div class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[20px]">vital_signs</span></div><div><span class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Servicios</span><span class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Terapias y medicina</span></div></a><a class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group" href="#procedimientos"><div class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[20px]">medical_services</span></div><div><span class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Procedimientos</span><span class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Maniobras y pautas</span></div></a><a class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group col-span-2 sm:col-span-1" href="#plantillas"><div class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[20px]">receipt_long</span></div><div><span class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Plantillas</span><span class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Planes terapéuticos</span></div></a></div></section>
-<!-- REUSABLE SEMANTIC CLINICAL STATUS GUIDE -->
-<section class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm space-y-3">
-<details class="group cursor-pointer"><summary class="flex items-center justify-between list-none focus:outline-none"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49]"><span class="material-symbols-outlined text-[18px]">verified</span></div><div><h3 class="font-label-lg text-label-lg font-semibold text-[#263328]">Guía de Estados Clínicos</h3><p class="font-body-sm text-body-sm text-[#606C5D]">Estándar semántico unificado de VetZen</p></div></div><span class="material-symbols-outlined text-[#606C5D] transition-transform group-open:rotate-180 text-[20px]">expand_more</span></summary><div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5"><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Activo</span><span class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Tratamiento regular</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F7EB] text-[#80AB4B] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#80AB4B]"></span>En curso</span><span class="font-body-sm text-body-sm text-[#606C5D]">#80AB4B • Sesión activa hoy</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span><span class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Triage y validación</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Resuelto</span><span class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Alta favorable</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF9E6] text-[#B8871F] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#E8AD46]"></span>Completado</span><span class="font-body-sm text-body-sm text-[#606C5D]">#E8AD46 • Ciclo concluido</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F2EF] text-[#606C5D] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#606C5D]"></span>Inactivo</span><span class="font-body-sm text-body-sm text-[#606C5D]">#606C5D • Pausa programada</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FDEEEB] text-[#DA5F42] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#DA5F42]"></span>Cancelado</span><span class="font-body-sm text-body-sm text-[#606C5D]">#DA5F42 • Cita desestimada</span></div><div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold w-fit"><span class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Suspendido</span><span class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Interrupción</span></div></div></details>
-</section>
-</div>
-<script>
-  (function() {
-    const toggleBtn = document.getElementById('btn-toggle-demo');
-    const cardsFeed = document.getElementById('cards-feed');
-    const emptyState = document.getElementById('empty-state-view');
-    const toggleLabel = document.getElementById('toggle-label');
+<!DOCTYPE html>
+<html lang="es">
 
-    if (toggleBtn && cardsFeed && emptyState) {
-      toggleBtn.addEventListener('click', function() {
-        const isCardsHidden = cardsFeed.classList.contains('hidden');
-        if (isCardsHidden) {
-          cardsFeed.classList.remove('hidden');
-          emptyState.classList.add('hidden');
-          toggleLabel.textContent = 'Alternar estado vacío';
-        } else {
-          cardsFeed.classList.add('hidden');
-          emptyState.classList.remove('hidden');
-          toggleLabel.textContent = 'Mostrar solicitudes (4)';
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport">
+    <meta content="mobile_tab" name="shell-type">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <style>
+        @layer base {
+
+            html,
+            body {
+                width: 100vw;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                overscroll-behavior: none;
+            }
+
+            .pb-safe {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            .pt-safe {
+                padding-top: env(safe-area-inset-top, 0px);
+            }
+
+            main>:first-child {
+                margin-top: 0 !important;
+            }
+
+            main>:last-child {
+                margin-bottom: 0 !important;
+            }
         }
-      });
-    }
-  })();
-</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-white/95 backdrop-blur-md border-t border-[#EAE4D9] shadow-sm" data-active-classes="text-primary font-semibold"><div class="flex justify-around items-center h-16 px-space-xs max-w-lg mx-auto"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] transition-all text-[#478F49] font-semibold" data-path="inicio" href="#"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="font-label-sm text-label-sm">Inicio</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all" data-path="clientes" href="#"><span class="material-symbols-outlined text-[22px]">group</span><span class="font-label-sm text-label-sm">Clientes</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all" data-path="pacientes" href="#"><span class="material-symbols-outlined text-[22px]">pets</span><span class="font-label-sm text-label-sm">Pacientes</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all" data-path="solicitudes-atencion" href="#"><span class="material-symbols-outlined text-[22px]">inbox</span><span class="font-label-sm text-label-sm">Solicitudes</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all" data-path="perfil-administrador" href="#"><span class="material-symbols-outlined text-[22px]">clinical_notes</span><span class="font-label-sm text-label-sm">Gestión</span></a></div></nav>
 
-</body></html>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#43690d",
+                        "tertiary": "#894d00",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "tertiary-fixed": "#ffdcc0",
+                        "primary-container": "#3b833f",
+                        "on-surface": "#121e14",
+                        "inverse-on-surface": "#e5f5e4",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#236c2b",
+                        "inverse-surface": "#263328",
+                        "tertiary-container": "#ab630a",
+                        "surface-container-highest": "#d7e7d6",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e3f2e1",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#a7d46f",
+                        "primary-fixed-dim": "#8dd889",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-primary-fixed-variant": "#005315",
+                        "surface-dim": "#cfdece",
+                        "on-tertiary-fixed": "#2d1600",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "secondary-container": "#bfee85",
+                        "secondary-fixed": "#c2f188",
+                        "on-secondary-container": "#476d12",
+                        "inverse-primary": "#8dd889",
+                        "on-secondary": "#ffffff",
+                        "surface": "#eefeed",
+                        "background": "#eefeed",
+                        "on-primary-fixed": "#002204",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-bright": "#eefeed",
+                        "primary": "#206928",
+                        "on-primary-container": "#f7fff1",
+                        "primary-fixed": "#a8f5a3",
+                        "surface-container-high": "#ddecdc",
+                        "on-surface-variant": "#40493e",
+                        "surface-container-low": "#e8f8e7",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#102000",
+                        "outline-variant": "#c0c9bb",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#d7e7d6",
+                        "on-background": "#121e14",
+                        "outline": "#707a6d",
+                        "on-error-container": "#93000a"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter-mobile": "1rem",
+                        "margin-mobile": "1rem",
+                        "space-sm": "0.5rem",
+                        "space-lg": "1.5rem",
+                        "space-xs": "0.25rem",
+                        "margin": "2rem",
+                        "space-2xl": "3rem",
+                        "gutter": "1.5rem",
+                        "space-xl": "2rem",
+                        "space-md": "1rem"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["1.625rem", {
+                            "lineHeight": "2.125rem",
+                            "letterSpacing": "-0.01em",
+                            "fontWeight": "600"
+                        }],
+                        "headline-sm": ["1.25rem", {
+                            "lineHeight": "1.75rem",
+                            "fontWeight": "600"
+                        }],
+                        "body-lg": ["1rem", {
+                            "lineHeight": "1.6rem",
+                            "fontWeight": "400"
+                        }],
+                        "body-sm": ["0.75rem", {
+                            "lineHeight": "1.2rem",
+                            "fontWeight": "400"
+                        }],
+                        "label-lg": ["0.875rem", {
+                            "lineHeight": "1.25rem",
+                            "letterSpacing": "0.01em",
+                            "fontWeight": "600"
+                        }],
+                        "headline-lg": ["2rem", {
+                            "lineHeight": "2.5rem",
+                            "letterSpacing": "-0.015em",
+                            "fontWeight": "600"
+                        }],
+                        "label-sm": ["0.6875rem", {
+                            "lineHeight": "0.875rem",
+                            "letterSpacing": "0.03em",
+                            "fontWeight": "600"
+                        }],
+                        "body-md": ["0.875rem", {
+                            "lineHeight": "1.45rem",
+                            "fontWeight": "400"
+                        }],
+                        "display": ["3rem", {
+                            "lineHeight": "3.5rem",
+                            "letterSpacing": "-0.02em",
+                            "fontWeight": "700"
+                        }],
+                        "label-md": ["0.75rem", {
+                            "lineHeight": "1rem",
+                            "letterSpacing": "0.02em",
+                            "fontWeight": "600"
+                        }],
+                        "title-md": ["1.125rem", {
+                            "lineHeight": "1.5rem",
+                            "fontWeight": "600"
+                        }],
+                        "headline-md": ["1.5rem", {
+                            "lineHeight": "2rem",
+                            "letterSpacing": "-0.01em",
+                            "fontWeight": "600"
+                        }]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="font-body-md flex flex-col min-h-screen bg-[#FDFAF3] text-[#263328]">
+    <header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md pt-safe border-b border-[#EAE4D9] shadow-sm">
+        <div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm">
+            <div class="flex items-center gap-space-sm min-w-0"><button aria-label="Abrir menú de navegación"
+                    class="w-11 h-11 flex items-center justify-center rounded-lg text-[#606C5D] hover:bg-[#F4EFE6] transition-colors"
+                    type="button"><span class="material-symbols-outlined text-[24px]">menu</span></button><img
+                    alt="VetZen Logo" class="h-9 w-auto object-contain"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLLzI-2ln6XJxfhaGvAjn3Qv-f8yCXT0-k34CjaE5gVKLOyrIdBxmPuqFeHyTs8KhYbfuNHXrUCgK3i4NfiB6IK9t66NjEG2WKfLVUB8BCP9pB4BRBKppa51Tp0z_RsR4tn6zId6LrXDRKCnODT8ZSKEkeT123w1sqcpcR99CAiaPUiJ8ppH83swet3P6leatnJlxwLhXBITfvnlqEJLiQFvJPp2qT3a2slRC1WnO64GF0Ubnod098a32lQiscRLxBw-s">
+                <div class="flex flex-col min-w-0">
+                    <div class="flex items-center gap-space-xs text-[#606C5D] font-label-sm text-label-sm"><span
+                            class="truncate font-medium">VetZen</span><span
+                            class="material-symbols-outlined text-[12px]">chevron_right</span></div>
+                    <h1 class="font-title-md text-title-md text-[#263328] font-semibold truncate leading-none">Inicio
+                    </h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-space-xs"><button aria-label="Solicitudes pendientes"
+                    class="w-11 h-11 flex items-center justify-center rounded-full text-[#606C5D] hover:bg-[#F4EFE6] transition-colors"
+                    type="button"><span class="material-symbols-outlined text-[22px]">notifications</span></button>
+                <div class="w-8 h-8 rounded-full bg-[#478F49] flex items-center justify-center shadow-sm text-white">
+                    <span class="material-symbols-outlined text-[18px]">person</span></div>
+            </div>
+        </div>
+    </header>
+    <main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-[#FDFAF3] px-margin-mobile">
+        <div class="flex flex-col w-full pb-8 space-y-6">
+            <!-- PAGE HEADER & WELCOME -->
+            <section class="flex flex-col gap-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="space-y-1">
+                        <div
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF4EC] text-[#478F49] text-label-sm font-label-sm font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span><span class="">Panel
+                                Operativo Clínico</span></div>
+                        <p class="font-body-md text-[#606C5D] leading-relaxed">Bienvenida de nuevo. Gestión diaria de
+                            terapias y seguimiento clínico integral.</p>
+                    </div><button
+                        class="inline-flex items-center justify-center gap-2 bg-[#478F49] hover:bg-[#3b793d] active:scale-[0.98] text-white font-label-lg text-label-lg px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none"
+                        type="button"><span class="material-symbols-outlined text-[20px]">add</span><span
+                            class="">Nuevo paciente</span></button>
+                </div>
+            </section>
+            <!-- OPERATIONAL KPI CARD -->
+            <section>
+                <div
+                    class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49] shrink-0">
+                            <span class="material-symbols-outlined text-[22px]">assignment_late</span></div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2"><span
+                                    class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328] leading-none">4</span><span
+                                    class="font-label-md text-label-md font-semibold text-[#263328]">Solicitudes
+                                    pendientes</span></div>
+                            <p class="font-body-sm text-body-sm text-[#606C5D] mt-0.5 truncate">Pacientes esperando
+                                confirmación de triage y evaluación inicial</p>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#F4EFE6]">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold"><span
+                                class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Requieren revisión</span><a
+                            class="inline-flex items-center gap-1 font-label-md text-label-md text-[#478F49] font-semibold hover:text-[#3b793d] transition-colors shrink-0"
+                            href="#solicitudes"><span class="">Ver todas</span><span
+                                class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div>
+                </div>
+            </section>
+            <!-- PRIMARY SECTION: PRIORITIZED REQUESTS -->
+            <section class="space-y-3" id="solicitudes">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Solicitudes
+                            prioritarias</h2><span
+                            class="px-2.5 py-1 rounded-full bg-[#EAE4D9] text-[#263328] font-label-md text-label-md font-bold">(4)</span>
+                    </div><button
+                        class="text-[#478F49] font-label-sm text-label-sm flex items-center gap-1 hover:underline"
+                        id="btn-toggle-demo" type="button"><span
+                            class="material-symbols-outlined text-[16px]">visibility</span><span id="toggle-label"
+                            class="">Alternar estado vacío</span></button>
+                </div>
+                <div class="flex flex-col gap-3" id="cards-feed">
+                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <div
+                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Luna golden retriever"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD381ri6VqqseQcHIXnev4R9qMrmnDFi5FjMjSu_im9KAww0EaZsV7mVHA-9iFMbPzZ_wF8M51cBGkYoMOtzaqgZjrnmUk8NC9GUFToGu5rfAlMzMutTSMLMkQr8tcprxuvoXzli_z6w25VOhuK4nNX-gguZTAC6n1WfZ9Z1jaDGebRUoiyKuegNDIui_FF-UCo9q2x6jHDJQnVEB975jKgb--br3L61KfIbRaBrqsSnuASk3orssNMCw">
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Luna
+                                        </h3><span
+                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Golden Retriever • 4
+                                        años</p>
+                                </div>
+                            </div><span
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
+                        </div>
+                        <div class="border-t border-[#F4EFE6] pt-3">
+                            <div
+                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
+                                <span class="material-symbols-outlined text-[20px] text-[#478F49]">spa</span><span
+                                    class="">Acupuntura Veterinaria</span></div>
+                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Sesión de evaluación
+                                preliminar para manejo del dolor articular crónico.</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
+                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
+                                type="button">Ficha de Luna</button><button
+                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
+                                type="button"><span class="">Ver solicitud</span><span
+                                    class="material-symbolFs-outlined text-[18px]">chevron_right</span></button></div>
+                    </article>
+                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <div
+                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Milo cat"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuApAaIMatPiaIn6_-zM-FXf7eppCA5T543xDZbQuxkWTstJg7bDHi_BOc1kMrWmf_IAb4npoociwr2fUnp5F6aNH6rBhdp31R25X5IKESArI-9X0OLQnY3xSX5IUHPJM9D63JMOUMilmrzRwEvD1A0lqq74DLHtjqdwJC_SYcN2hldFC5EnONS7BLj1wGvKkBrz5yL1A53R31WbNUOOWfuMOYjFhQaMwJApktq8LlsGa7jppqretg4Edg">
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Milo
+                                        </h3><span
+                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Felino</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Gato Europeo • 6 años
+                                    </p>
+                                </div>
+                            </div><span
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
+                        </div>
+                        <div class="border-t border-[#F4EFE6] pt-3">
+                            <div
+                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
+                                <span
+                                    class="material-symbols-outlined text-[20px] text-[#478F49]">accessibility_new</span><span
+                                    class="">Fisioterapia y Rehabilitación</span></div>
+                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Control post-quirúrgico
+                                de miembro posterior izquierdo con rangos de movimiento.</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
+                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
+                                type="button">Ficha de Milo</button><button
+                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
+                                type="button"><span class="">Ver solicitud</span><span
+                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
+                    </article>
+                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <div
+                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Thor bulldog"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB622ZEkcbDdE7PNWVuHdH0hR-vc75tuelwbLyzFHljPllTMdUdUgqBze_FotCy-mRrI_cTmRHTWlAMamDu_UjNOmwoUqSap8jbUuNVOiRdwkKN-O_d6Hq8tW41ku0G8DC-laiLWv7QM66pD6morqQ9R9q0voY0ydP58hUIVVWkGtSPQIRIaeaTsPrjmBUideyuZpsxVun9Xypqs9flikrMkSTnGos5VgFbZmwKupsGt1aYP9ENeU1KEg">
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Thor
+                                        </h3><span
+                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Bulldog Francés • 2
+                                        años</p>
+                                </div>
+                            </div><span
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
+                        </div>
+                        <div class="border-t border-[#F4EFE6] pt-3">
+                            <div
+                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
+                                <span class="material-symbols-outlined text-[20px] text-[#478F49]">flare</span><span
+                                    class="">Terapia Láser</span></div>
+                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Estimulación de
+                                cicatrización dermatológica en pliegues nasolabiales.</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
+                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
+                                type="button">Ficha de Thor</button><button
+                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
+                                type="button"><span class="">Ver solicitud</span><span
+                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
+                    </article>
+                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <div
+                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover" data-alt="Kira mixed dog"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_Wu3DdYO5wANoC_NH7mOzd9ULUHNynwAouV0jiNX5KvMdbB3NNTBvuY_liA9TrZQsRuwxkfm98uWDzUKjGSfN2OQlWyKuP1I_iLmLZeZv5BspCDD9ER-XBQ1FIbm_FknHx43HUG4S538HFtWzhttxCw1NVY_i_AwSNt3T1NDa0RBSiQwtQx9yjCI5JlXLEt98wl0U8kuXLGfC-0Lv4VcnPLldFG-e5Q_zVPXdND3KQeYlIWnLYE_rAA">
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Kira
+                                        </h3><span
+                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Mestiza • 8 años</p>
+                                </div>
+                            </div><span
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
+                        </div>
+                        <div class="border-t border-[#F4EFE6] pt-3">
+                            <div
+                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
+                                <span
+                                    class="material-symbols-outlined text-[20px] text-[#478F49]">psychiatry</span><span
+                                    class="">Fitoterapia y Nutrición Clínica</span></div>
+                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Ajuste de dieta
+                                terapéutica botánica para soporte digestivo y hepático.</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
+                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
+                                type="button">Ficha de Kira</button><button
+                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
+                                type="button"><span class="">Ver solicitud</span><span
+                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
+                    </article>
+                </div>
+                <div class="hidden bg-white rounded-xl p-8 text-center border border-[#EAE4D9] shadow-sm"
+                    id="empty-state-view">
+                    <div
+                        class="w-16 h-16 rounded-full bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center mx-auto mb-3 text-[#478F49]">
+                        <span class="material-symbols-outlined text-[32px]">task_alt</span></div>
+                    <h3 class="font-title-md text-title-md font-semibold text-[#263328] mb-1">Sin solicitudes
+                        pendientes</h3>
+                    <p class="font-body-sm text-body-sm text-[#606C5D] max-w-xs mx-auto mb-4">Todo el trabajo clínico
+                        está al día. No hay revisiones pendientes en la cola de triage.</p><button
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors font-medium"
+                        type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span
+                            class="">Registrar nueva solicitud manual</span></button>
+                </div>
+            </section>
+            <!-- QUICK ACCESS TO CLINICAL CATALOG -->
+            <section class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Accesos
+                        rápidos</h2><span class="font-label-md text-label-md text-[#606C5D] font-medium">Catálogo y
+                        Procesos</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3"><a
+                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
+                        href="#pacientes">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">pets</span></div>
+                        <div><span
+                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Pacientes</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Expedientes
+                                activos</span></div>
+                    </a><a
+                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
+                        href="#solicitudes-atencion">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">assignment</span></div>
+                        <div><span
+                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Admisiones</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Solicitudes triage</span>
+                        </div>
+                    </a><a
+                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
+                        href="#servicios">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">vital_signs</span></div>
+                        <div><span
+                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Servicios</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Terapias y
+                                medicina</span></div>
+                    </a><a
+                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
+                        href="#procedimientos">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">medical_services</span></div>
+                        <div><span
+                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Procedimientos</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Maniobras y pautas</span>
+                        </div>
+                    </a><a
+                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group col-span-2 sm:col-span-1"
+                        href="#plantillas">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[20px]">receipt_long</span></div>
+                        <div><span
+                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Plantillas</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Planes
+                                terapéuticos</span></div>
+                    </a></div>
+            </section>
+            <!-- REUSABLE SEMANTIC CLINICAL STATUS GUIDE -->
+            <section class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm space-y-3">
+                <details class="group cursor-pointer">
+                    <summary class="flex items-center justify-between list-none focus:outline-none">
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49]">
+                                <span class="material-symbols-outlined text-[18px]">verified</span></div>
+                            <div>
+                                <h3 class="font-label-lg text-label-lg font-semibold text-[#263328]">Guía de Estados
+                                    Clínicos</h3>
+                                <p class="font-body-sm text-body-sm text-[#606C5D]">Estándar semántico unificado de
+                                    VetZen</p>
+                            </div>
+                        </div><span
+                            class="material-symbols-outlined text-[#606C5D] transition-transform group-open:rotate-180 text-[20px]">expand_more</span>
+                    </summary>
+                    <div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Activo</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Tratamiento regular</span>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F7EB] text-[#80AB4B] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#80AB4B]"></span>En curso</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#80AB4B • Sesión activa hoy</span>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Triage y validación</span>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Resuelto</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Alta favorable</span></div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF9E6] text-[#B8871F] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#E8AD46]"></span>Completado</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#E8AD46 • Ciclo concluido</span></div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F2EF] text-[#606C5D] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#606C5D]"></span>Inactivo</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#606C5D • Pausa programada</span>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FDEEEB] text-[#DA5F42] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#DA5F42]"></span>Cancelado</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#DA5F42 • Cita desestimada</span>
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold w-fit"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Suspendido</span><span
+                                class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Interrupción</span></div>
+                    </div>
+                </details>
+            </section>
+        </div>
+        <script>
+            (function() {
+                const toggleBtn = document.getElementById('btn-toggle-demo');
+                const cardsFeed = document.getElementById('cards-feed');
+                const emptyState = document.getElementById('empty-state-view');
+                const toggleLabel = document.getElementById('toggle-label');
+
+                if (toggleBtn && cardsFeed && emptyState) {
+                    toggleBtn.addEventListener('click', function() {
+                        const isCardsHidden = cardsFeed.classList.contains('hidden');
+                        if (isCardsHidden) {
+                            cardsFeed.classList.remove('hidden');
+                            emptyState.classList.add('hidden');
+                            toggleLabel.textContent = 'Alternar estado vacío';
+                        } else {
+                            cardsFeed.classList.add('hidden');
+                            emptyState.classList.remove('hidden');
+                            toggleLabel.textContent = 'Mostrar solicitudes (4)';
+                        }
+                    });
+                }
+            })();
+        </script>
+    </main>
+    <nav class="fixed bottom-0 w-full z-50 pb-safe bg-white/95 backdrop-blur-md border-t border-[#EAE4D9] shadow-sm"
+        data-active-classes="text-primary font-semibold">
+        <div class="flex justify-around items-center h-16 px-space-xs max-w-lg mx-auto"><a aria-current="page"
+                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] transition-all text-[#478F49] font-semibold"
+                data-path="inicio" href="#"><span
+                    class="material-symbols-outlined text-[22px]">dashboard</span><span
+                    class="font-label-sm text-label-sm">Inicio</span></a><a
+                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
+                data-path="clientes" href="#"><span
+                    class="material-symbols-outlined text-[22px]">group</span><span
+                    class="font-label-sm text-label-sm">Clientes</span></a><a
+                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
+                data-path="pacientes" href="#"><span
+                    class="material-symbols-outlined text-[22px]">pets</span><span
+                    class="font-label-sm text-label-sm">Pacientes</span></a><a
+                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
+                data-path="solicitudes-atencion" href="#"><span
+                    class="material-symbols-outlined text-[22px]">inbox</span><span
+                    class="font-label-sm text-label-sm">Solicitudes</span></a><a
+                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
+                data-path="perfil-administrador" href="#"><span
+                    class="material-symbols-outlined text-[22px]">clinical_notes</span><span
+                    class="font-label-sm text-label-sm">Gestión</span></a></div>
+    </nav>
+
+</body>
+
+</html>
