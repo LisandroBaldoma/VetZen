@@ -1,7 +1,8 @@
+import { AppBottomNav } from '@/components/app-bottom-nav';
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
-import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { AppTopbar } from '@/components/app-topbar';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -13,11 +14,12 @@ export default function AppSidebarLayout({
             <AppSidebar />
             <AppContent
                 variant="sidebar"
-                className="min-w-0 overflow-x-clip bg-background"
+                className="min-w-0 overflow-x-clip bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0"
             >
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                <AppTopbar breadcrumbs={breadcrumbs} />
                 {children}
             </AppContent>
+            <AppBottomNav />
         </AppShell>
     );
 }
