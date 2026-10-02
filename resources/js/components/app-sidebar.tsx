@@ -1,20 +1,13 @@
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { getNavigationGroups, getNavigationSection } from '@/lib/navigation';
-import { dashboard } from '@/routes';
 import type { Auth } from '@/types';
 
 export function AppSidebar() {
@@ -31,30 +24,12 @@ export function AppSidebar() {
             collapsible="icon"
             className="border-r border-sidebar-border bg-sidebar"
         >
-            <SidebarHeader className="relative border-b border-sidebar-border px-4 pt-4 pb-3 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
-                <SidebarTrigger className="absolute top-3 right-3 md:hidden" />
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="pr-12 md:pr-2"
-                            asChild
-                        >
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+            <SidebarHeader className="h-16 shrink-0 justify-center border-b border-sidebar-border px-6 py-0 pr-14 group-data-[collapsible=icon]/sidebar-wrapper:hidden md:px-6">
+                <AppLogo />
             </SidebarHeader>
-
             <SidebarContent className="px-2 py-4">
                 <NavMain groups={mainNavGroups} />
             </SidebarContent>
-
-            <SidebarFooter className="border-t border-sidebar-border bg-surface-subtle/45 px-4 py-4 group-data-[collapsible=icon]/sidebar-wrapper:px-2">
-                <NavUser />
-            </SidebarFooter>
         </Sidebar>
     );
 }
