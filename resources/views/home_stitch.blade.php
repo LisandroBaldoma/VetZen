@@ -321,7 +321,7 @@
                                 type="button">Ficha de Luna</button><button
                                 class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
                                 type="button"><span class="">Ver solicitud</span><span
-                                    class="material-symbolFs-outlined text-[18px]">chevron_right</span></button></div>
+                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
                     </article>
                     <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
                         <div class="flex items-start justify-between gap-3">
