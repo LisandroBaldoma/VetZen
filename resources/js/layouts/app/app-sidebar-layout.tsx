@@ -14,7 +14,7 @@ export default function AppSidebarLayout({
             <AppSidebar />
             <AppContent
                 variant="sidebar"
-                className="min-w-0 overflow-x-clip bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0"
+                className="min-w-0 overflow-x-clip bg-surface-subtle pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0"
             >
                 <AppTopbar breadcrumbs={breadcrumbs} />
                 {children}

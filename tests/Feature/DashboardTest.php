@@ -81,7 +81,7 @@ class DashboardTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $service = Service::factory()->create(['name' => 'Fisioterapia']);
-        $pet = Pet::factory()->create(['name' => 'Mora']);
+        $pet = Pet::factory()->create(['name' => 'Mora', 'species' => 'Canino']);
 
         $olderPending = ServiceRequest::factory()->for($pet)->for($service)->create([
             'status' => 'pending',
@@ -115,13 +115,14 @@ class DashboardTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('admin/dashboard')
                 ->where('pendingRequestsCount', 2)
-                ->has('requests', 5)
+                ->has('requests', 2)
                 ->where('requests.0.id', $newerPending->id)
                 ->where('requests.1.id', $olderPending->id)
-                ->where('requests.2.id', $recentResolved->id)
+                ->where('requests.0.status', 'pending')
                 ->where('requests.0.pet.name', 'Mora')
+                ->where('requests.0.pet.species', 'Canino')
                 ->where('requests.0.service.name', 'Fisioterapia')
-                ->missing('requests.0.notes')
+                ->where('requests.1.notes', 'Private note')
                 ->missing('client')
                 ->missing('pets')
                 ->missing('pendingRequests')

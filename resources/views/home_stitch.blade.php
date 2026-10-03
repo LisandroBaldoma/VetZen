@@ -1,39 +1,32 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-        name="viewport">
-    <meta content="mobile_tab" name="shell-type">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_dashboard" name="shell-type" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
-        rel="stylesheet">
+        rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet">
+        rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet">
+        rel="stylesheet" />
     <style>
         @layer base {
 
             html,
             body {
-                width: 100vw;
                 margin: 0;
                 padding: 0;
             }
 
             body {
                 overscroll-behavior: none;
-            }
-
-            .pb-safe {
-                padding-bottom: env(safe-area-inset-bottom, 0px);
-            }
-
-            .pt-safe {
-                padding-top: env(safe-area-inset-top, 0px);
             }
 
             main>:first-child {
@@ -52,568 +45,977 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "secondary": "#43690d",
-                        "tertiary": "#894d00",
-                        "on-secondary-fixed-variant": "#2f4f00",
-                        "tertiary-fixed": "#ffdcc0",
-                        "primary-container": "#3b833f",
-                        "on-surface": "#121e14",
-                        "inverse-on-surface": "#e5f5e4",
-                        "on-primary": "#ffffff",
-                        "surface-tint": "#236c2b",
-                        "inverse-surface": "#263328",
-                        "tertiary-container": "#ab630a",
-                        "surface-container-highest": "#d7e7d6",
-                        "on-error": "#ffffff",
-                        "surface-container": "#e3f2e1",
-                        "surface-container-lowest": "#ffffff",
-                        "secondary-fixed-dim": "#a7d46f",
-                        "primary-fixed-dim": "#8dd889",
-                        "on-tertiary-fixed-variant": "#6b3b00",
-                        "on-primary-fixed-variant": "#005315",
-                        "surface-dim": "#cfdece",
-                        "on-tertiary-fixed": "#2d1600",
-                        "tertiary-fixed-dim": "#ffb875",
+            "darkMode": "class",
+            "theme": {
+                "extend": {
+                    "colors": {
                         "secondary-container": "#bfee85",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#102000",
+                        "background": "#eefeed",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "primary-container": "#3b833f",
+                        "on-primary-fixed": "#002204",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e3f2e1",
+                        "on-secondary": "#ffffff",
+                        "outline": "#707a6d",
+                        "surface-tint": "#236c2b",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#8dd889",
+                        "tertiary-container": "#ab630a",
+                        "on-background": "#121e14",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#2f4f00",
+                        "on-surface-variant": "#40493e",
+                        "surface-dim": "#cfdece",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#a8f5a3",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c0c9bb",
+                        "surface-variant": "#d7e7d6",
+                        "secondary": "#43690d",
+                        "on-primary-fixed-variant": "#005315",
+                        "on-primary-container": "#f7fff1",
+                        "primary": "#206928",
+                        "secondary-fixed-dim": "#a7d46f",
+                        "surface-container-low": "#e8f8e7",
+                        "on-surface": "#121e14",
                         "secondary-fixed": "#c2f188",
                         "on-secondary-container": "#476d12",
-                        "inverse-primary": "#8dd889",
-                        "on-secondary": "#ffffff",
-                        "surface": "#eefeed",
-                        "background": "#eefeed",
-                        "on-primary-fixed": "#002204",
-                        "on-tertiary-container": "#fffbff",
+                        "primary-fixed-dim": "#8dd889",
+                        "tertiary-fixed": "#ffdcc0",
                         "surface-bright": "#eefeed",
-                        "primary": "#206928",
-                        "on-primary-container": "#f7fff1",
-                        "primary-fixed": "#a8f5a3",
+                        "inverse-on-surface": "#e5f5e4",
+                        "inverse-surface": "#263328",
+                        "on-tertiary-fixed-variant": "#6b3b00",
                         "surface-container-high": "#ddecdc",
-                        "on-surface-variant": "#40493e",
-                        "surface-container-low": "#e8f8e7",
-                        "error": "#ba1a1a",
-                        "error-container": "#ffdad6",
-                        "on-secondary-fixed": "#102000",
-                        "outline-variant": "#c0c9bb",
-                        "on-tertiary": "#ffffff",
-                        "surface-variant": "#d7e7d6",
-                        "on-background": "#121e14",
-                        "outline": "#707a6d",
-                        "on-error-container": "#93000a"
+                        "surface-container-highest": "#d7e7d6",
+                        "surface": "#eefeed",
+                        "tertiary": "#894d00"
                     },
-                    borderRadius: {
+                    "borderRadius": {
                         "DEFAULT": "0.25rem",
                         "lg": "0.5rem",
                         "xl": "0.75rem",
                         "full": "9999px"
                     },
-                    spacing: {
-                        "gutter-mobile": "1rem",
-                        "margin-mobile": "1rem",
+                    "spacing": {
                         "space-sm": "0.5rem",
+                        "margin-desktop": "2.5rem",
+                        "margin-tablet": "1.5rem",
                         "space-lg": "1.5rem",
+                        "space-xl": "2.25rem",
+                        "margin": "1rem",
+                        "gutter": "1.25rem",
                         "space-xs": "0.25rem",
-                        "margin": "2rem",
-                        "space-2xl": "3rem",
-                        "gutter": "1.5rem",
-                        "space-xl": "2rem",
+                        "gutter-desktop": "1.5rem",
                         "space-md": "1rem"
                     },
-                    fontFamily: {
-                        "headline-lg-mobile": ["Plus Jakarta Sans"],
-                        "headline-sm": ["Plus Jakarta Sans"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "body-sm": ["Plus Jakarta Sans"],
-                        "label-lg": ["Plus Jakarta Sans"],
-                        "headline-lg": ["Plus Jakarta Sans"],
-                        "label-sm": ["Plus Jakarta Sans"],
-                        "body-md": ["Plus Jakarta Sans"],
-                        "display": ["Plus Jakarta Sans"],
+                    "fontFamily": {
                         "label-md": ["Plus Jakarta Sans"],
-                        "title-md": ["Plus Jakarta Sans"],
-                        "headline-md": ["Plus Jakarta Sans"]
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
                     },
-                    fontSize: {
-                        "headline-lg-mobile": ["1.625rem", {
-                            "lineHeight": "2.125rem",
-                            "letterSpacing": "-0.01em",
+                    "fontSize": {
+                        "label-md": ["0.75rem", {
+                            "lineHeight": "1rem",
+                            "letterSpacing": "0.02em",
                             "fontWeight": "600"
                         }],
-                        "headline-sm": ["1.25rem", {
-                            "lineHeight": "1.75rem",
-                            "fontWeight": "600"
-                        }],
-                        "body-lg": ["1rem", {
-                            "lineHeight": "1.6rem",
-                            "fontWeight": "400"
-                        }],
-                        "body-sm": ["0.75rem", {
-                            "lineHeight": "1.2rem",
-                            "fontWeight": "400"
+                        "display-lg": ["3rem", {
+                            "lineHeight": "3.5rem",
+                            "letterSpacing": "-0.02em",
+                            "fontWeight": "700"
                         }],
                         "label-lg": ["0.875rem", {
                             "lineHeight": "1.25rem",
                             "letterSpacing": "0.01em",
                             "fontWeight": "600"
                         }],
-                        "headline-lg": ["2rem", {
-                            "lineHeight": "2.5rem",
-                            "letterSpacing": "-0.015em",
-                            "fontWeight": "600"
+                        "body-lg": ["1.0625rem", {
+                            "lineHeight": "1.625rem",
+                            "fontWeight": "400"
                         }],
                         "label-sm": ["0.6875rem", {
                             "lineHeight": "0.875rem",
                             "letterSpacing": "0.03em",
                             "fontWeight": "600"
                         }],
-                        "body-md": ["0.875rem", {
-                            "lineHeight": "1.45rem",
-                            "fontWeight": "400"
+                        "headline-lg-mobile": ["1.5rem", {
+                            "lineHeight": "2rem",
+                            "fontWeight": "600"
                         }],
-                        "display": ["3rem", {
-                            "lineHeight": "3.5rem",
-                            "letterSpacing": "-0.02em",
+                        "display-lg-mobile": ["2rem", {
+                            "lineHeight": "2.5rem",
+                            "letterSpacing": "-0.01em",
                             "fontWeight": "700"
                         }],
-                        "label-md": ["0.75rem", {
-                            "lineHeight": "1rem",
-                            "letterSpacing": "0.02em",
-                            "fontWeight": "600"
+                        "body-sm": ["0.8125rem", {
+                            "lineHeight": "1.25rem",
+                            "fontWeight": "400"
                         }],
-                        "title-md": ["1.125rem", {
+                        "body-md": ["0.9375rem", {
                             "lineHeight": "1.5rem",
+                            "fontWeight": "400"
+                        }],
+                        "headline-md": ["1.375rem", {
+                            "lineHeight": "1.875rem",
                             "fontWeight": "600"
                         }],
-                        "headline-md": ["1.5rem", {
-                            "lineHeight": "2rem",
-                            "letterSpacing": "-0.01em",
+                        "headline-sm": ["1.125rem", {
+                            "lineHeight": "1.625rem",
+                            "fontWeight": "600"
+                        }],
+                        "headline-lg": ["2rem", {
+                            "lineHeight": "2.5rem",
+                            "letterSpacing": "-0.015em",
                             "fontWeight": "600"
                         }]
                     }
                 }
             }
-        };
-    </script>
-    <style>
-        body {
-            min-height: max(884px, 100dvh);
         }
-    </style>
+    </script>
 </head>
 
-<body class="font-body-md flex flex-col min-h-screen bg-[#FDFAF3] text-[#263328]">
-    <header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md pt-safe border-b border-[#EAE4D9] shadow-sm">
-        <div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm">
-            <div class="flex items-center gap-space-sm min-w-0"><button aria-label="Abrir menú de navegación"
-                    class="w-11 h-11 flex items-center justify-center rounded-lg text-[#606C5D] hover:bg-[#F4EFE6] transition-colors"
-                    type="button"><span class="material-symbols-outlined text-[24px]">menu</span></button><img
-                    alt="VetZen Logo" class="h-9 w-auto object-contain"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLLzI-2ln6XJxfhaGvAjn3Qv-f8yCXT0-k34CjaE5gVKLOyrIdBxmPuqFeHyTs8KhYbfuNHXrUCgK3i4NfiB6IK9t66NjEG2WKfLVUB8BCP9pB4BRBKppa51Tp0z_RsR4tn6zId6LrXDRKCnODT8ZSKEkeT123w1sqcpcR99CAiaPUiJ8ppH83swet3P6leatnJlxwLhXBITfvnlqEJLiQFvJPp2qT3a2slRC1WnO64GF0Ubnod098a32lQiscRLxBw-s">
-                <div class="flex flex-col min-w-0">
-                    <div class="flex items-center gap-space-xs text-[#606C5D] font-label-sm text-label-sm"><span
-                            class="truncate font-medium">VetZen</span><span
-                            class="material-symbols-outlined text-[12px]">chevron_right</span></div>
-                    <h1 class="font-title-md text-title-md text-[#263328] font-semibold truncate leading-none">Inicio
-                    </h1>
-                </div>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+    <aside
+        class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <div class="flex flex-col">
+            <div class="h-16 px-space-lg flex items-center gap-space-sm bg-surface-container-lowest"><img alt="logo.png"
+                    class="h-8 w-auto object-contain"
+                    src="https://lh3.googleusercontent.com/aida/AEtjO1VjP_3hoVwfwHiJFhaIUTyYs32mg_WMzHpX3Ekr1k8FcxeUz2oRf2TDaH5Tdq6eT7CQP7FUp3ASd2hcXLkEr6tWkYy6N76C6t4Snhr3ddjqpNKhQnbex8cWLtjpfte1MNeuWLgYfdP5ssHUnuvhaK-puMIQA0bF3nLIbPOAJuG0iigD_U-xYGiOPDkMRfAzSbQX1I3GVVBqi856HGn3BmVEyZmSzXrcI9piXj3YIeMVTkWDMDCut0dGH_9n5lywUlMCXcISnPdMgA" />
+                <div class="flex flex-col"><span
+                        class="font-headline-sm text-headline-sm text-on-surface font-bold leading-none tracking-tight">VetZen</span><span
+                        class="font-label-sm text-label-sm text-on-surface-variant leading-none mt-1">Clínica
+                        Veterinaria</span></div>
             </div>
-            <div class="flex items-center gap-space-xs"><button aria-label="Solicitudes pendientes"
-                    class="w-11 h-11 flex items-center justify-center rounded-full text-[#606C5D] hover:bg-[#F4EFE6] transition-colors"
-                    type="button"><span class="material-symbols-outlined text-[22px]">notifications</span></button>
-                <div class="w-8 h-8 rounded-full bg-[#478F49] flex items-center justify-center shadow-sm text-white">
-                    <span class="material-symbols-outlined text-[18px]">person</span></div>
+            <div class="px-space-md py-space-sm">
+                <nav class="flex flex-col gap-space-xs"
+                    data-active-classes="bg-surface-container-high text-primary font-label-lg font-semibold rounded-lg">
+                    <a aria-current="page"
+                        class="flex items-center gap-space-sm px-space-md py-space-sm transition-colors bg-surface-container-high text-primary font-label-lg font-semibold rounded-lg"
+                        data-path="inicio" href="#"><span
+                            class="material-symbols-outlined text-[20px]">grid_view</span><span>Inicio</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="clientes" href="#"><span
+                            class="material-symbols-outlined text-[20px]">group</span><span>Clientes</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="pacientes" href="#"><span
+                            class="material-symbols-outlined text-[20px]">pets</span><span>Pacientes</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="solicitudes-de-atencion" href="#"><span
+                            class="material-symbols-outlined text-[20px]">pending_actions</span><span>Solicitudes de
+                            atención</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="servicios-clinicos" href="#"><span
+                            class="material-symbols-outlined text-[20px]">medical_services</span><span>Servicios
+                            clínicos</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="procedimientos-clinicos" href="#"><span
+                            class="material-symbols-outlined text-[20px]">vital_signs</span><span>Procedimientos
+                            clínicos</span></a><a
+                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        data-path="plantillas-de-tratamiento" href="#"><span
+                            class="material-symbols-outlined text-[20px]">description</span><span>Plantillas de
+                            tratamiento</span></a></nav>
             </div>
         </div>
-    </header>
-    <main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-[#FDFAF3] px-margin-mobile">
-        <div class="flex flex-col w-full pb-8 space-y-6">
-            <!-- PAGE HEADER & WELCOME -->
-            <section class="flex flex-col gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div class="space-y-1">
-                        <div
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF4EC] text-[#478F49] text-label-sm font-label-sm font-semibold">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span><span class="">Panel
-                                Operativo Clínico</span></div>
-                        <p class="font-body-md text-[#606C5D] leading-relaxed">Bienvenida de nuevo. Gestión diaria de
-                            terapias y seguimiento clínico integral.</p>
-                    </div><button
-                        class="inline-flex items-center justify-center gap-2 bg-[#478F49] hover:bg-[#3b793d] active:scale-[0.98] text-white font-label-lg text-label-lg px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none"
-                        type="button"><span class="material-symbols-outlined text-[20px]">add</span><span
-                            class="">Nuevo paciente</span></button>
+        <div class="p-space-md bg-surface-container-lowest">
+            <div class="bg-surface-container-low rounded-xl p-space-sm flex items-center justify-between gap-space-xs">
+                <div class="flex items-center gap-space-sm min-w-0">
+                    <div class="w-9 h-9 rounded-full bg-primary flex-shrink-0 flex items-center justify-center"><span
+                            class="material-symbols-outlined text-on-primary text-[20px]">person</span></div>
+                    <div class="flex flex-col truncate"><span
+                            class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Dra. Carmen
+                            V.</span><span
+                            class="font-label-sm text-label-sm text-on-surface-variant truncate">Directora Médica</span>
+                    </div>
                 </div>
-            </section>
-            <!-- OPERATIONAL KPI CARD -->
-            <section>
+                <div class="flex items-center gap-1"><button
+                        class="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        title="Ajustes" type="button"><span
+                            class="material-symbols-outlined text-[18px]">settings</span></button><button
+                        class="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                        title="Cerrar sesión" type="button"><span
+                            class="material-symbols-outlined text-[18px]">logout</span></button></div>
+            </div>
+        </div>
+    </aside>
+    <div class="pl-72">
+        <header
+            class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl">
+            <div class="flex items-center gap-space-md"><img alt="logo.png" class="h-8 w-auto object-contain"
+                    src="https://lh3.googleusercontent.com/aida/AEtjO1VjP_3hoVwfwHiJFhaIUTyYs32mg_WMzHpX3Ekr1k8FcxeUz2oRf2TDaH5Tdq6eT7CQP7FUp3ASd2hcXLkEr6tWkYy6N76C6t4Snhr3ddjqpNKhQnbex8cWLtjpfte1MNeuWLgYfdP5ssHUnuvhaK-puMIQA0bF3nLIbPOAJuG0iigD_U-xYGiOPDkMRfAzSbQX1I3GVVBqi856HGn3BmVEyZmSzXrcI9piXj3YIeMVTkWDMDCut0dGH_9n5lywUlMCXcISnPdMgA" />
+                <nav class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant"><span
+                        class="hover:text-on-surface transition-colors">VetZen</span><span
+                        class="material-symbols-outlined text-[14px]">chevron_right</span><span
+                        class="text-primary font-semibold">Clínica</span></nav>
                 <div
-                    class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div class="flex items-center gap-3.5 min-w-0">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49] shrink-0">
-                            <span class="material-symbols-outlined text-[22px]">assignment_late</span></div>
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2"><span
-                                    class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328] leading-none">4</span><span
-                                    class="font-label-md text-label-md font-semibold text-[#263328]">Solicitudes
-                                    pendientes</span></div>
-                            <p class="font-body-sm text-body-sm text-[#606C5D] mt-0.5 truncate">Pacientes esperando
-                                confirmación de triage y evaluación inicial</p>
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#F4EFE6]">
-                        <span
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold"><span
-                                class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Requieren revisión</span><a
-                            class="inline-flex items-center gap-1 font-label-md text-label-md text-[#478F49] font-semibold hover:text-[#3b793d] transition-colors shrink-0"
-                            href="#solicitudes"><span class="">Ver todas</span><span
-                                class="material-symbols-outlined text-[16px]">arrow_forward</span></a></div>
+                    class="hidden md:flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span><span>Atención Médica Activa</span></div>
+            </div>
+            <div class="flex items-center gap-space-md"><button
+                    class="relative p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                    title="Notificaciones" type="button"><span
+                        class="material-symbols-outlined text-[22px]">notifications</span><span
+                        class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></button>
+                <div class="flex items-center gap-space-sm pl-space-sm">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
+                            class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
-            </section>
-            <!-- PRIMARY SECTION: PRIORITIZED REQUESTS -->
-            <section class="space-y-3" id="solicitudes">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Solicitudes
-                            prioritarias</h2><span
-                            class="px-2.5 py-1 rounded-full bg-[#EAE4D9] text-[#263328] font-label-md text-label-md font-bold">(4)</span>
-                    </div><button
-                        class="text-[#478F49] font-label-sm text-label-sm flex items-center gap-1 hover:underline"
-                        id="btn-toggle-demo" type="button"><span
-                            class="material-symbols-outlined text-[16px]">visibility</span><span id="toggle-label"
-                            class="">Alternar estado vacío</span></button>
-                </div>
-                <div class="flex flex-col gap-3" id="cards-feed">
-                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex items-center gap-3.5 min-w-0">
-                                <div
-                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
-                                    <img class="w-full h-full object-cover" data-alt="Luna golden retriever"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD381ri6VqqseQcHIXnev4R9qMrmnDFi5FjMjSu_im9KAww0EaZsV7mVHA-9iFMbPzZ_wF8M51cBGkYoMOtzaqgZjrnmUk8NC9GUFToGu5rfAlMzMutTSMLMkQr8tcprxuvoXzli_z6w25VOhuK4nNX-gguZTAC6n1WfZ9Z1jaDGebRUoiyKuegNDIui_FF-UCo9q2x6jHDJQnVEB975jKgb--br3L61KfIbRaBrqsSnuASk3orssNMCw">
+            </div>
+        </header>
+        <main class="relative pt-16 bg-surface min-h-screen">
+            <div class="max-w-7xl mx-auto px-space-xl py-space-lg">
+                <div class="flex flex-col w-full">
+                    <!-- PAGE HEADER & PRIMARY KPI -->
+                    <div class="flex flex-col gap-space-lg mb-space-xl">
+                        <!-- Top Bar: Title & Action -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex items-center gap-space-sm flex-wrap">
+                                    <h1
+                                        class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">
+                                        Inicio</h1>
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-md text-label-md">
+                                        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                        Panel Operativo Clínico
+                                    </span>
                                 </div>
-                                <div class="min-w-0">
-                                    <div class="flex items-center gap-2 mb-0.5">
-                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Luna
-                                        </h3><span
-                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Golden Retriever • 4
-                                        años</p>
-                                </div>
-                            </div><span
-                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
-                        </div>
-                        <div class="border-t border-[#F4EFE6] pt-3">
-                            <div
-                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
-                                <span class="material-symbols-outlined text-[20px] text-[#478F49]">spa</span><span
-                                    class="">Acupuntura Veterinaria</span></div>
-                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Sesión de evaluación
-                                preliminar para manejo del dolor articular crónico.</p>
-                        </div>
-                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
-                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
-                                type="button">Ficha de Luna</button><button
-                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
-                                type="button"><span class="">Ver solicitud</span><span
-                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
-                    </article>
-                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex items-center gap-3.5 min-w-0">
-                                <div
-                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
-                                    <img class="w-full h-full object-cover" data-alt="Milo cat"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuApAaIMatPiaIn6_-zM-FXf7eppCA5T543xDZbQuxkWTstJg7bDHi_BOc1kMrWmf_IAb4npoociwr2fUnp5F6aNH6rBhdp31R25X5IKESArI-9X0OLQnY3xSX5IUHPJM9D63JMOUMilmrzRwEvD1A0lqq74DLHtjqdwJC_SYcN2hldFC5EnONS7BLj1wGvKkBrz5yL1A53R31WbNUOOWfuMOYjFhQaMwJApktq8LlsGa7jppqretg4Edg">
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="flex items-center gap-2 mb-0.5">
-                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Milo
-                                        </h3><span
-                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Felino</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Gato Europeo • 6 años
-                                    </p>
-                                </div>
-                            </div><span
-                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
-                        </div>
-                        <div class="border-t border-[#F4EFE6] pt-3">
-                            <div
-                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
-                                <span
-                                    class="material-symbols-outlined text-[20px] text-[#478F49]">accessibility_new</span><span
-                                    class="">Fisioterapia y Rehabilitación</span></div>
-                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Control post-quirúrgico
-                                de miembro posterior izquierdo con rangos de movimiento.</p>
-                        </div>
-                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
-                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
-                                type="button">Ficha de Milo</button><button
-                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
-                                type="button"><span class="">Ver solicitud</span><span
-                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
-                    </article>
-                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex items-center gap-3.5 min-w-0">
-                                <div
-                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
-                                    <img class="w-full h-full object-cover" data-alt="Thor bulldog"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB622ZEkcbDdE7PNWVuHdH0hR-vc75tuelwbLyzFHljPllTMdUdUgqBze_FotCy-mRrI_cTmRHTWlAMamDu_UjNOmwoUqSap8jbUuNVOiRdwkKN-O_d6Hq8tW41ku0G8DC-laiLWv7QM66pD6morqQ9R9q0voY0ydP58hUIVVWkGtSPQIRIaeaTsPrjmBUideyuZpsxVun9Xypqs9flikrMkSTnGos5VgFbZmwKupsGt1aYP9ENeU1KEg">
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="flex items-center gap-2 mb-0.5">
-                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Thor
-                                        </h3><span
-                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Bulldog Francés • 2
-                                        años</p>
-                                </div>
-                            </div><span
-                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
-                        </div>
-                        <div class="border-t border-[#F4EFE6] pt-3">
-                            <div
-                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
-                                <span class="material-symbols-outlined text-[20px] text-[#478F49]">flare</span><span
-                                    class="">Terapia Láser</span></div>
-                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Estimulación de
-                                cicatrización dermatológica en pliegues nasolabiales.</p>
-                        </div>
-                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
-                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
-                                type="button">Ficha de Thor</button><button
-                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
-                                type="button"><span class="">Ver solicitud</span><span
-                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
-                    </article>
-                    <article class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm flex flex-col gap-3.5">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex items-center gap-3.5 min-w-0">
-                                <div
-                                    class="relative shrink-0 w-16 h-16 rounded-xl bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center overflow-hidden">
-                                    <img class="w-full h-full object-cover" data-alt="Kira mixed dog"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_Wu3DdYO5wANoC_NH7mOzd9ULUHNynwAouV0jiNX5KvMdbB3NNTBvuY_liA9TrZQsRuwxkfm98uWDzUKjGSfN2OQlWyKuP1I_iLmLZeZv5BspCDD9ER-XBQ1FIbm_FknHx43HUG4S538HFtWzhttxCw1NVY_i_AwSNt3T1NDa0RBSiQwtQx9yjCI5JlXLEt98wl0U8kuXLGfC-0Lv4VcnPLldFG-e5Q_zVPXdND3KQeYlIWnLYE_rAA">
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="flex items-center gap-2 mb-0.5">
-                                        <h3 class="font-title-md text-title-md font-bold text-[#263328] truncate">Kira
-                                        </h3><span
-                                            class="px-2.5 py-0.5 rounded-full bg-[#F7F4EE] text-[#606C5D] font-label-md text-label-md shrink-0 border border-[#EAE4D9] font-medium">Canino</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-[#606C5D] truncate">Mestiza • 8 años</p>
-                                </div>
-                            </div><span
-                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-md text-label-md font-semibold shrink-0"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span>
-                        </div>
-                        <div class="border-t border-[#F4EFE6] pt-3">
-                            <div
-                                class="flex items-center gap-1.5 text-[#263328] font-title-md text-title-md mb-1 font-semibold">
-                                <span
-                                    class="material-symbols-outlined text-[20px] text-[#478F49]">psychiatry</span><span
-                                    class="">Fitoterapia y Nutrición Clínica</span></div>
-                            <p class="font-body-md text-body-md text-[#606C5D] leading-relaxed">Ajuste de dieta
-                                terapéutica botánica para soporte digestivo y hepático.</p>
-                        </div>
-                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#F4EFE6]"><button
-                                class="px-4 py-2.5 rounded-lg bg-[#F7F4EE] hover:bg-[#EAE4D9] text-[#263328] border border-[#EAE4D9] font-label-md text-label-md transition-colors font-semibold"
-                                type="button">Ficha de Kira</button><button
-                                class="px-4 py-2.5 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors flex items-center gap-1 shadow-sm font-semibold"
-                                type="button"><span class="">Ver solicitud</span><span
-                                    class="material-symbols-outlined text-[18px]">chevron_right</span></button></div>
-                    </article>
-                </div>
-                <div class="hidden bg-white rounded-xl p-8 text-center border border-[#EAE4D9] shadow-sm"
-                    id="empty-state-view">
-                    <div
-                        class="w-16 h-16 rounded-full bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center mx-auto mb-3 text-[#478F49]">
-                        <span class="material-symbols-outlined text-[32px]">task_alt</span></div>
-                    <h3 class="font-title-md text-title-md font-semibold text-[#263328] mb-1">Sin solicitudes
-                        pendientes</h3>
-                    <p class="font-body-sm text-body-sm text-[#606C5D] max-w-xs mx-auto mb-4">Todo el trabajo clínico
-                        está al día. No hay revisiones pendientes en la cola de triage.</p><button
-                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#478F49] hover:bg-[#3b793d] text-white font-label-md text-label-md transition-colors font-medium"
-                        type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span
-                            class="">Registrar nueva solicitud manual</span></button>
-                </div>
-            </section>
-            <!-- QUICK ACCESS TO CLINICAL CATALOG -->
-            <section class="space-y-3">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-[#263328]">Accesos
-                        rápidos</h2><span class="font-label-md text-label-md text-[#606C5D] font-medium">Catálogo y
-                        Procesos</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3"><a
-                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
-                        href="#pacientes">
-                        <div
-                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[20px]">pets</span></div>
-                        <div><span
-                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Pacientes</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Expedientes
-                                activos</span></div>
-                    </a><a
-                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
-                        href="#solicitudes-atencion">
-                        <div
-                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[20px]">assignment</span></div>
-                        <div><span
-                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Admisiones</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Solicitudes triage</span>
-                        </div>
-                    </a><a
-                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
-                        href="#servicios">
-                        <div
-                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[20px]">vital_signs</span></div>
-                        <div><span
-                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Servicios</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Terapias y
-                                medicina</span></div>
-                    </a><a
-                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group"
-                        href="#procedimientos">
-                        <div
-                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#80AB4B] flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[20px]">medical_services</span></div>
-                        <div><span
-                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Procedimientos</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Maniobras y pautas</span>
-                        </div>
-                    </a><a
-                        class="bg-white hover:bg-[#FAF7F0] border border-[#EAE4D9] transition-colors rounded-xl p-3.5 shadow-sm flex flex-col gap-2 group col-span-2 sm:col-span-1"
-                        href="#plantillas">
-                        <div
-                            class="w-9 h-9 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] text-[#478F49] flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[20px]">receipt_long</span></div>
-                        <div><span
-                                class="font-label-md text-label-md font-semibold text-[#263328] block leading-tight">Plantillas</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D] block mt-0.5">Planes
-                                terapéuticos</span></div>
-                    </a></div>
-            </section>
-            <!-- REUSABLE SEMANTIC CLINICAL STATUS GUIDE -->
-            <section class="bg-white rounded-xl p-4 border border-[#EAE4D9] shadow-sm space-y-3">
-                <details class="group cursor-pointer">
-                    <summary class="flex items-center justify-between list-none focus:outline-none">
-                        <div class="flex items-center gap-2">
-                            <div
-                                class="w-7 h-7 rounded-lg bg-[#F7F4EE] border border-[#EAE4D9] flex items-center justify-center text-[#478F49]">
-                                <span class="material-symbols-outlined text-[18px]">verified</span></div>
-                            <div>
-                                <h3 class="font-label-lg text-label-lg font-semibold text-[#263328]">Guía de Estados
-                                    Clínicos</h3>
-                                <p class="font-body-sm text-body-sm text-[#606C5D]">Estándar semántico unificado de
-                                    VetZen</p>
+                                <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                                    Bienvenida de nuevo. Gestión diaria de terapias y seguimiento clínico integral.
+                                </p>
                             </div>
-                        </div><span
-                            class="material-symbols-outlined text-[#606C5D] transition-transform group-open:rotate-180 text-[20px]">expand_more</span>
-                    </summary>
-                    <div class="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Activo</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Tratamiento regular</span>
+                            <div class="flex items-center gap-space-sm">
+                                <button
+                                    class="h-11 px-space-lg rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container transition-all flex items-center gap-2 active:scale-95"
+                                    type="button">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                    <span>+ Nuevo paciente</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F7EB] text-[#80AB4B] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#80AB4B]"></span>En curso</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#80AB4B • Sesión activa hoy</span>
+                        <!-- KPI / Overview Highlights Banner -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+                            <!-- Tarjeta KPI Principal: Solicitudes pendientes -->
+                            <div
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+                                <div class="flex items-start justify-between gap-space-md">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-12 h-12 rounded-xl bg-tertiary-fixed/40 flex items-center justify-center text-tertiary">
+                                            <span class="material-symbols-outlined text-[26px]">pending_actions</span>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-display-lg text-display-lg font-bold text-on-surface leading-none"
+                                                id="kpi-count">4</span>
+                                            <p
+                                                class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">
+                                                Solicitudes pendientes</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="px-2.5 py-1 rounded-full bg-[#EA9640]/15 text-[#8A4F13] font-label-sm text-label-sm font-semibold tracking-wide">
+                                        Requieren revisión
+                                    </span>
+                                </div>
+                                <div
+                                    class="mt-4 pt-3 flex items-center justify-between border-t border-surface-variant/40">
+                                    <p
+                                        class="font-body-sm text-body-sm text-on-surface-variant max-w-[210px] leading-snug">
+                                        Pacientes esperando confirmación de triage y evaluación inicial.
+                                    </p>
+                                    <a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline shrink-0"
+                                        href="#">
+                                        Ver todas
+                                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Métricas complementarias de soporte clínico -->
+                            <div
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+                                            <span class="material-symbols-outlined text-[26px]">vital_signs</span>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-display-lg text-display-lg font-bold text-on-surface leading-none">12</span>
+                                            <p
+                                                class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">
+                                                Terapias hoy</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="px-2.5 py-1 rounded-full bg-secondary-container/50 text-secondary font-label-sm text-label-sm font-semibold">
+                                        En cronograma
+                                    </span>
+                                </div>
+                                <div
+                                    class="mt-4 pt-3 flex items-center justify-between border-t border-surface-variant/40">
+                                    <p class="font-body-sm text-body-sm text-on-surface-variant text-sm">
+                                        8 completadas • 4 programadas para turno tarde.
+                                    </p>
+                                    <span class="font-label-md text-label-md text-on-surface-variant font-medium">85%
+                                        ocupación</span>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+                                            <span class="material-symbols-outlined text-[26px]">medical_services</span>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-display-lg text-display-lg font-bold text-on-surface leading-none">98.4%</span>
+                                            <p
+                                                class="font-label-lg text-label-lg text-on-surface font-semibold mt-0.5">
+                                                Adherencia médica</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-semibold">
+                                        Óptima
+                                    </span>
+                                </div>
+                                <div
+                                    class="mt-4 pt-3 flex items-center justify-between border-t border-surface-variant/40">
+                                    <p class="font-body-sm text-body-sm text-on-surface-variant text-sm">
+                                        Cumplimiento activo de protocolos terapéuticos semanales.
+                                    </p>
+                                    <span class="font-label-md text-label-md text-primary font-bold">Sin alertas</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF5EB] text-[#D86B1E] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Pendiente</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Triage y validación</span>
-                        </div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EBF4EC] text-[#478F49] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#478F49]"></span>Resuelto</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#478F49 • Alta favorable</span></div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF9E6] text-[#B8871F] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#E8AD46]"></span>Completado</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#E8AD46 • Ciclo concluido</span></div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F3F2EF] text-[#606C5D] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#606C5D]"></span>Inactivo</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#606C5D • Pausa programada</span>
-                        </div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FDEEEB] text-[#DA5F42] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#DA5F42]"></span>Cancelado</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#DA5F42 • Cita desestimada</span>
-                        </div>
-                        <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#EAE4D9] flex flex-col gap-1"><span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FFF4E5] text-[#C9721D] font-label-sm text-label-sm font-semibold w-fit"><span
-                                    class="w-1.5 h-1.5 rounded-full bg-[#EA9640]"></span>Suspendido</span><span
-                                class="font-body-sm text-body-sm text-[#606C5D]">#EA9640 • Interrupción</span></div>
                     </div>
-                </details>
-            </section>
-        </div>
-        <script>
-            (function() {
-                const toggleBtn = document.getElementById('btn-toggle-demo');
-                const cardsFeed = document.getElementById('cards-feed');
-                const emptyState = document.getElementById('empty-state-view');
-                const toggleLabel = document.getElementById('toggle-label');
+                    <!-- SOLICITUDES PRIORITARIAS (SECCIÓN OPERATIVA) -->
+                    <section class="flex flex-col gap-space-md mb-space-xl">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-1">
+                            <div class="flex items-center gap-3">
+                                <h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
+                                    Solicitudes prioritarias</h2>
+                                <span
+                                    class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-primary font-label-md text-label-md font-bold"
+                                    id="requests-badge">
+                                    4 pendientes
+                                </span>
+                            </div>
+                            <!-- Interactive Toggle for empty-state review -->
+                            <button
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-md text-label-md transition-colors w-fit"
+                                id="toggle-empty-state" type="button">
+                                <span class="material-symbols-outlined text-[18px]">sync_alt</span>
+                                <span>Alternar estado vacío</span>
+                            </button>
+                        </div>
+                        <!-- Active List of Requests -->
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-space-md transition-all" id="requests-grid">
+                            <!-- Card 1: Luna -->
+                            <article
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-space-md group">
+                                <div class="flex items-start gap-space-md">
+                                    <div
+                                        class="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-surface-container-low shadow-sm">
+                                        <img class="w-full h-full object-cover"
+                                            data-alt="High resolution portrait of a friendly gentle Golden Retriever dog named Luna with shiny warm honey coat, calm veterinary clinical natural lighting with soft green background bokeh"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhY-yyvjurvW8zkTC_4BB-CrT7rRHtFMu9wgIgmoqDEpKsJkK9KjP94VzeiZYx0YRqL2f2NpGyvI9AL3Td_g9_T0xqGt4WP_Ce4jedxgQ0bfQzTsCCHFQbRiMSpibK0K--y9veS5KKzmyZPwGJZcdGb0QgL8HC6BtgWrCj5vdmsoERdrzOLSf1_QfINgASZo_S7IWndiVl8NP8xbEwHyf33oV-WxtQxhIqCLfErt82NKJdlFLa7w7wHA" />
+                                    </div>
+                                    <div class="flex flex-col flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <div>
+                                                <h3
+                                                    class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
+                                                    Luna</h3>
+                                                <p
+                                                    class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+                                                    Canino • Golden Retriever • 4 años</p>
+                                            </div>
+                                            <span
+                                                class="px-2.5 py-1 rounded-full bg-[#EA9640]/15 text-[#8A4F13] font-label-sm text-label-sm font-semibold tracking-wide shrink-0">
+                                                Pendiente
+                                            </span>
+                                        </div>
+                                        <!-- Terapia vinculada -->
+                                        <div
+                                            class="inline-flex items-center gap-1.5 text-primary font-label-md text-label-md font-semibold mt-1">
+                                            <span class="material-symbols-outlined text-[18px]">healing</span>
+                                            <span>Acupuntura Veterinaria</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p
+                                    class="font-body-md text-body-md text-on-surface-variant bg-surface-container-low/60 rounded-xl p-3">
+                                    Sesión de evaluación preliminar para manejo del dolor articular crónico en cadera y
+                                    rodillas.
+                                </p>
+                                <div class="flex items-center justify-between gap-3 pt-2">
+                                    <span
+                                        class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        Recibido hace 25 min
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-colors"
+                                            type="button">
+                                            Ficha de Luna
+                                        </button>
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center gap-1"
+                                            type="button">
+                                            <span>Ver solicitud</span>
+                                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                            <!-- Card 2: Milo -->
+                            <article
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-space-md group">
+                                <div class="flex items-start gap-space-md">
+                                    <div
+                                        class="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-surface-container-low shadow-sm">
+                                        <img class="w-full h-full object-cover"
+                                            data-alt="Charming tabby domestic European shorthair cat Milo with serene green eyes, clean clinical warm veterinary ambiance, sharp focus and tender expression"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBydb61frKayTJyHalyWF1l26PRi9e7eYNFz7h3_YCTNWAGpcx__eToUSSKwPOSDvgbkh87gjzkxab-OPJea9OVmmymJtDdEFim8vkY6A9KrH-d4x2rEfxaQxGgBm84FRLWkeQMxgIK8XIYUu9eUaYXUAKN1lUtgcc5oZ4a9O8PQpu966k9U2Nx2sG7CQMifBBEHCs_Kq5jvDlMEKq18jegsfznG_TNqzRA5cWEAeABUkuqKOQtsbeE1w" />
+                                    </div>
+                                    <div class="flex flex-col flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <div>
+                                                <h3
+                                                    class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
+                                                    Milo</h3>
+                                                <p
+                                                    class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+                                                    Felino • Gato Europeo • 6 años</p>
+                                            </div>
+                                            <span
+                                                class="px-2.5 py-1 rounded-full bg-[#EA9640]/15 text-[#8A4F13] font-label-sm text-label-sm font-semibold tracking-wide shrink-0">
+                                                Pendiente
+                                            </span>
+                                        </div>
+                                        <!-- Terapia vinculada -->
+                                        <div
+                                            class="inline-flex items-center gap-1.5 text-primary font-label-md text-label-md font-semibold mt-1">
+                                            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
+                                            <span>Fisioterapia y Rehabilitación</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p
+                                    class="font-body-md text-body-md text-on-surface-variant bg-surface-container-low/60 rounded-xl p-3">
+                                    Control post-quirúrgico de miembro posterior izquierdo con rangos de movimiento y
+                                    fortalecimiento.
+                                </p>
+                                <div class="flex items-center justify-between gap-3 pt-2">
+                                    <span
+                                        class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        Recibido hace 1 hora
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-colors"
+                                            type="button">
+                                            Ficha de Milo
+                                        </button>
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center gap-1"
+                                            type="button">
+                                            <span>Ver solicitud</span>
+                                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                            <!-- Card 3: Thor -->
+                            <article
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-space-md group">
+                                <div class="flex items-start gap-space-md">
+                                    <div
+                                        class="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-surface-container-low shadow-sm">
+                                        <img class="w-full h-full object-cover"
+                                            data-alt="Sweet expressive French Bulldog Thor with clean fawn fur coat in warm natural daylight inside veterinary rehabilitation studio"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj7CSkPL21ByPyXnWsO2Sh-0czMl2YxrTCJLWjNKsz-vjmBTuajh-ees3CsUOs2H3pQLg9hPjPiIIyvXuDru7upGVlgOc_srnBXgUYjkdTy3cDgH0v-O9SdE0gMs9RMiKStWugxfWOWLgButJZrUKUVenfORuYVlolj9fvQ5fM4L5d4TpxDE5WVHcn8BHk9VE_GxRhXkalI6YGlYti3SAI8SraNX-OFFDepCCAfqMjTaEBXDSU5lgQ9w" />
+                                    </div>
+                                    <div class="flex flex-col flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <div>
+                                                <h3
+                                                    class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
+                                                    Thor</h3>
+                                                <p
+                                                    class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+                                                    Canino • Bulldog Francés • 2 años</p>
+                                            </div>
+                                            <span
+                                                class="px-2.5 py-1 rounded-full bg-[#EA9640]/15 text-[#8A4F13] font-label-sm text-label-sm font-semibold tracking-wide shrink-0">
+                                                Pendiente
+                                            </span>
+                                        </div>
+                                        <!-- Terapia vinculada -->
+                                        <div
+                                            class="inline-flex items-center gap-1.5 text-primary font-label-md text-label-md font-semibold mt-1">
+                                            <span class="material-symbols-outlined text-[18px]">flare</span>
+                                            <span>Terapia Láser</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p
+                                    class="font-body-md text-body-md text-on-surface-variant bg-surface-container-low/60 rounded-xl p-3">
+                                    Estimulación de cicatrización dermatológica en pliegues nasolabiales y descongestión
+                                    epidérmica.
+                                </p>
+                                <div class="flex items-center justify-between gap-3 pt-2">
+                                    <span
+                                        class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        Recibido hace 2 horas
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-colors"
+                                            type="button">
+                                            Ficha de Thor
+                                        </button>
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center gap-1"
+                                            type="button">
+                                            <span>Ver solicitud</span>
+                                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                            <!-- Card 4: Kira -->
+                            <article
+                                class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-space-md group">
+                                <div class="flex items-start gap-space-md">
+                                    <div
+                                        class="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-surface-container-low shadow-sm">
+                                        <img class="w-full h-full object-cover"
+                                            data-alt="Attentive mixed-breed medium dog Kira with warm gentle hazel eyes resting comfortably on clean linen veterinary consultation bed"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5t_qStAgCBd81QURYaQwSBUMzCfF6CTIXj8v_dmTzyidQzqSbPHwxRU3RPWpmL7nNjhBaAoYDac_0t7p4QsW0ZweAav97O4G6jEbM0rdcpWZt2CksyHiTFuIt_DeWe-MRh_Ct0sPqTL2mnVBddZHKRIPOfvWLWcCFIMZtpaVuE_h0ugYmUjs7ebTuqGzlWSseBupWbNpS1SRJEKx_RniqsLYoKbl-5aLKJ9l3tyhQyrgQm5v1pL7s0g" />
+                                    </div>
+                                    <div class="flex flex-col flex-1 min-w-0">
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <div>
+                                                <h3
+                                                    class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
+                                                    Kira</h3>
+                                                <p
+                                                    class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+                                                    Canino • Mestiza • 8 años</p>
+                                            </div>
+                                            <span
+                                                class="px-2.5 py-1 rounded-full bg-[#EA9640]/15 text-[#8A4F13] font-label-sm text-label-sm font-semibold tracking-wide shrink-0">
+                                                Pendiente
+                                            </span>
+                                        </div>
+                                        <!-- Terapia vinculada -->
+                                        <div
+                                            class="inline-flex items-center gap-1.5 text-primary font-label-md text-label-md font-semibold mt-1">
+                                            <span class="material-symbols-outlined text-[18px]">spa</span>
+                                            <span>Fitoterapia y Nutrición Clínica</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p
+                                    class="font-body-md text-body-md text-on-surface-variant bg-surface-container-low/60 rounded-xl p-3">
+                                    Ajuste de dieta terapéutica botánica para soporte digestivo y hepático en paciente
+                                    senior.
+                                </p>
+                                <div class="flex items-center justify-between gap-3 pt-2">
+                                    <span
+                                        class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        Recibido hace 3 horas
+                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md font-semibold transition-colors"
+                                            type="button">
+                                            Ficha de Kira
+                                        </button>
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center gap-1"
+                                            type="button">
+                                            <span>Ver solicitud</span>
+                                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        <!-- Empty State View (Toggleable) -->
+                        <div class="hidden bg-surface-container-lowest rounded-2xl p-space-xl shadow-sm text-center flex-col items-center justify-center py-16"
+                            id="requests-empty-state">
+                            <div
+                                class="w-16 h-16 rounded-full bg-surface-container-high text-primary flex items-center justify-center mb-4">
+                                <span class="material-symbols-outlined text-[32px]">task_alt</span>
+                            </div>
+                            <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Bandeja de triage
+                                al día</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant max-w-md mt-1 mb-6">
+                                No hay solicitudes de atención pendientes de revisión en este momento. Todas las
+                                evaluaciones preliminares han sido procesadas.
+                            </p>
+                            <button
+                                class="h-11 px-6 rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-semibold shadow-sm hover:bg-primary-container transition-colors inline-flex items-center gap-2"
+                                type="button">
+                                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                                <span>Crear solicitud manual</span>
+                            </button>
+                        </div>
+                    </section>
+                    <!-- ACCESOS RÁPIDOS: CATÁLOGO Y PROCESOS -->
+                    <section class="flex flex-col gap-space-md mb-space-xl">
+                        <div>
+                            <h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
+                                Accesos rápidos</h2>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">Catálogo y Procesos esenciales
+                                de la práctica clínica</p>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-space-md">
+                            <!-- 1: Pacientes -->
+                            <a class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group border border-transparent hover:border-surface-variant"
+                                href="#">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-low group-hover:bg-primary-fixed text-primary flex items-center justify-center mb-3 transition-colors">
+                                    <span class="material-symbols-outlined text-[24px]">pets</span>
+                                </div>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">Pacientes</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Expedientes
+                                    activos</span>
+                            </a>
+                            <!-- 2: Admisiones -->
+                            <a class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group border border-transparent hover:border-surface-variant"
+                                href="#">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-low group-hover:bg-primary-fixed text-primary flex items-center justify-center mb-3 transition-colors">
+                                    <span class="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+                                </div>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">Admisiones</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Solicitudes
+                                    triage</span>
+                            </a>
+                            <!-- 3: Servicios -->
+                            <a class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group border border-transparent hover:border-surface-variant"
+                                href="#">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-low group-hover:bg-primary-fixed text-primary flex items-center justify-center mb-3 transition-colors">
+                                    <span class="material-symbols-outlined text-[24px]">medical_services</span>
+                                </div>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">Servicios</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Terapias y
+                                    medicina</span>
+                            </a>
+                            <!-- 4: Procedimientos -->
+                            <a class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group border border-transparent hover:border-surface-variant"
+                                href="#">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-low group-hover:bg-primary-fixed text-primary flex items-center justify-center mb-3 transition-colors">
+                                    <span class="material-symbols-outlined text-[24px]">vital_signs</span>
+                                </div>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">Procedimientos</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Maniobras y
+                                    pautas</span>
+                            </a>
+                            <!-- 5: Plantillas -->
+                            <a class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group border border-transparent hover:border-surface-variant"
+                                href="#">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-low group-hover:bg-primary-fixed text-primary flex items-center justify-center mb-3 transition-colors">
+                                    <span class="material-symbols-outlined text-[24px]">description</span>
+                                </div>
+                                <span
+                                    class="font-label-lg text-label-lg text-on-surface font-bold group-hover:text-primary transition-colors">Plantillas</span>
+                                <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Planes
+                                    terapéuticos</span>
+                            </a>
+                        </div>
+                    </section>
+                    <!-- GUÍA DE ESTADOS CLÍNICOS & ESPECIFICACIÓN DEL SISTEMA VISUAL -->
+                    <section class="bg-surface-container-lowest rounded-2xl shadow-sm p-space-lg mb-space-lg">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-md border-b border-surface-variant/50 gap-space-sm">
+                            <div class="flex items-center gap-2">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-surface-container-high text-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[20px]">palette</span>
+                                </div>
+                                <div>
+                                    <h2
+                                        class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
+                                        Guía de Estados Clínicos y Especificación Visual</h2>
+                                    <p class="font-body-sm text-body-sm text-on-surface-variant">Vocabulario cromático
+                                        unificado y componentes normativos de VetZen</p>
+                                </div>
+                            </div>
+                            <button
+                                class="inline-flex items-center gap-1 text-primary font-label-md text-label-md font-semibold hover:underline"
+                                id="toggle-guide-body" type="button">
+                                <span id="guide-toggle-text">Ocultar especificación</span>
+                                <span class="material-symbols-outlined text-[18px]"
+                                    id="guide-toggle-icon">expand_less</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col gap-space-lg pt-space-lg" id="guide-content">
+                            <!-- 8 Estados Semánticos Oficiales -->
+                            <div>
+                                <h4
+                                    class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-bold mb-space-sm">
+                                    Semántica de Estados Médicos (8 Estados Oficiales)
+                                </h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-space-sm">
+                                    <!-- 1. Activo -->
+                                    <div class="bg-[#478F49]/10 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#478F49] text-white font-label-sm text-label-sm font-semibold">Activo</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#263328] font-bold mt-1">#478F49</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Tratamiento
+                                            en vigencia</span>
+                                    </div>
+                                    <!-- 2. Inactivo -->
+                                    <div
+                                        class="bg-surface-container-high/60 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant font-label-sm text-label-sm font-semibold">Inactivo</span>
+                                        <span class="font-label-sm text-label-sm text-[#263328] font-bold mt-1">Gris
+                                            neutro</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Alta
+                                            o sin terapia</span>
+                                    </div>
+                                    <!-- 3. Pendiente -->
+                                    <div class="bg-[#EA9640]/15 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#EA9640] text-white font-label-sm text-label-sm font-semibold">Pendiente</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#8A4F13] font-bold mt-1">#EA9640</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Triage
+                                            / Espera</span>
+                                    </div>
+                                    <!-- 4. Resuelto -->
+                                    <div class="bg-[#2A7B5E]/15 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#2A7B5E] text-white font-label-sm text-label-sm font-semibold">Resuelto</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#1b503e] font-bold mt-1">#2A7B5E</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Síntoma
+                                            mitigado</span>
+                                    </div>
+                                    <!-- 5. Cancelado -->
+                                    <div class="bg-[#DA5F42]/15 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#DA5F42] text-white font-label-sm text-label-sm font-semibold">Cancelado</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#8F2C16] font-bold mt-1">#DA5F42</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Sesión
+                                            anulada</span>
+                                    </div>
+                                    <!-- 6. En curso -->
+                                    <div class="bg-[#E8AD46]/20 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#E8AD46] text-[#263328] font-label-sm text-label-sm font-semibold">En
+                                            curso</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#73500d] font-bold mt-1">#E8AD46</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Sesión
+                                            en cabina</span>
+                                    </div>
+                                    <!-- 7. Completado -->
+                                    <div
+                                        class="bg-secondary-container/40 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-semibold">Completado</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#476d12] font-bold mt-1">Esmeralda</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Plan
+                                            concluido</span>
+                                    </div>
+                                    <!-- 8. Suspendido -->
+                                    <div class="bg-error-container/40 rounded-xl p-3 flex flex-col gap-1 items-start">
+                                        <span
+                                            class="px-2 py-0.5 rounded-full bg-[#DA5F42]/20 text-[#8F2C16] font-label-sm text-label-sm font-semibold">Suspendido</span>
+                                        <span
+                                            class="font-label-sm text-label-sm text-[#ba1a1a] font-bold mt-1">Terracota
+                                            tenue</span>
+                                        <span
+                                            class="font-body-sm text-body-sm text-[#606C5D] text-[11px] leading-tight">Interrupción
+                                            médica</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Muestra de Tokens y Componentes -->
+                            <div
+                                class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg pt-2 border-t border-surface-variant/40">
+                                <!-- Paleta base aprobada -->
+                                <div class="flex flex-col gap-2">
+                                    <h5
+                                        class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">
+                                        Tokens de Superficie y Texto</h5>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="p-2.5 rounded-xl bg-surface flex flex-col gap-0.5 shadow-sm">
+                                            <span
+                                                class="font-label-sm text-label-sm text-on-surface font-semibold">Background</span>
+                                            <span
+                                                class="font-body-sm text-body-sm text-on-surface-variant font-mono">#FDFAF3
+                                                / surface</span>
+                                        </div>
+                                        <div
+                                            class="p-2.5 rounded-xl bg-surface-container-lowest flex flex-col gap-0.5 shadow-sm">
+                                            <span
+                                                class="font-label-sm text-label-sm text-on-surface font-semibold">Card
+                                                Surface</span>
+                                            <span
+                                                class="font-body-sm text-body-sm text-on-surface-variant font-mono">#FFFFFF
+                                                / lowest</span>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl bg-surface-container-high flex flex-col gap-0.5">
+                                            <span
+                                                class="font-label-sm text-label-sm text-on-surface font-semibold">Borders
+                                                &amp; Subtle</span>
+                                            <span
+                                                class="font-body-sm text-body-sm text-on-surface-variant font-mono">#EAE4D9
+                                                / variant</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4 mt-2 px-1">
+                                        <div class="flex items-center gap-1.5 text-on-surface">
+                                            <span class="w-3 h-3 rounded-full bg-on-surface"></span>
+                                            <span class="font-label-sm text-label-sm font-semibold">Primary Text
+                                                (#263328)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-on-surface-variant">
+                                            <span class="w-3 h-3 rounded-full bg-on-surface-variant"></span>
+                                            <span class="font-label-sm text-label-sm font-semibold">Secondary Text
+                                                (#606C5D)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Componentes estándar en vivo -->
+                                <div class="flex flex-col gap-2">
+                                    <h5
+                                        class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">
+                                        Botones e Inputs Clínicos</h5>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold shadow-sm hover:bg-primary-container transition-colors"
+                                            type="button">
+                                            Primario (42px)
+                                        </button>
+                                        <button
+                                            class="h-10 px-4 rounded-xl bg-surface-container-lowest text-on-surface font-label-md text-label-md font-semibold shadow-sm hover:bg-surface-container-low transition-colors"
+                                            type="button">
+                                            Secundario Blanco
+                                        </button>
+                                        <div class="relative flex-1 min-w-[160px]">
+                                            <span
+                                                class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">search</span>
+                                            <input
+                                                class="w-full h-10 pl-9 pr-3 rounded-xl bg-surface-container-lowest text-on-surface font-body-sm text-body-sm placeholder:text-on-surface-variant/70 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                                placeholder="Buscar paciente..." type="text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Inline Script for Interactivity (Empty State & Guide Toggle) -->
+                    <script>
+                        (function() {
+                            const toggleBtn = document.getElementById('toggle-empty-state');
+                            const grid = document.getElementById('requests-grid');
+                            const emptyState = document.getElementById('requests-empty-state');
+                            const badge = document.getElementById('requests-badge');
+                            const kpiCount = document.getElementById('kpi-count');
 
-                if (toggleBtn && cardsFeed && emptyState) {
-                    toggleBtn.addEventListener('click', function() {
-                        const isCardsHidden = cardsFeed.classList.contains('hidden');
-                        if (isCardsHidden) {
-                            cardsFeed.classList.remove('hidden');
-                            emptyState.classList.add('hidden');
-                            toggleLabel.textContent = 'Alternar estado vacío';
-                        } else {
-                            cardsFeed.classList.add('hidden');
-                            emptyState.classList.remove('hidden');
-                            toggleLabel.textContent = 'Mostrar solicitudes (4)';
-                        }
-                    });
-                }
-            })();
-        </script>
-    </main>
-    <nav class="fixed bottom-0 w-full z-50 pb-safe bg-white/95 backdrop-blur-md border-t border-[#EAE4D9] shadow-sm"
-        data-active-classes="text-primary font-semibold">
-        <div class="flex justify-around items-center h-16 px-space-xs max-w-lg mx-auto"><a aria-current="page"
-                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] transition-all text-[#478F49] font-semibold"
-                data-path="inicio" href="#"><span
-                    class="material-symbols-outlined text-[22px]">dashboard</span><span
-                    class="font-label-sm text-label-sm">Inicio</span></a><a
-                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
-                data-path="clientes" href="#"><span
-                    class="material-symbols-outlined text-[22px]">group</span><span
-                    class="font-label-sm text-label-sm">Clientes</span></a><a
-                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
-                data-path="pacientes" href="#"><span
-                    class="material-symbols-outlined text-[22px]">pets</span><span
-                    class="font-label-sm text-label-sm">Pacientes</span></a><a
-                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
-                data-path="solicitudes-atencion" href="#"><span
-                    class="material-symbols-outlined text-[22px]">inbox</span><span
-                    class="font-label-sm text-label-sm">Solicitudes</span></a><a
-                class="flex flex-col items-center justify-center gap-space-xs min-w-[56px] min-h-[44px] text-[#606C5D] hover:text-[#478F49] transition-all"
-                data-path="perfil-administrador" href="#"><span
-                    class="material-symbols-outlined text-[22px]">clinical_notes</span><span
-                    class="font-label-sm text-label-sm">Gestión</span></a></div>
-    </nav>
+                            let isEmpty = false;
 
+                            if (toggleBtn && grid && emptyState) {
+                                toggleBtn.addEventListener('click', function() {
+                                    isEmpty = !isEmpty;
+                                    if (isEmpty) {
+                                        grid.classList.add('hidden');
+                                        emptyState.classList.remove('hidden');
+                                        emptyState.classList.add('flex');
+                                        badge.textContent = '0 pendientes';
+                                        badge.classList.remove('text-primary');
+                                        badge.classList.add('text-on-surface-variant');
+                                        if (kpiCount) kpiCount.textContent = '0';
+                                    } else {
+                                        grid.classList.remove('hidden');
+                                        emptyState.classList.add('hidden');
+                                        emptyState.classList.remove('flex');
+                                        badge.textContent = '4 pendientes';
+                                        badge.classList.add('text-primary');
+                                        badge.classList.remove('text-on-surface-variant');
+                                        if (kpiCount) kpiCount.textContent = '4';
+                                    }
+                                });
+                            }
+
+                            // Collapsible visual guide
+                            const guideToggleBtn = document.getElementById('toggle-guide-body');
+                            const guideContent = document.getElementById('guide-content');
+                            const guideToggleText = document.getElementById('guide-toggle-text');
+                            const guideToggleIcon = document.getElementById('guide-toggle-icon');
+
+                            if (guideToggleBtn && guideContent) {
+                                let isCollapsed = false;
+                                guideToggleBtn.addEventListener('click', function() {
+                                    isCollapsed = !isCollapsed;
+                                    if (isCollapsed) {
+                                        guideContent.classList.add('hidden');
+                                        guideToggleText.textContent = 'Mostrar especificación';
+                                        guideToggleIcon.textContent = 'expand_more';
+                                    } else {
+                                        guideContent.classList.remove('hidden');
+                                        guideToggleText.textContent = 'Ocultar especificación';
+                                        guideToggleIcon.textContent = 'expand_less';
+                                    }
+                                });
+                            }
+                        })();
+                    </script>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 
 </html>

@@ -7,10 +7,12 @@ export type DashboardPet = {
 export type DashboardRequest = {
     id: number;
     status: 'pending' | 'resolved' | 'cancelled';
+    notes?: string | null;
     createdAt: string;
     pet: {
         id: number;
         name: string;
+        species?: string;
     };
     service: {
         id: number;

@@ -26,12 +26,13 @@ class PetController extends Controller
             'pets' => Pet::query()
                 ->with('client.user:id,name')
                 ->orderBy('name')
-                ->get(['id', 'client_id', 'name', 'species', 'breed', 'photo'])
+                ->get(['id', 'client_id', 'name', 'species', 'breed', 'sex', 'photo'])
                 ->map(fn (Pet $pet): array => [
                     'id' => $pet->id,
                     'name' => $pet->name,
                     'species' => $pet->species,
                     'breed' => $pet->breed,
+                    'sex' => $pet->sex,
                     'has_photo' => $pet->photo !== null,
                     'client' => [
                         'id' => $pet->client->id,

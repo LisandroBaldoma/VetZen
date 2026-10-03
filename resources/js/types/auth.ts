@@ -37,7 +37,7 @@ export type Pet = {
     photo: string | null;
 };
 
-export type PetCard = Pick<Pet, 'id' | 'name' | 'species' | 'breed'> & {
+export type PetCard = Pick<Pet, 'id' | 'name' | 'species' | 'breed' | 'sex'> & {
     has_photo: boolean;
 };
 

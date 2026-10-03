@@ -14,9 +14,9 @@ class DashboardController extends Controller
     {
         if ($request->user()->hasRole('admin')) {
             $requests = ServiceRequest::query()
-                ->select(['id', 'pet_id', 'service_id', 'status', 'created_at'])
-                ->with(['pet:id,name', 'service:id,name'])
-                ->orderByRaw('CASE WHEN status = ? THEN 0 ELSE 1 END', ['pending'])
+                ->select(['id', 'pet_id', 'service_id', 'status', 'notes', 'created_at'])
+                ->where('status', 'pending')
+                ->with(['pet:id,name,species', 'service:id,name'])
                 ->orderByDesc('created_at')
                 ->orderByDesc('id')
                 ->limit(5)
@@ -29,10 +29,12 @@ class DashboardController extends Controller
                 'requests' => $requests->map(fn (ServiceRequest $serviceRequest): array => [
                     'id' => $serviceRequest->id,
                     'status' => $serviceRequest->status,
+                    'notes' => $serviceRequest->notes,
                     'createdAt' => $serviceRequest->created_at->toIso8601String(),
                     'pet' => [
                         'id' => $serviceRequest->pet->id,
                         'name' => $serviceRequest->pet->name,
+                        'species' => $serviceRequest->pet->species,
                     ],
                     'service' => [
                         'id' => $serviceRequest->service->id,

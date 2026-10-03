@@ -27,12 +27,13 @@ class PetController extends Controller
         return Inertia::render('pets/index', [
             'pets' => $request->user()->client->pets()
                 ->orderBy('name')
-                ->get(['id', 'name', 'species', 'breed', 'photo'])
+                ->get(['id', 'name', 'species', 'breed', 'sex', 'photo'])
                 ->map(fn (Pet $pet): array => [
                     'id' => $pet->id,
                     'name' => $pet->name,
                     'species' => $pet->species,
                     'breed' => $pet->breed,
+                    'sex' => $pet->sex,
                     'has_photo' => $pet->photo !== null,
                 ]),
         ]);

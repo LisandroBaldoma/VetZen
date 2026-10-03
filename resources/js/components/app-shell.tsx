@@ -22,7 +22,7 @@ export function AppShell({ children, variant = 'sidebar' }: Props) {
     return (
         <SidebarProvider
             defaultOpen={isOpen}
-            className="min-h-[100dvh] bg-background"
+            className="min-h-[100dvh] bg-surface-subtle"
         >
             {children}
         </SidebarProvider>
