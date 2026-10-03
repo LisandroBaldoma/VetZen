@@ -1,4 +1,13 @@
 import { Link } from '@inertiajs/react';
+import {
+    ClipboardList,
+    FileText,
+    LayoutDashboard,
+    PawPrint,
+    Pencil,
+    Stethoscope,
+    UserRound,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -37,16 +46,6 @@ type Props = {
     editHref: string;
 };
 
-const dateFormatter = new Intl.DateTimeFormat('es-AR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-});
-
-function formatBirthDate(date: string): string {
-    return dateFormatter.format(new Date(`${date.slice(0, 10)}T00:00:00`));
-}
-
 function formatSex(sex: string): string {
     if (sex.toLowerCase() === 'female') {
         return 'Hembra';
@@ -74,16 +73,19 @@ export default function PetContextHeader({
                   key: 'summary' as const,
                   label: 'Resumen',
                   href: adminPetShow(pet.id),
+                  icon: LayoutDashboard,
               },
               {
                   key: 'medical-records' as const,
                   label: 'Historia clínica',
                   href: adminMedicalRecordsIndex(pet.id),
+                  icon: FileText,
               },
               {
                   key: 'treatments' as const,
                   label: 'Tratamientos',
                   href: adminTreatmentsIndex(pet.id),
+                  icon: Stethoscope,
               },
           ]
         : [
@@ -91,114 +93,106 @@ export default function PetContextHeader({
                   key: 'summary' as const,
                   label: 'Resumen',
                   href: petShow(pet.id),
+                  icon: LayoutDashboard,
               },
               {
                   key: 'medical-records' as const,
                   label: 'Historia clínica',
                   href: medicalRecordsIndex(pet.id),
+                  icon: FileText,
               },
               {
                   key: 'service-requests' as const,
                   label: 'Solicitudes de atención',
                   href: serviceRequestsIndex(pet.id),
+                  icon: ClipboardList,
               },
               {
                   key: 'treatments' as const,
                   label: 'Tratamientos',
                   href: treatmentsIndex(pet.id),
+                  icon: Stethoscope,
               },
           ];
 
     return (
-        <header className="border-b border-border">
-            <div className="grid gap-6 py-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:py-9 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
-                <Avatar className="size-20 rounded-2xl border border-clinical-foreground/15 bg-clinical/55 sm:size-24">
-                    {hasPhoto && (
-                        <AvatarImage
-                            src={photo.url(pet.id)}
-                            alt={`Foto de ${pet.name}`}
-                            className="object-cover"
-                        />
-                    )}
-                    <AvatarFallback
-                        className="rounded-2xl text-2xl font-semibold"
-                        aria-label={`${pet.name} no tiene foto`}
-                    >
-                        {pet.name.slice(0, 1).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
-
-                <div className="min-w-0 space-y-4">
-                    <div className="space-y-1.5">
-                        <p className="text-[0.6875rem] font-semibold tracking-[0.16em] text-clinical-foreground uppercase">
-                            {isAdmin
-                                ? 'Expediente del paciente'
-                                : 'Expediente de mi mascota'}
-                        </p>
-                        <h1 className="text-3xl font-semibold tracking-tight text-balance break-words sm:text-4xl">
-                            {pet.name}
-                        </h1>
-                        <p className="text-base text-muted-foreground">
-                            {pet.species}
-                            {pet.breed ? ` · ${pet.breed}` : ''}
-                        </p>
+        <header className="space-y-4">
+            <section className="rounded-xl border bg-card p-4 shadow-sm sm:p-5">
+                <div className="flex min-w-0 items-start gap-3.5">
+                    <div className="relative shrink-0">
+                        <Avatar className="size-16 rounded-full border border-border bg-surface-subtle shadow-sm">
+                            {hasPhoto && (
+                                <AvatarImage
+                                    src={photo.url(pet.id)}
+                                    alt={`Foto de ${pet.name}`}
+                                    className="object-cover"
+                                />
+                            )}
+                            <AvatarFallback
+                                className="rounded-full bg-surface-subtle text-xl font-semibold text-primary"
+                                aria-label={`${pet.name} no tiene foto`}
+                            >
+                                {pet.name.slice(0, 1).toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="absolute right-0 bottom-0 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                            <PawPrint aria-hidden className="size-2.5" />
+                        </span>
                     </div>
 
-                    <dl className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
-                        <div>
-                            <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                                Sexo
-                            </dt>
-                            <dd className="mt-0.5 font-medium text-foreground">
-                                {formatSex(pet.sex)}
-                            </dd>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h1 className="text-section-title font-semibold tracking-tight text-balance break-words">
+                                {pet.name}
+                            </h1>
+                            <span className="rounded-full bg-surface-subtle px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                                {pet.species}
+                            </span>
                         </div>
-                        {pet.birth_date && (
-                            <div>
-                                <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                                    Nacimiento
-                                </dt>
-                                <dd className="mt-0.5 text-foreground">
-                                    {formatBirthDate(pet.birth_date)}
-                                </dd>
-                            </div>
-                        )}
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                            {pet.breed ?? 'Raza no informada'} ·{' '}
+                            {formatSex(pet.sex)}
+                        </p>
                         {isAdmin && responsibleName && pet.client && (
-                            <div>
-                                <dt className="text-[0.625rem] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                                    Responsable
-                                </dt>
-                                <dd className="mt-0.5">
-                                    <Link
-                                        href={editClient(pet.client.id)}
-                                        className="font-medium underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                    >
-                                        {responsibleName}
-                                    </Link>
-                                </dd>
+                            <div className="mt-2 flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+                                <UserRound
+                                    aria-hidden
+                                    className="size-4 shrink-0"
+                                />
+                                <span className="shrink-0">Responsable:</span>
+                                <Link
+                                    href={editClient(pet.client.id)}
+                                    className="min-w-0 truncate font-semibold text-foreground underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                >
+                                    {responsibleName}
+                                </Link>
                             </div>
                         )}
-                    </dl>
+                    </div>
                 </div>
 
-                <Button
-                    asChild
-                    variant="outline"
-                    className="min-h-11 sm:col-start-2 lg:col-start-auto lg:self-start"
-                >
-                    <Link href={editHref}>
-                        {isAdmin ? 'Editar paciente' : 'Editar mascota'}
-                    </Link>
-                </Button>
-            </div>
+                <div className="mt-4 flex justify-end border-t pt-3.5">
+                    <Button
+                        asChild
+                        variant="secondary"
+                        className="min-h-11 rounded-full"
+                    >
+                        <Link href={editHref}>
+                            <Pencil aria-hidden className="size-4" />
+                            {isAdmin ? 'Editar paciente' : 'Editar mascota'}
+                        </Link>
+                    </Button>
+                </div>
+            </section>
 
             <nav
                 aria-label={`Secciones de ${pet.name}`}
-                className="overflow-x-auto"
+                className="overflow-x-auto pb-1"
             >
-                <div className="flex min-w-max gap-6 sm:gap-8">
+                <div className="flex min-w-max items-center gap-2">
                     {navItems.map((item) => {
                         const isActive = active === item.key;
+                        const Icon = item.icon;
 
                         return (
                             <Link
@@ -206,12 +200,13 @@ export default function PetContextHeader({
                                 href={item.href}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    'flex min-h-12 items-center border-b-2 py-1 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                    'inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold whitespace-nowrap transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]',
                                     isActive
-                                        ? 'border-clinical-foreground font-semibold text-foreground'
-                                        : 'border-transparent text-muted-foreground hover:text-foreground',
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                        : 'bg-card text-muted-foreground shadow-sm hover:bg-surface-subtle hover:text-foreground',
                                 )}
                             >
+                                <Icon aria-hidden className="size-4" />
                                 {item.label}
                             </Link>
                         );
