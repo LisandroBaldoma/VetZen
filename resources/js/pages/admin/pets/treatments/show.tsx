@@ -1,5 +1,7 @@
 import { Form, Head, Link, setLayoutProps } from '@inertiajs/react';
+import { useState } from 'react';
 import PetTreatmentController from '@/actions/App/Http/Controllers/Admin/PetTreatmentController';
+import ConfirmActionDialog from '@/components/confirm-action-dialog';
 import InputError from '@/components/input-error';
 import PageHeader from '@/components/page-header';
 import PetContextHeader from '@/components/pet-context-header';
@@ -16,6 +18,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import SessionManagementSheet from '@/pages/admin/pets/treatments/components/session-management-sheet';
 import SessionRow from '@/pages/admin/pets/treatments/components/session-row';
 import type { TreatmentSession } from '@/pages/admin/pets/treatments/components/session-row';
 import { dashboard } from '@/routes';
@@ -66,14 +69,14 @@ function money(value: string, currency: string): string {
 function SessionGroup({
     title,
     sessions,
-    petId,
     canOperate,
+    onManage,
     highlighted = false,
 }: {
     title: string;
     sessions: TreatmentSession[];
-    petId: number;
     canOperate: boolean;
+    onManage: (sessionId: number) => void;
     highlighted?: boolean;
 }) {
     if (sessions.length === 0) {
@@ -94,8 +97,8 @@ function SessionGroup({
                     <SessionRow
                         key={session.id}
                         session={session}
-                        petId={petId}
                         canOperate={canOperate}
+                        onManage={onManage}
                         highlighted={highlighted && index === 0}
                     />
                 ))}
@@ -111,6 +114,10 @@ export default function TreatmentShow({
     pet: Pet;
     petTreatment: PetTreatment;
 }) {
+    const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
+        null,
+    );
+    const [cancelTreatmentOpen, setCancelTreatmentOpen] = useState(false);
     const completed = petTreatment.sessions.filter(
         (session) => session.status === 'completed',
     ).length;
@@ -142,6 +149,16 @@ export default function TreatmentShow({
     const cancelledSessions = petTreatment.sessions.filter(
         (session) => session.status === 'cancelled',
     );
+    const selectedSession =
+        petTreatment.sessions.find(
+            (session) => session.id === selectedSessionId,
+        ) ?? null;
+
+    function handleSheetOpenChange(open: boolean): void {
+        if (!open) {
+            setSelectedSessionId(null);
+        }
+    }
 
     setLayoutProps({
         breadcrumbs: [
@@ -437,13 +454,9 @@ export default function TreatmentShow({
                                     pet.id,
                                     petTreatment.id,
                                 ])}
-                                onBefore={() =>
-                                    window.confirm(
-                                        '¿Confirmás la cancelación? El tratamiento no podrá reabrirse.',
-                                    )
-                                }
+                                onError={() => setCancelTreatmentOpen(false)}
                             >
-                                {({ processing }) => (
+                                {({ processing, submit }) => (
                                     <>
                                         <input
                                             type="hidden"
@@ -451,12 +464,28 @@ export default function TreatmentShow({
                                             value="cancelled"
                                         />
                                         <Button
+                                            type="button"
                                             variant="destructive"
                                             disabled={processing}
                                             className="w-full sm:w-auto"
+                                            onClick={() =>
+                                                setCancelTreatmentOpen(true)
+                                            }
                                         >
                                             Cancelar tratamiento
                                         </Button>
+                                        <ConfirmActionDialog
+                                            open={cancelTreatmentOpen}
+                                            onOpenChange={
+                                                setCancelTreatmentOpen
+                                            }
+                                            onConfirm={submit}
+                                            title="¿Cancelar tratamiento?"
+                                            description="El tratamiento no podrá reabrirse. Sus sesiones permanecerán disponibles como historial."
+                                            confirmLabel="Cancelar tratamiento"
+                                            pending={processing}
+                                            destructive
+                                        />
                                     </>
                                 )}
                             </Form>
@@ -498,35 +527,46 @@ export default function TreatmentShow({
                     <SessionGroup
                         title="Próxima sesión programada"
                         sessions={nextSession}
-                        petId={pet.id}
                         canOperate={canOperate}
+                        onManage={setSelectedSessionId}
                         highlighted
                     />
                     <SessionGroup
                         title="Otras sesiones programadas"
                         sessions={otherScheduledSessions}
-                        petId={pet.id}
                         canOperate={canOperate}
+                        onManage={setSelectedSessionId}
                     />
                     <SessionGroup
                         title="Sesiones pendientes sin programar"
                         sessions={pendingSessions}
-                        petId={pet.id}
                         canOperate={canOperate}
+                        onManage={setSelectedSessionId}
                     />
                     <SessionGroup
                         title="Sesiones completadas"
                         sessions={completedSessions}
-                        petId={pet.id}
                         canOperate={canOperate}
+                        onManage={setSelectedSessionId}
                     />
                     <SessionGroup
                         title="Sesiones canceladas"
                         sessions={cancelledSessions}
-                        petId={pet.id}
                         canOperate={canOperate}
+                        onManage={setSelectedSessionId}
                     />
                 </section>
+                <SessionManagementSheet
+                    session={selectedSession}
+                    open={selectedSession !== null}
+                    onOpenChange={handleSheetOpenChange}
+                    canOperate={canOperate}
+                    completedSessions={completed}
+                    plannedSessions={petTreatment.planned_sessions}
+                    petId={pet.id}
+                    petName={pet.name}
+                    treatmentName={petTreatment.treatment_name}
+                />
             </div>
         </>
     );
