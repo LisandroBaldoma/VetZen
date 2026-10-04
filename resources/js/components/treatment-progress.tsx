@@ -34,6 +34,7 @@ export default function TreatmentProgress({
                     </p>
                     <p className="text-section-title font-semibold text-foreground tabular-nums">
                         {completedSessions} de {plannedSessions} sesiones
+                        completadas
                     </p>
                 </div>
                 <span className="text-section-title font-semibold text-primary tabular-nums">
