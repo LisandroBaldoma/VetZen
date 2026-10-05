@@ -47,7 +47,7 @@ export default function TreatmentEdit({
     return (
         <>
             <Head title="Editar plantilla" />
-            <div className="mx-auto max-w-2xl space-y-6 p-4">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title={`Editar ${treatment.name}`}
                     description={`Servicio: ${service.name}. Los cambios no alteran asignaciones históricas.`}
@@ -57,7 +57,7 @@ export default function TreatmentEdit({
                         service.id,
                         treatment.id,
                     ])}
-                    className="space-y-5 rounded-xl border p-6"
+                    className="space-y-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ errors, processing }) => (
                         <>
@@ -79,7 +79,7 @@ export default function TreatmentEdit({
                                     defaultValue={treatment.description}
                                     required
                                     maxLength={5000}
-                                    className="min-h-28 rounded-md border p-3"
+                                    className="min-h-28 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -96,14 +96,14 @@ export default function TreatmentEdit({
                                     required
                                 />
                             </div>
-                            <fieldset className="grid gap-2">
+                            <fieldset className="grid gap-3 border-t pt-5">
                                 <legend className="font-medium">
                                     Procedimientos
                                 </legend>
                                 {procedures.map((procedure) => (
                                     <label
                                         key={procedure.id}
-                                        className="flex gap-2"
+                                        className="flex min-h-10 items-center gap-2 rounded-lg bg-muted/45 px-3 text-sm"
                                     >
                                         <input
                                             type="checkbox"
@@ -126,7 +126,7 @@ export default function TreatmentEdit({
                                 ))}
                                 <InputError message={errors.procedure_ids} />
                             </fieldset>
-                            <label className="flex gap-2">
+                            <label className="flex min-h-10 items-center gap-2 border-t pt-5">
                                 <input
                                     type="hidden"
                                     name="is_active"
@@ -140,9 +140,11 @@ export default function TreatmentEdit({
                                 />
                                 Activo
                             </label>
-                            <Button disabled={processing}>
-                                Guardar plantilla
-                            </Button>
+                            <div className="flex justify-end border-t pt-5">
+                                <Button disabled={processing}>
+                                    Guardar plantilla
+                                </Button>
+                            </div>
                         </>
                     )}
                 </Form>

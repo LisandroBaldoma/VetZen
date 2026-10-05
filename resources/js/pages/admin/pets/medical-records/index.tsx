@@ -1,12 +1,14 @@
 import { Head, Link, setLayoutProps } from '@inertiajs/react';
-import ClinicalRecordSummary from '@/components/clinical-record-summary';
-import Heading from '@/components/heading';
+import { ClinicalRecordsEmptyState } from '@/components/clinical-records-empty-state';
+import { ClinicalRecordsHeader } from '@/components/clinical-records-header';
+import { ClinicalRecordsTimeline } from '@/components/clinical-records-timeline';
 import PetContextHeader from '@/components/pet-context-header';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/admin/pets';
 import {
     create,
+    edit as editRecord,
     index as medicalRecordsIndex,
     show,
 } from '@/routes/admin/pets/medical-records';
@@ -34,41 +36,46 @@ export default function AdminMedicalRecordsIndex({
     return (
         <>
             <Head title={`${pet.name} · Historia clínica`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4">
+            <div className="workspace-clinical">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
                     active="medical-records"
                     editHref={edit.url(pet.id)}
                 />
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                    <Heading
-                        title="Historia clínica"
-                        description={`Cronología clínica completa de ${pet.name}.`}
-                    />
-                    <Button asChild>
-                        <Link href={create.url(pet.id)}>Nuevo registro</Link>
-                    </Button>
-                </div>
+                <ClinicalRecordsHeader
+                    petName={pet.name}
+                    count={records.length}
+                    description={`Cronología clínica completa de ${pet.name}.`}
+                    actions={
+                        <Button asChild className="min-h-11">
+                            <Link href={create.url(pet.id)}>
+                                Nuevo registro
+                            </Link>
+                        </Button>
+                    }
+                />
                 {records.length === 0 ? (
-                    <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                        No hay registros clínicos para este paciente.
-                    </div>
+                    <ClinicalRecordsEmptyState
+                        petName={pet.name}
+                        title="No hay registros clínicos"
+                        description={`Registrá el primer antecedente clínico de ${pet.name}.`}
+                        action={
+                            <Button asChild className="min-h-11">
+                                <Link href={create.url(pet.id)}>
+                                    Nuevo registro
+                                </Link>
+                            </Button>
+                        }
+                    />
                 ) : (
-                    <ol className="grid gap-4 md:ml-3 md:gap-0 md:border-l md:border-border">
-                        {records.map((record) => (
-                            <li
-                                key={record.id}
-                                className="relative md:pb-8 md:pl-8 last:md:pb-0"
-                            >
-                                <span className="absolute top-8 -left-[5px] hidden size-2.5 rounded-full bg-primary ring-4 ring-background md:block" />
-                                <ClinicalRecordSummary
-                                    record={record}
-                                    href={show.url([pet.id, record.id])}
-                                />
-                            </li>
-                        ))}
-                    </ol>
+                    <ClinicalRecordsTimeline
+                        records={records}
+                        recordHref={(record) => show.url([pet.id, record.id])}
+                        editHref={(record) =>
+                            editRecord.url([pet.id, record.id])
+                        }
+                    />
                 )}
             </div>
         </>

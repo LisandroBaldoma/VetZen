@@ -6,6 +6,7 @@ type Props = {
     description?: string;
     actions?: ReactNode;
     className?: string;
+    actionsClassName?: string;
 };
 
 export default function PageHeader({
@@ -13,6 +14,7 @@ export default function PageHeader({
     description,
     actions,
     className,
+    actionsClassName,
 }: Props) {
     return (
         <header
@@ -32,7 +34,14 @@ export default function PageHeader({
                 )}
             </div>
             {actions && (
-                <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>
+                <div
+                    className={cn(
+                        'flex shrink-0 flex-wrap gap-2',
+                        actionsClassName,
+                    )}
+                >
+                    {actions}
+                </div>
             )}
         </header>
     );

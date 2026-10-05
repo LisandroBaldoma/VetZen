@@ -137,7 +137,7 @@ En detalles profundos se añade el título del registro, solicitud o tratamiento
 
 - Se valida a 320, 375, 390, 768 y 1280 px.
 - La tabla admin se muestra desde desktop; móvil usa tarjetas.
-- La navegación contextual puede desplazarse dentro de su propia región sin generar overflow de página.
+- En móvil, la navegación contextual se distribuye en una grilla de dos columnas; desde `sm` recupera la fila compacta. No genera overflow de página ni requiere desplazamiento horizontal.
 - Nombre, responsable y acciones permiten wrap o truncado seguro.
 - Fotos tienen texto alternativo; avatares sin foto conservan un nombre accesible.
 - Existe una sola `h1`; las secciones internas comienzan en `h2`.

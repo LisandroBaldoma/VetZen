@@ -25,7 +25,7 @@ export default function AdminProceduresIndex({
     return (
         <>
             <Head title={`Procedimientos — ${service.name}`} />
-            <div className="space-y-6 p-4">
+            <div className="workspace-operational max-w-6xl">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
                         <CatalogIconLink
@@ -45,7 +45,7 @@ export default function AdminProceduresIndex({
                     </Button>
                 </div>
                 {procedures.length === 0 ? (
-                    <p className="rounded-xl border p-6 text-sm text-muted-foreground">
+                    <p className="border-y border-dashed py-8 text-sm text-muted-foreground">
                         Este servicio todavía no tiene procedimientos.
                     </p>
                 ) : (
@@ -54,7 +54,7 @@ export default function AdminProceduresIndex({
                             {procedures.map((procedure) => (
                                 <article
                                     key={procedure.id}
-                                    className="space-y-4 rounded-xl border p-4"
+                                    className="space-y-4 border-b border-border py-5"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <h2 className="font-semibold">
@@ -87,9 +87,9 @@ export default function AdminProceduresIndex({
                                 </article>
                             ))}
                         </div>
-                        <div className="hidden overflow-x-auto rounded-xl border md:block">
+                        <div className="hidden overflow-x-auto border-y border-border md:block">
                             <table className="w-full min-w-2xl text-left text-sm">
-                                <thead className="bg-muted/50 text-muted-foreground">
+                                <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
                                         <th className="px-4 py-3">
                                             Procedimiento
@@ -105,7 +105,7 @@ export default function AdminProceduresIndex({
                                     {procedures.map((procedure) => (
                                         <tr
                                             key={procedure.id}
-                                            className="border-t"
+                                            className="border-t transition-colors hover:bg-muted/40"
                                         >
                                             <td className="px-4 py-3 font-medium">
                                                 {procedure.name}

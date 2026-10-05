@@ -1,4 +1,13 @@
 import { Link } from '@inertiajs/react';
+import {
+    ClipboardList,
+    FileText,
+    LayoutDashboard,
+    PawPrint,
+    Pencil,
+    Stethoscope,
+    UserRound,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -37,16 +46,6 @@ type Props = {
     editHref: string;
 };
 
-const dateFormatter = new Intl.DateTimeFormat('es-AR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-});
-
-function formatBirthDate(date: string): string {
-    return dateFormatter.format(new Date(`${date.slice(0, 10)}T00:00:00`));
-}
-
 function formatSex(sex: string): string {
     if (sex.toLowerCase() === 'female') {
         return 'Hembra';
@@ -74,16 +73,19 @@ export default function PetContextHeader({
                   key: 'summary' as const,
                   label: 'Resumen',
                   href: adminPetShow(pet.id),
+                  icon: LayoutDashboard,
               },
               {
                   key: 'medical-records' as const,
                   label: 'Historia clínica',
                   href: adminMedicalRecordsIndex(pet.id),
+                  icon: FileText,
               },
               {
                   key: 'treatments' as const,
                   label: 'Tratamientos',
                   href: adminTreatmentsIndex(pet.id),
+                  icon: Stethoscope,
               },
           ]
         : [
@@ -91,96 +93,103 @@ export default function PetContextHeader({
                   key: 'summary' as const,
                   label: 'Resumen',
                   href: petShow(pet.id),
+                  icon: LayoutDashboard,
               },
               {
                   key: 'medical-records' as const,
                   label: 'Historia clínica',
                   href: medicalRecordsIndex(pet.id),
+                  icon: FileText,
               },
               {
                   key: 'service-requests' as const,
                   label: 'Solicitudes de atención',
                   href: serviceRequestsIndex(pet.id),
+                  icon: ClipboardList,
               },
               {
                   key: 'treatments' as const,
                   label: 'Tratamientos',
                   href: treatmentsIndex(pet.id),
+                  icon: Stethoscope,
               },
           ];
 
     return (
-        <header className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <div className="flex flex-col gap-5 p-4 sm:flex-row sm:items-center sm:p-6">
-                <Avatar className="size-20 rounded-2xl border sm:size-24">
-                    {hasPhoto && (
-                        <AvatarImage
-                            src={photo.url(pet.id)}
-                            alt={`Foto de ${pet.name}`}
-                            className="object-cover"
-                        />
-                    )}
-                    <AvatarFallback
-                        className="rounded-2xl text-2xl font-semibold"
-                        aria-label={`${pet.name} no tiene foto`}
-                    >
-                        {pet.name.slice(0, 1).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
-
-                <div className="min-w-0 flex-1 space-y-2">
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                            {isAdmin ? 'Paciente' : 'Mascota'}
-                        </p>
-                        <h1 className="text-2xl font-semibold tracking-tight break-words">
-                            {pet.name}
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            {pet.species}
-                            {pet.breed ? ` · ${pet.breed}` : ''}
-                        </p>
+        <header className="space-y-4">
+            <section className="rounded-xl border bg-card p-4 shadow-sm sm:p-5">
+                <div className="flex min-w-0 items-start gap-3.5">
+                    <div className="relative shrink-0">
+                        <Avatar className="size-16 rounded-full border border-border bg-surface-subtle shadow-sm">
+                            {hasPhoto && (
+                                <AvatarImage
+                                    src={photo.url(pet.id)}
+                                    alt={`Foto de ${pet.name}`}
+                                    className="object-cover"
+                                />
+                            )}
+                            <AvatarFallback
+                                className="rounded-full bg-surface-subtle text-xl font-semibold text-primary"
+                                aria-label={`${pet.name} no tiene foto`}
+                            >
+                                {pet.name.slice(0, 1).toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="absolute right-0 bottom-0 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                            <PawPrint aria-hidden className="size-2.5" />
+                        </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                        <span>{formatSex(pet.sex)}</span>
-                        {pet.birth_date && (
-                            <span>
-                                Nacimiento: {formatBirthDate(pet.birth_date)}
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h1 className="text-section-title font-semibold tracking-tight text-balance break-words">
+                                {pet.name}
+                            </h1>
+                            <span className="rounded-full bg-surface-subtle px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                                {pet.species}
                             </span>
-                        )}
+                        </div>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                            {pet.breed ?? 'Raza no informada'} ·{' '}
+                            {formatSex(pet.sex)}
+                        </p>
                         {isAdmin && responsibleName && pet.client && (
-                            <span>
-                                Responsable:{' '}
+                            <div className="mt-2 flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+                                <UserRound
+                                    aria-hidden
+                                    className="size-4 shrink-0"
+                                />
+                                <span className="shrink-0">Responsable:</span>
                                 <Link
                                     href={editClient(pet.client.id)}
-                                    className="font-medium underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    className="min-w-0 truncate font-semibold text-foreground underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                 >
                                     {responsibleName}
                                 </Link>
-                            </span>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <Button
-                    asChild
-                    variant="outline"
-                    className="min-h-11 sm:self-start"
-                >
-                    <Link href={editHref}>
-                        {isAdmin ? 'Editar paciente' : 'Editar mascota'}
-                    </Link>
-                </Button>
-            </div>
+                <div className="mt-4 flex justify-end border-t pt-3.5">
+                    <Button
+                        asChild
+                        variant="secondary"
+                        className="min-h-11 rounded-full"
+                    >
+                        <Link href={editHref}>
+                            <Pencil aria-hidden className="size-4" />
+                            {isAdmin ? 'Editar paciente' : 'Editar mascota'}
+                        </Link>
+                    </Button>
+                </div>
+            </section>
 
-            <nav
-                aria-label={`Secciones de ${pet.name}`}
-                className="overflow-x-auto border-t px-2 sm:px-4"
-            >
-                <div className="flex min-w-max gap-1">
+            <nav aria-label={`Secciones de ${pet.name}`} className="pb-1">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                     {navItems.map((item) => {
                         const isActive = active === item.key;
+                        const Icon = item.icon;
 
                         return (
                             <Link
@@ -188,12 +197,13 @@ export default function PetContextHeader({
                                 href={item.href}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    'flex min-h-11 items-center border-b-2 px-3 text-sm whitespace-nowrap transition-colors focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                                    'inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-center text-sm leading-tight font-semibold transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98] sm:w-auto sm:rounded-full sm:px-3.5 sm:whitespace-nowrap',
                                     isActive
-                                        ? 'border-primary bg-muted/60 font-semibold text-foreground'
-                                        : 'border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                        : 'bg-card text-muted-foreground shadow-sm hover:bg-surface-subtle hover:text-foreground',
                                 )}
                             >
+                                <Icon aria-hidden className="size-4" />
                                 {item.label}
                             </Link>
                         );

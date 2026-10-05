@@ -56,8 +56,11 @@ class DashboardTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('client/dashboard')
                 ->where('pets', [])
+                ->where('selectedPet', null)
+                ->where('nextSession', null)
                 ->where('pendingRequests', [])
                 ->where('activeTreatments', [])
+                ->where('timezone', config('app.timezone'))
                 ->missing('client')
                 ->missing('pendingRequestsCount')
                 ->missing('requests'));
@@ -81,7 +84,7 @@ class DashboardTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
         $service = Service::factory()->create(['name' => 'Fisioterapia']);
-        $pet = Pet::factory()->create(['name' => 'Mora']);
+        $pet = Pet::factory()->create(['name' => 'Mora', 'species' => 'Canino']);
 
         $olderPending = ServiceRequest::factory()->for($pet)->for($service)->create([
             'status' => 'pending',
@@ -115,13 +118,14 @@ class DashboardTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('admin/dashboard')
                 ->where('pendingRequestsCount', 2)
-                ->has('requests', 5)
+                ->has('requests', 2)
                 ->where('requests.0.id', $newerPending->id)
                 ->where('requests.1.id', $olderPending->id)
-                ->where('requests.2.id', $recentResolved->id)
+                ->where('requests.0.status', 'pending')
                 ->where('requests.0.pet.name', 'Mora')
+                ->where('requests.0.pet.species', 'Canino')
                 ->where('requests.0.service.name', 'Fisioterapia')
-                ->missing('requests.0.notes')
+                ->where('requests.1.notes', 'Private note')
                 ->missing('client')
                 ->missing('pets')
                 ->missing('pendingRequests')
@@ -216,12 +220,71 @@ class DashboardTest extends TestCase
         $this->assignTreatment($otherPet, 'pending', 1, now()->addDay()->toDateString());
 
         $this->actingAs($client->user)
-            ->get(route('dashboard'))
+            ->get(route('dashboard', ['pet' => $ownedPets->first()->id]))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->has('pets', 6)
                 ->has('pendingRequests', 5)
                 ->has('activeTreatments', 5));
+    }
+
+    public function test_client_dashboard_selects_an_owned_pet_and_returns_its_next_eligible_session(): void
+    {
+        $client = Client::factory()->create();
+        $otherClient = Client::factory()->create();
+        $firstPet = Pet::factory()->for($client)->create(['name' => 'Alma']);
+        $selectedPet = Pet::factory()->for($client)->create(['name' => 'Bruno']);
+        $otherPet = Pet::factory()->for($otherClient)->create();
+
+        $firstPetTreatment = $this->assignTreatment($firstPet, 'pending');
+        $firstPetTreatment->sessions()->update(['scheduled_at' => now()->addDay()]);
+
+        $laterTreatment = $this->assignTreatment($selectedPet, 'in_progress', 2);
+        $laterTreatment->sessions()->where('session_number', 1)->update([
+            'scheduled_at' => now()->addDays(2),
+        ]);
+        $laterTreatment->sessions()->where('session_number', 2)->update([
+            'scheduled_at' => now()->addDays(3),
+        ]);
+
+        $nextTreatment = $this->assignTreatment($selectedPet, 'pending');
+        $nextTreatment->sessions()->update(['scheduled_at' => now()->addHour()]);
+
+        $pastTreatment = $this->assignTreatment($selectedPet, 'pending');
+        $pastTreatment->sessions()->update(['scheduled_at' => now()->subHour()]);
+
+        $completedSessionTreatment = $this->assignTreatment($selectedPet, 'in_progress');
+        $completedSessionTreatment->sessions()->update([
+            'scheduled_at' => now()->addMinutes(30),
+            'status' => 'completed',
+        ]);
+
+        $suspendedTreatment = $this->assignTreatment($selectedPet, 'suspended');
+        $suspendedTreatment->sessions()->update(['scheduled_at' => now()->addMinutes(15)]);
+
+        $this->actingAs($client->user)
+            ->get(route('dashboard', ['pet' => $selectedPet->id]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('selectedPet.id', $selectedPet->id)
+                ->where('selectedPet.name', 'Bruno')
+                ->where('selectedPet.activeTreatmentsCount', 5)
+                ->where('nextSession.treatmentId', $nextTreatment->id)
+                ->where('nextSession.sessionNumber', 1)
+                ->has('pendingRequests', 0)
+                ->has('activeTreatments', 5)
+                ->where('activeTreatments.0.id', $suspendedTreatment->id)
+                ->where('activeTreatments.0.nextSession', null)
+                ->where('activeTreatments.1.id', $completedSessionTreatment->id)
+                ->where('activeTreatments.1.nextSession', null)
+                ->where('activeTreatments.2.id', $pastTreatment->id)
+                ->where('activeTreatments.2.nextSession', null)
+                ->where('activeTreatments.3.id', $nextTreatment->id)
+                ->where('activeTreatments.3.nextSession.sessionNumber', 1));
+
+        $this->actingAs($client->user)
+            ->get(route('dashboard', ['pet' => $otherPet->id]))
+            ->assertNotFound();
     }
 
     public function test_admin_role_selects_the_administration_dashboard_without_client_permissions(): void

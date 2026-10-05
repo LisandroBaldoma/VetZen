@@ -46,7 +46,7 @@ export default function RequestCreate({
     return (
         <>
             <Head title={`Solicitar atención para ${pet.name}`} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="workspace-reading">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
@@ -61,7 +61,7 @@ export default function RequestCreate({
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
                     <Form
                         {...ServiceRequestController.store.form(pet.id)}
-                        className="space-y-5 rounded-xl border p-5 sm:p-6"
+                        className="order-2 min-w-0 space-y-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6 lg:order-1"
                     >
                         {({ errors, processing }) => (
                             <>
@@ -74,45 +74,65 @@ export default function RequestCreate({
                                         enviar la solicitud.
                                     </p>
                                 )}
-                                <div className="grid gap-2">
-                                    <Label htmlFor="service_id">Servicio</Label>
-                                    <select
-                                        id="service_id"
+                                {selectedService ? (
+                                    <input
+                                        type="hidden"
                                         name="service_id"
-                                        required
-                                        defaultValue={selectedServiceId ?? ''}
-                                        className="h-10 rounded-md border bg-background px-3"
-                                    >
-                                        <option value="">Seleccionar…</option>
-                                        {services.map((service) => (
-                                            <option
-                                                key={service.id}
-                                                value={service.id}
-                                            >
-                                                {service.name}
+                                        value={selectedService.id}
+                                    />
+                                ) : (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="service_id">
+                                            Tipo de atención
+                                        </Label>
+                                        <select
+                                            id="service_id"
+                                            name="service_id"
+                                            required
+                                            defaultValue=""
+                                            className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                        >
+                                            <option value="">
+                                                Seleccionar…
                                             </option>
-                                        ))}
-                                    </select>
-                                    <InputError message={errors.service_id} />
-                                </div>
+                                            {services.map((service) => (
+                                                <option
+                                                    key={service.id}
+                                                    value={service.id}
+                                                >
+                                                    {service.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+                                <InputError message={errors.service_id} />
                                 <div className="grid gap-2">
                                     <Label htmlFor="notes">Nota opcional</Label>
                                     <textarea
                                         id="notes"
                                         name="notes"
                                         maxLength={2000}
-                                        className="min-h-32 rounded-md border bg-background p-3"
+                                        className="min-h-32 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                         placeholder="Contanos brevemente el motivo de la consulta."
                                     />
                                     <InputError message={errors.notes} />
                                 </div>
                                 <div className="flex flex-col-reverse gap-2 sm:flex-row">
-                                    <Button variant="outline" asChild>
+                                    <Button
+                                        variant="outline"
+                                        asChild
+                                        className="min-h-11 w-full sm:w-auto"
+                                    >
                                         <Link href={index(pet.id)}>
                                             Cancelar
                                         </Link>
                                     </Button>
-                                    <Button type="submit" disabled={processing}>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="min-h-11 w-full sm:w-auto"
+                                    >
                                         {processing
                                             ? 'Enviando…'
                                             : 'Enviar solicitud'}
@@ -122,8 +142,10 @@ export default function RequestCreate({
                         )}
                     </Form>
 
-                    <aside className="space-y-3 rounded-xl border bg-muted/20 p-5">
-                        <h2 className="font-semibold">Resumen</h2>
+                    <aside className="order-1 min-w-0 space-y-3 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm lg:order-2">
+                        <h2 className="font-semibold">
+                            Resumen de tu solicitud
+                        </h2>
                         <dl className="grid gap-3 text-sm">
                             <div>
                                 <dt className="text-muted-foreground">
@@ -133,7 +155,7 @@ export default function RequestCreate({
                             </div>
                             <div>
                                 <dt className="text-muted-foreground">
-                                    Servicio preseleccionado
+                                    Tipo de atención
                                 </dt>
                                 <dd className="font-medium">
                                     {selectedService?.name ?? 'A elegir'}

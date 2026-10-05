@@ -42,7 +42,7 @@ export default function AdminMedicalRecordEdit({
     return (
         <>
             <Head title={`Editar ${record.title}`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -58,7 +58,7 @@ export default function AdminMedicalRecordEdit({
                         pet.id,
                         record.id,
                     ])}
-                    className="space-y-6 rounded-xl border p-6"
+                    className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ processing, errors }) => (
                         <ClinicalRecordFormFields

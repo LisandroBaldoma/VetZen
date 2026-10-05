@@ -17,14 +17,14 @@ export default function AdminServiceCreate() {
     return (
         <>
             <Head title="Crear servicio" />
-            <div className="mx-auto max-w-2xl space-y-6 p-4">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title="Crear servicio"
                     description="Agregá una terapia al catálogo de VetZen."
                 />
                 <Form
                     {...AdminServiceController.store.form()}
-                    className="space-y-6 rounded-xl border p-6"
+                    className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ processing, errors }) => (
                         <ServiceFormFields

@@ -34,7 +34,7 @@ export default function AdminMedicalRecordShow({
     return (
         <>
             <Head title={record.title} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"

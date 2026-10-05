@@ -1,11 +1,18 @@
 import { Link } from '@inertiajs/react';
-import { ChevronRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowUpRight } from 'lucide-react';
 import {
     clinicalRecordTypeLabel,
     formatClinicalDate,
 } from '@/lib/clinical-records';
 import type { ClinicalRecordSummary as ClinicalRecordSummaryData } from '@/types';
+
+const typeStyles: Record<string, string> = {
+    consultation: 'bg-info',
+    evaluation: 'bg-operational-foreground',
+    evolution: 'bg-clinical-foreground',
+    session: 'bg-primary',
+    other: 'bg-muted-foreground',
+};
 
 export default function ClinicalRecordSummary({
     record,
@@ -17,35 +24,39 @@ export default function ClinicalRecordSummary({
     const hasHistoricalVisibility = record.is_visible_to_client !== undefined;
 
     return (
-        <article>
+        <article className="group relative">
             <Link
                 href={href}
-                className="group flex min-h-28 items-center justify-between gap-4 rounded-xl border bg-card p-5 transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none md:min-h-24 md:rounded-none md:border-x-0 md:border-t-0 md:bg-transparent md:px-0"
+                className="grid gap-3 py-6 transition-colors hover:bg-clinical/30 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none sm:grid-cols-[8.5rem_minmax(0,1fr)_auto] sm:items-start sm:gap-6 sm:px-4"
             >
-                <div className="min-w-0 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                <div className="space-y-1 text-sm text-muted-foreground">
+                    <p className="font-semibold tracking-tight text-foreground">
                         <time dateTime={record.occurred_at}>
                             {formatClinicalDate(record.occurred_at)}
                         </time>
-                        <span aria-hidden="true">·</span>
-                        <Badge variant="secondary">
+                    </p>
+                    <p className="text-xs font-semibold tracking-[0.12em] uppercase">
+                        Registro clínico
+                    </p>
+                </div>
+                <div className="min-w-0 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                            <span
+                                className={`size-2 rounded-full ${typeStyles[record.type] ?? typeStyles.other}`}
+                                aria-hidden="true"
+                            />
                             {clinicalRecordTypeLabel(record.type)}
-                        </Badge>
+                        </span>
                         {hasHistoricalVisibility && (
-                            <Badge
-                                variant={
-                                    record.is_visible_to_client
-                                        ? 'default'
-                                        : 'outline'
-                                }
-                            >
+                            <span className="text-xs text-muted-foreground">
                                 {record.is_visible_to_client
-                                    ? 'Marcado visible (histórico)'
-                                    : 'Marcado no visible (histórico)'}
-                            </Badge>
+                                    ? 'Visible (histórico)'
+                                    : 'No visible (histórico)'}
+                            </span>
                         )}
                     </div>
-                    <h3 className="font-semibold text-foreground group-hover:underline">
+                    <h3 className="text-lg font-semibold tracking-tight text-foreground underline-offset-4 group-hover:underline">
                         {record.title}
                     </h3>
                     {record.creator && (
@@ -54,8 +65,8 @@ export default function ClinicalRecordSummary({
                         </p>
                     )}
                 </div>
-                <ChevronRight
-                    className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1"
+                <ArrowUpRight
+                    className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     aria-hidden="true"
                 />
             </Link>

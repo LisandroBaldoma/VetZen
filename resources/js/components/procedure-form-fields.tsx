@@ -34,7 +34,7 @@ export default function ProcedureFormFields({
                     id="description"
                     name="description"
                     defaultValue={procedure?.description ?? ''}
-                    className="min-h-32 rounded-md border bg-transparent px-3 py-2 text-sm"
+                    className="min-h-32 rounded-md border bg-input/55 px-3 py-2 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 />
                 <InputError message={errors.description} />
             </div>
@@ -52,7 +52,7 @@ export default function ProcedureFormFields({
                 />
                 <InputError message={errors.duration_minutes} />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-t pt-5">
                 <input type="hidden" name="is_active" value="0" />
                 <Checkbox
                     id="is_active"
@@ -63,9 +63,11 @@ export default function ProcedureFormFields({
                 <Label htmlFor="is_active">Activo</Label>
                 <InputError message={errors.is_active} />
             </div>
-            <Button disabled={processing}>
-                {processing ? 'Guardando…' : 'Guardar procedimiento'}
-            </Button>
+            <div className="flex justify-end border-t pt-5">
+                <Button disabled={processing}>
+                    {processing ? 'Guardando…' : 'Guardar procedimiento'}
+                </Button>
+            </div>
         </>
     );
 }

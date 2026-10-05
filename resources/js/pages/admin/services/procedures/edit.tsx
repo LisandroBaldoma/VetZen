@@ -16,7 +16,7 @@ export default function AdminProcedureEdit({
     return (
         <>
             <Head title={`Editar ${procedure.name}`} />
-            <div className="mx-auto max-w-2xl space-y-6 p-4">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title={`Editar ${procedure.name}`}
                     description={`Actualizá este procedimiento de ${service.name}.`}
@@ -26,7 +26,7 @@ export default function AdminProcedureEdit({
                         service.id,
                         procedure.id,
                     ])}
-                    className="space-y-6 rounded-xl border p-6"
+                    className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ processing, errors }) => (
                         <ProcedureFormFields

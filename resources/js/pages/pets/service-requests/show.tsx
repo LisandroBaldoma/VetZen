@@ -63,14 +63,14 @@ export default function RequestShow({
     return (
         <>
             <Head title={`Solicitud de ${pet.name}`} />
-            <div className="mx-auto max-w-4xl space-y-6 p-4">
+            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
                     active="service-requests"
                     editHref={edit.url(pet.id)}
                 />
-                <section className="space-y-5 rounded-xl border p-5 sm:p-6">
+                <section className="space-y-5 rounded-xl border border-l-4 border-l-primary bg-card p-5 shadow-sm sm:p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                         <Heading
                             title={serviceRequest.service.name}
@@ -88,20 +88,20 @@ export default function RequestShow({
                     </div>
 
                     {serviceRequest.status === 'pending' && (
-                        <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+                        <p className="rounded-lg bg-muted/60 p-4 text-sm text-muted-foreground">
                             La solicitud está pendiente de evaluación
                             profesional. Todavía no representa un turno ni un
                             tratamiento asignado.
                         </p>
                     )}
                     {serviceRequest.status === 'cancelled' && (
-                        <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+                        <p className="rounded-lg bg-muted/60 p-4 text-sm text-muted-foreground">
                             Esta solicitud fue cancelada y se conserva como
                             historial.
                         </p>
                     )}
                     {serviceRequest.pet_treatment && (
-                        <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
+                        <div className="space-y-3 rounded-lg border bg-secondary/45 p-4">
                             <div>
                                 <h2 className="font-semibold">
                                     Tratamiento definido

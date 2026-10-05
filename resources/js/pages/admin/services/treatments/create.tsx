@@ -34,13 +34,13 @@ export default function TreatmentCreate({
     return (
         <>
             <Head title="Crear plantilla" />
-            <div className="mx-auto max-w-2xl space-y-6 p-4">
+            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title="Crear plantilla"
                     description={`Servicio: ${service.name}. Definí sus procedimientos y sesiones estimadas.`}
                 />
                 {procedures.length === 0 ? (
-                    <div className="space-y-4 rounded-xl border p-6">
+                    <div className="space-y-4 rounded-xl border border-dashed bg-card p-5 shadow-sm sm:p-6">
                         <p className="text-sm text-muted-foreground">
                             Este servicio no tiene procedimientos activos. Creá
                             o activá uno antes de crear una plantilla.
@@ -54,7 +54,7 @@ export default function TreatmentCreate({
                 ) : (
                     <Form
                         {...TreatmentController.store.form(service.id)}
-                        className="space-y-5 rounded-xl border p-6"
+                        className="space-y-5 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                     >
                         {({ errors, processing }) => (
                             <>
@@ -71,7 +71,7 @@ export default function TreatmentCreate({
                                         id="description"
                                         name="description"
                                         required
-                                        className="min-h-28 rounded-md border p-3"
+                                        className="min-h-28 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -90,14 +90,14 @@ export default function TreatmentCreate({
                                         message={errors.estimated_sessions}
                                     />
                                 </div>
-                                <fieldset className="grid gap-2">
+                                <fieldset className="grid gap-3 border-t pt-5">
                                     <legend className="font-medium">
                                         Procedimientos
                                     </legend>
                                     {procedures.map((p) => (
                                         <label
                                             key={p.id}
-                                            className="flex gap-2"
+                                            className="flex min-h-10 items-center gap-2 rounded-lg bg-muted/45 px-3 text-sm"
                                         >
                                             <input
                                                 type="checkbox"
@@ -116,9 +116,11 @@ export default function TreatmentCreate({
                                     name="is_active"
                                     value="1"
                                 />
-                                <Button disabled={processing}>
-                                    Guardar plantilla
-                                </Button>
+                                <div className="flex justify-end border-t pt-5">
+                                    <Button disabled={processing}>
+                                        Guardar plantilla
+                                    </Button>
+                                </div>
                             </>
                         )}
                     </Form>

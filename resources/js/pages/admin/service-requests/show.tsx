@@ -3,7 +3,6 @@ import AdminServiceRequestController from '@/actions/App/Http/Controllers/Admin/
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import PetContextHeader from '@/components/pet-context-header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +50,12 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
     timeStyle: 'short',
 });
 
+const statusStyles: Record<RequestStatus, string> = {
+    pending: 'bg-operational text-operational-foreground',
+    resolved: 'bg-clinical text-clinical-foreground',
+    cancelled: 'bg-muted text-muted-foreground',
+};
+
 export default function AdminRequestShow({
     serviceRequest,
     treatments,
@@ -74,7 +79,7 @@ export default function AdminRequestShow({
     return (
         <>
             <Head title={`Solicitud de ${pet.name}`} />
-            <div className="mx-auto max-w-5xl space-y-6 p-4">
+            <div className="workspace-operational">
                 <PetContextHeader
                     pet={pet}
                     variant="admin"
@@ -83,15 +88,21 @@ export default function AdminRequestShow({
                 />
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,1fr)]">
-                    <section className="space-y-5 rounded-xl border p-5 sm:p-6">
+                    <section className="space-y-5 border-y border-border py-6 sm:py-7">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                             <Heading
                                 title="Solicitud"
                                 description={`Recibida el ${dateFormatter.format(new Date(serviceRequest.created_at))}`}
                             />
-                            <Badge variant="outline">
+                            <span
+                                className={`inline-flex items-center gap-2 rounded-sm px-2 py-1 text-xs font-semibold ${statusStyles[serviceRequest.status]}`}
+                            >
+                                <span
+                                    className="size-1.5 rounded-full bg-current"
+                                    aria-hidden="true"
+                                />
                                 {statusLabels[serviceRequest.status]}
-                            </Badge>
+                            </span>
                         </div>
 
                         <dl className="grid gap-4 text-sm sm:grid-cols-2">
@@ -179,7 +190,7 @@ export default function AdminRequestShow({
 
                     {serviceRequest.status === 'pending' ? (
                         !serviceRequest.service.is_active ? (
-                            <section className="space-y-3 rounded-xl border border-destructive/40 p-5 sm:p-6">
+                            <section className="space-y-3 border-l-2 border-destructive/60 bg-destructive/5 px-5 py-5 sm:px-6">
                                 <Heading
                                     title="Resolución bloqueada"
                                     description="El servicio fue desactivado después de recibir esta solicitud."
@@ -199,7 +210,7 @@ export default function AdminRequestShow({
                                 </Button>
                             </section>
                         ) : treatments.length === 0 ? (
-                            <section className="space-y-3 rounded-xl border p-5 sm:p-6">
+                            <section className="space-y-3 border-l-2 border-operational-foreground/50 bg-operational/25 px-5 py-5 sm:px-6">
                                 <Heading
                                     title="Sin plantillas compatibles"
                                     description="Creá una plantilla activa para este servicio antes de resolver la solicitud."
@@ -219,7 +230,7 @@ export default function AdminRequestShow({
                                 {...AdminServiceRequestController.resolve.form(
                                     serviceRequest.id,
                                 )}
-                                className="grid content-start gap-4 rounded-xl border p-5 sm:p-6"
+                                className="grid content-start gap-4 border-l-2 border-operational-foreground/50 bg-operational/20 px-5 py-5 sm:px-6"
                                 onBefore={() =>
                                     window.confirm(
                                         '¿Confirmás la resolución? Se creará el tratamiento del paciente y todas sus sesiones.',
@@ -256,7 +267,7 @@ export default function AdminRequestShow({
                                                 id="treatment_id"
                                                 name="treatment_id"
                                                 required
-                                                className="h-10 rounded-md border bg-background px-3"
+                                                className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             >
                                                 <option value="">
                                                     Seleccionar…
@@ -337,7 +348,7 @@ export default function AdminRequestShow({
                                                 <select
                                                     id="status"
                                                     name="status"
-                                                    className="h-10 rounded-md border bg-background px-3"
+                                                    className="h-10 rounded-md border bg-input/55 px-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                                     defaultValue="pending"
                                                 >
                                                     <option value="pending">
@@ -367,7 +378,7 @@ export default function AdminRequestShow({
                                             <textarea
                                                 id="notes"
                                                 name="notes"
-                                                className="min-h-24 rounded-md border bg-background p-3"
+                                                className="min-h-24 rounded-md border bg-input/55 p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                                             />
                                             <InputError
                                                 message={errors.notes}
@@ -393,7 +404,7 @@ export default function AdminRequestShow({
                             </Form>
                         )
                     ) : serviceRequest.pet_treatment ? (
-                        <section className="space-y-4 rounded-xl border p-5 sm:p-6">
+                        <section className="space-y-4 border-l-2 border-clinical-foreground/50 bg-clinical/20 px-5 py-5 sm:px-6">
                             <Heading
                                 title="Tratamiento iniciado"
                                 description="Esta solicitud ya fue resuelta y permanece vinculada al tratamiento creado."
@@ -425,7 +436,7 @@ export default function AdminRequestShow({
                             </Button>
                         </section>
                     ) : (
-                        <section className="rounded-xl border p-5 sm:p-6">
+                        <section className="border-l-2 border-muted-foreground/50 bg-muted/30 px-5 py-5 sm:px-6">
                             <Heading
                                 title="Solicitud cancelada"
                                 description="Se conserva como historial y no puede resolverse."

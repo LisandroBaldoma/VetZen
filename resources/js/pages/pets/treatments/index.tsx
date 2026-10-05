@@ -1,7 +1,10 @@
-import { Head, Link, setLayoutProps } from '@inertiajs/react';
-import Heading from '@/components/heading';
+import { Head, setLayoutProps } from '@inertiajs/react';
+import { ClipboardListIcon } from 'lucide-react';
+import { EmptyState } from '@/components/empty-state';
+import PageHeader from '@/components/page-header';
 import PetContextHeader from '@/components/pet-context-header';
-import { Badge } from '@/components/ui/badge';
+import PetTreatmentCard from '@/components/pet-treatment-card';
+import type { PetTreatmentSummary } from '@/components/pet-treatment-card';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/pets';
 import { index, show } from '@/routes/pets/treatments';
@@ -19,29 +22,76 @@ type Pet = {
     has_photo?: boolean;
 };
 
-type TreatmentSummary = {
-    id: number;
-    treatment_name: string;
-    planned_sessions: number;
-    completed_sessions_count: number;
-    status: string;
-};
+const currentStatuses: PetTreatmentSummary['status'][] = [
+    'pending',
+    'in_progress',
+    'suspended',
+];
 
-const statusLabels: Record<string, string> = {
-    pending: 'Pendiente',
-    in_progress: 'En curso',
-    completed: 'Completado',
-    suspended: 'Suspendido',
-    cancelled: 'Cancelado',
-};
+function treatmentCount(count: number): string {
+    return `${count} ${count === 1 ? 'tratamiento' : 'tratamientos'}`;
+}
+
+function TreatmentGroup({
+    title,
+    treatments,
+    petId,
+    historical = false,
+}: {
+    title: string;
+    treatments: PetTreatmentSummary[];
+    petId: number;
+    historical?: boolean;
+}) {
+    if (treatments.length === 0) {
+        return null;
+    }
+
+    return (
+        <section
+            aria-labelledby={`${historical ? 'history' : 'current'}-treatments`}
+        >
+            <div className="mb-4 flex items-baseline justify-between gap-4">
+                <h2
+                    id={`${historical ? 'history' : 'current'}-treatments`}
+                    className={
+                        historical
+                            ? 'text-section-title font-semibold text-muted-foreground'
+                            : 'text-section-title font-semibold text-foreground'
+                    }
+                >
+                    {title}
+                </h2>
+                <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                    {treatmentCount(treatments.length)}
+                </span>
+            </div>
+            <div className="grid gap-4 xl:grid-cols-2">
+                {treatments.map((treatment) => (
+                    <PetTreatmentCard
+                        key={treatment.id}
+                        treatment={treatment}
+                        href={show.url([petId, treatment.id])}
+                    />
+                ))}
+            </div>
+        </section>
+    );
+}
 
 export default function Treatments({
     pet,
     petTreatments,
 }: {
     pet: Pet;
-    petTreatments: TreatmentSummary[];
+    petTreatments: PetTreatmentSummary[];
 }) {
+    const currentTreatments = petTreatments.filter((treatment) =>
+        currentStatuses.includes(treatment.status),
+    );
+    const historicalTreatments = petTreatments.filter(
+        (treatment) => !currentStatuses.includes(treatment.status),
+    );
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
@@ -54,53 +104,38 @@ export default function Treatments({
     return (
         <>
             <Head title={`Tratamientos de ${pet.name}`} />
-            <div className="mx-auto max-w-3xl space-y-6 p-4">
+            <div className="workspace-reading">
                 <PetContextHeader
                     pet={pet}
                     variant="client"
                     active="treatments"
                     editHref={edit.url(pet.id)}
                 />
-                <Heading
-                    title={`Tratamientos de ${pet.name}`}
-                    description="Consulta de progreso y sesiones."
+                <PageHeader
+                    title="Tratamientos"
+                    description="Consultá los tratamientos asignados y su progreso."
                 />
-                <div className="grid gap-3">
-                    {petTreatments.length === 0 && (
-                        <p className="rounded-xl border p-6">
-                            No hay tratamientos asignados.
-                        </p>
-                    )}
-                    {petTreatments.map((item) => (
-                        <Link
-                            key={item.id}
-                            href={show.url([pet.id, item.id])}
-                            className="rounded-xl border p-5 transition-colors hover:bg-muted/40"
-                        >
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                <div>
-                                    <strong>{item.treatment_name}</strong>
-                                    <p className="text-sm text-muted-foreground">
-                                        {item.completed_sessions_count} de{' '}
-                                        {item.planned_sessions} sesiones
-                                        completadas
-                                    </p>
-                                </div>
-                                <Badge variant="outline">
-                                    {statusLabels[item.status] ?? item.status}
-                                </Badge>
-                            </div>
-                            <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                                <div
-                                    className="h-full rounded-full bg-primary"
-                                    style={{
-                                        width: `${Math.min(100, (item.completed_sessions_count / item.planned_sessions) * 100)}%`,
-                                    }}
-                                />
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                {petTreatments.length === 0 ? (
+                    <EmptyState
+                        icon={<ClipboardListIcon aria-hidden="true" />}
+                        title="Esta mascota todavía no tiene tratamientos asignados."
+                        description="Cuando se asigne un tratamiento podrás consultar desde aquí su estado y progreso."
+                    />
+                ) : (
+                    <div className="space-y-8">
+                        <TreatmentGroup
+                            title="Tratamientos actuales"
+                            treatments={currentTreatments}
+                            petId={pet.id}
+                        />
+                        <TreatmentGroup
+                            title="Historial de tratamientos"
+                            treatments={historicalTreatments}
+                            petId={pet.id}
+                            historical
+                        />
+                    </div>
+                )}
             </div>
         </>
     );
