@@ -92,7 +92,7 @@ export default function SessionManagementSheet({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
                 side="bottom"
-                className="max-h-[90dvh] gap-0 rounded-t-2xl border-x border-t p-0 md:top-0 md:right-0 md:bottom-0 md:left-auto md:h-full md:w-[28rem] md:max-w-none md:rounded-none md:border-y-0 md:border-l"
+                className="max-h-[90dvh] gap-0 rounded-t-2xl border-x border-t p-0 md:right-auto md:bottom-6 md:left-1/2 md:w-[min(42rem,calc(100vw-3rem))] md:max-w-none md:-translate-x-1/2 md:rounded-2xl md:border"
             >
                 <SheetHeader className="border-b border-border-subtle px-4 pt-3 pb-4 sm:px-5">
                     <div className="mb-2 h-1 w-10 self-center rounded-full bg-border-strong md:hidden" />
@@ -115,7 +115,7 @@ export default function SessionManagementSheet({
                     </SheetDescription>
                 </SheetHeader>
 
-                <div className="overflow-y-auto px-4 py-5 sm:px-5">
+                <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-5">
                     {canOperate ? (
                         <Form
                             ref={formRef}

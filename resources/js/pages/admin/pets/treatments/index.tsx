@@ -1,5 +1,9 @@
 import { Head, Link, setLayoutProps } from '@inertiajs/react';
-import { ArrowRightIcon, ClipboardPlusIcon } from 'lucide-react';
+import {
+    ArrowRightIcon,
+    CalendarDaysIcon,
+    ClipboardPlusIcon,
+} from 'lucide-react';
 import { EmptyState } from '@/components/empty-state';
 import PageHeader from '@/components/page-header';
 import PetContextHeader from '@/components/pet-context-header';
@@ -58,21 +62,13 @@ function treatmentCount(count: number): string {
 function TreatmentCard({
     treatment,
     petId,
-    historical = false,
 }: {
     treatment: TreatmentSummary;
     petId: number;
-    historical?: boolean;
 }) {
     return (
-        <Card
-            className={
-                historical
-                    ? 'gap-0 overflow-hidden border-border-subtle p-0 shadow-none'
-                    : 'gap-0 overflow-hidden border-border-subtle p-0'
-            }
-        >
-            <CardHeader className="gap-3 p-4 sm:p-5">
+        <Card className="gap-0 overflow-hidden border-border-subtle p-0 shadow-sm">
+            <CardHeader className="gap-3 p-4 pb-3 sm:p-5 sm:pb-3">
                 <div className="flex items-start justify-between gap-3">
                     <CardTitle className="min-w-0 text-section-title leading-snug break-words">
                         {treatment.treatment_name}
@@ -83,27 +79,37 @@ function TreatmentCard({
                     />
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4 px-4 pb-4 sm:px-5">
+            <CardContent className="px-4 pb-3 sm:px-5">
                 <TreatmentProgress
                     completedSessions={treatment.completed_sessions_count}
                     plannedSessions={treatment.planned_sessions}
-                    className="border-0 bg-surface-subtle p-3 shadow-none"
+                    compact
                 />
-                {treatment.starts_on && (
-                    <dl className="flex items-baseline justify-between gap-4 text-sm">
-                        <dt className="text-muted-foreground">Inicio</dt>
-                        <dd className="text-right font-medium text-foreground tabular-nums">
+            </CardContent>
+            <CardFooter className="justify-between gap-3 px-4 pt-0 pb-3 sm:px-5 sm:pb-4">
+                {treatment.starts_on ? (
+                    <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground tabular-nums">
+                        <CalendarDaysIcon
+                            aria-hidden
+                            className="size-3.5 shrink-0"
+                        />
+                        <span className="truncate">
+                            Inicio ·{' '}
                             {dateFormatter.format(
                                 new Date(
                                     `${treatment.starts_on.slice(0, 10)}T00:00:00`,
                                 ),
                             )}
-                        </dd>
-                    </dl>
+                        </span>
+                    </p>
+                ) : (
+                    <span />
                 )}
-            </CardContent>
-            <CardFooter className="border-t border-border-subtle px-4 py-3 sm:px-5">
-                <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Button
+                    asChild
+                    variant="ghost"
+                    className="shrink-0 px-2 text-primary hover:text-primary"
+                >
                     <Link href={show.url([petId, treatment.id])}>
                         Ver tratamiento
                         <ArrowRightIcon aria-hidden="true" />
@@ -154,7 +160,6 @@ function TreatmentGroup({
                         key={treatment.id}
                         treatment={treatment}
                         petId={petId}
-                        historical={historical}
                     />
                 ))}
             </div>
