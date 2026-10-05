@@ -1,15 +1,26 @@
-import { Head, Link, setLayoutProps } from '@inertiajs/react';
+import { Form, Head, Link, setLayoutProps } from '@inertiajs/react';
 import { useState } from 'react';
+import PetTreatmentController from '@/actions/App/Http/Controllers/Admin/PetTreatmentController';
+import ConfirmActionDialog from '@/components/confirm-action-dialog';
+import InputError from '@/components/input-error';
 import PetContextHeader from '@/components/pet-context-header';
 import TreatmentProgress from '@/components/treatment-progress';
 import TreatmentStatusBadge from '@/components/treatment-status-badge';
 import type { TreatmentStatus } from '@/components/treatment-status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import SessionManagementSheet from '@/pages/admin/pets/treatments/components/session-management-sheet';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import SessionRow from '@/pages/admin/pets/treatments/components/session-row';
 import type { TreatmentSession } from '@/pages/admin/pets/treatments/components/session-row';
-import TreatmentManagementSheet from '@/pages/admin/pets/treatments/components/treatment-management-sheet';
 import { dashboard } from '@/routes';
 import { edit, index as petsIndex, show as petShow } from '@/routes/admin/pets';
 import { create, index, show } from '@/routes/admin/pets/treatments';
@@ -59,7 +70,9 @@ function SessionGroup({
     title,
     sessions,
     canOperate,
-    onManage,
+    completedSessions,
+    plannedSessions,
+    petId,
     highlighted = false,
     tone = 'default',
     compact = false,
@@ -68,7 +81,9 @@ function SessionGroup({
     title: string;
     sessions: TreatmentSession[];
     canOperate: boolean;
-    onManage: (sessionId: number) => void;
+    completedSessions: number;
+    plannedSessions: number;
+    petId: number;
     highlighted?: boolean;
     tone?: 'default' | 'completed' | 'cancelled';
     compact?: boolean;
@@ -96,7 +111,9 @@ function SessionGroup({
                             key={session.id}
                             session={session}
                             canOperate={canOperate}
-                            onManage={onManage}
+                            completedSessions={completedSessions}
+                            plannedSessions={plannedSessions}
+                            petId={petId}
                         />
                     ))}
                 </div>
@@ -129,13 +146,136 @@ function SessionGroup({
                         key={session.id}
                         session={session}
                         canOperate={canOperate}
-                        onManage={onManage}
+                        completedSessions={completedSessions}
+                        plannedSessions={plannedSessions}
+                        petId={petId}
                         highlighted={highlighted && index === 0}
                         compact={compact}
                     />
                 ))}
             </div>
         </section>
+    );
+}
+
+function EditTreatmentConditionsDialog({
+    treatment,
+    petId,
+    open,
+    onOpenChange,
+}: {
+    treatment: PetTreatment;
+    petId: number;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Editar condiciones</DialogTitle>
+                    <DialogDescription>
+                        Las sesiones nuevas usarán el precio actualizado. Las
+                        existentes conservarán su precio histórico.
+                    </DialogDescription>
+                </DialogHeader>
+                <Form
+                    {...PetTreatmentController.update.form([
+                        petId,
+                        treatment.id,
+                    ])}
+                    onSuccess={() => onOpenChange(false)}
+                    className="space-y-4"
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            <div className="grid gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="planned_sessions">
+                                        Sesiones requeridas
+                                    </Label>
+                                    <Input
+                                        id="planned_sessions"
+                                        name="planned_sessions"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={
+                                            treatment.planned_sessions
+                                        }
+                                        aria-invalid={Boolean(
+                                            errors.planned_sessions,
+                                        )}
+                                    />
+                                    <InputError
+                                        message={errors.planned_sessions}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="default_session_price">
+                                        Valor de referencia por sesión
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="default_session_price"
+                                            name="default_session_price"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            defaultValue={
+                                                treatment.default_session_price
+                                            }
+                                            className="pr-14"
+                                            aria-invalid={Boolean(
+                                                errors.default_session_price,
+                                            )}
+                                        />
+                                        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-sm font-semibold text-muted-foreground">
+                                            {treatment.currency}
+                                        </span>
+                                    </div>
+                                    <InputError
+                                        message={errors.default_session_price}
+                                    />
+                                </div>
+                                <input
+                                    type="hidden"
+                                    name="currency"
+                                    value={treatment.currency}
+                                />
+                                <div className="grid gap-2">
+                                    <Label htmlFor="treatment_notes">
+                                        Notas
+                                    </Label>
+                                    <textarea
+                                        id="treatment_notes"
+                                        name="notes"
+                                        defaultValue={treatment.notes ?? ''}
+                                        className="min-h-28 rounded-xl border bg-input p-3 shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                    />
+                                    <InputError message={errors.notes} />
+                                    <InputError message={errors.currency} />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    disabled={processing}
+                                    onClick={() => onOpenChange(false)}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button disabled={processing}>
+                                    {processing
+                                        ? 'Guardando...'
+                                        : 'Guardar cambios'}
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -146,11 +286,9 @@ export default function TreatmentShow({
     pet: Pet;
     petTreatment: PetTreatment;
 }) {
-    const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
-        null,
-    );
-    const [treatmentManagementOpen, setTreatmentManagementOpen] =
-        useState(false);
+    const [conditionsDialogOpen, setConditionsDialogOpen] = useState(false);
+    const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
+    const [cancelTreatmentOpen, setCancelTreatmentOpen] = useState(false);
     const completed = petTreatment.sessions.filter(
         (session) => session.status === 'completed',
     ).length;
@@ -182,17 +320,6 @@ export default function TreatmentShow({
     const cancelledSessions = petTreatment.sessions.filter(
         (session) => session.status === 'cancelled',
     );
-    const selectedSession =
-        petTreatment.sessions.find(
-            (session) => session.id === selectedSessionId,
-        ) ?? null;
-
-    function handleSheetOpenChange(open: boolean): void {
-        if (!open) {
-            setSelectedSessionId(null);
-        }
-    }
-
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
@@ -238,18 +365,6 @@ export default function TreatmentShow({
                                     />
                                 </div>
                             </div>
-                            {!isFinal && (
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    className="shrink-0"
-                                    onClick={() =>
-                                        setTreatmentManagementOpen(true)
-                                    }
-                                >
-                                    Gestionar tratamiento
-                                </Button>
-                            )}
                         </CardContent>
                     </Card>
                 </div>
@@ -394,6 +509,137 @@ export default function TreatmentShow({
                     </Card>
                 )}
 
+                {!isFinal && (
+                    <section className="rounded-xl border border-border-subtle bg-card p-4 shadow-sm sm:p-5">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 className="text-section-title font-semibold">
+                                    Estado del tratamiento
+                                </h2>
+                                <div className="mt-2">
+                                    <TreatmentStatusBadge
+                                        status={petTreatment.status}
+                                    />
+                                </div>
+                            </div>
+                            {canOperate && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() =>
+                                        setConditionsDialogOpen(true)
+                                    }
+                                >
+                                    Editar condiciones
+                                </Button>
+                            )}
+                        </div>
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                            {petTreatment.status === 'suspended' ? (
+                                <Form
+                                    {...PetTreatmentController.updateStatus.form(
+                                        [pet.id, petTreatment.id],
+                                    )}
+                                >
+                                    {({ processing }) => (
+                                        <>
+                                            <input
+                                                type="hidden"
+                                                name="status"
+                                                value="resume"
+                                            />
+                                            <Button
+                                                variant="secondary"
+                                                disabled={processing}
+                                            >
+                                                Reanudar tratamiento
+                                            </Button>
+                                        </>
+                                    )}
+                                </Form>
+                            ) : (
+                                <Form
+                                    {...PetTreatmentController.updateStatus.form(
+                                        [pet.id, petTreatment.id],
+                                    )}
+                                    onError={() => setSuspendDialogOpen(false)}
+                                >
+                                    {({ processing, submit }) => (
+                                        <>
+                                            <input
+                                                type="hidden"
+                                                name="status"
+                                                value="suspended"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                disabled={processing}
+                                                onClick={() =>
+                                                    setSuspendDialogOpen(true)
+                                                }
+                                            >
+                                                Suspender tratamiento
+                                            </Button>
+                                            <ConfirmActionDialog
+                                                open={suspendDialogOpen}
+                                                onOpenChange={
+                                                    setSuspendDialogOpen
+                                                }
+                                                onConfirm={submit}
+                                                title="¿Suspender tratamiento?"
+                                                description="Mientras esté suspendido no podrán gestionarse sus sesiones."
+                                                confirmLabel="Suspender tratamiento"
+                                                pending={processing}
+                                            />
+                                        </>
+                                    )}
+                                </Form>
+                            )}
+                            <Form
+                                {...PetTreatmentController.updateStatus.form([
+                                    pet.id,
+                                    petTreatment.id,
+                                ])}
+                                onError={() => setCancelTreatmentOpen(false)}
+                            >
+                                {({ processing, submit }) => (
+                                    <>
+                                        <input
+                                            type="hidden"
+                                            name="status"
+                                            value="cancelled"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                            disabled={processing}
+                                            onClick={() =>
+                                                setCancelTreatmentOpen(true)
+                                            }
+                                        >
+                                            Cancelar tratamiento
+                                        </Button>
+                                        <ConfirmActionDialog
+                                            open={cancelTreatmentOpen}
+                                            onOpenChange={
+                                                setCancelTreatmentOpen
+                                            }
+                                            onConfirm={submit}
+                                            title="¿Cancelar tratamiento?"
+                                            description="El tratamiento no podrá reabrirse. Sus sesiones permanecerán disponibles como historial."
+                                            confirmLabel="Cancelar tratamiento"
+                                            pending={processing}
+                                            destructive
+                                        />
+                                    </>
+                                )}
+                            </Form>
+                        </div>
+                    </section>
+                )}
+
                 <section className="space-y-6">
                     <div>
                         <h2 className="text-page-title font-semibold">
@@ -408,14 +654,18 @@ export default function TreatmentShow({
                         title="Próxima sesión programada"
                         sessions={nextSession}
                         canOperate={canOperate}
-                        onManage={setSelectedSessionId}
+                        completedSessions={completed}
+                        plannedSessions={petTreatment.planned_sessions}
+                        petId={pet.id}
                         highlighted
                     />
                     <SessionGroup
                         title="Sesiones completadas"
                         sessions={completedSessions}
                         canOperate={canOperate}
-                        onManage={setSelectedSessionId}
+                        completedSessions={completed}
+                        plannedSessions={petTreatment.planned_sessions}
+                        petId={pet.id}
                         tone="completed"
                         compact
                     />
@@ -432,42 +682,35 @@ export default function TreatmentShow({
                             title="Otras sesiones programadas"
                             sessions={otherScheduledSessions}
                             canOperate={canOperate}
-                            onManage={setSelectedSessionId}
+                            completedSessions={completed}
+                            plannedSessions={petTreatment.planned_sessions}
+                            petId={pet.id}
                         />
                         <SessionGroup
                             title="Sesiones pendientes sin programar"
                             sessions={pendingSessions}
                             canOperate={canOperate}
-                            onManage={setSelectedSessionId}
+                            completedSessions={completed}
+                            plannedSessions={petTreatment.planned_sessions}
+                            petId={pet.id}
                         />
                     </section>
                     <SessionGroup
                         title="Sesiones canceladas"
                         sessions={cancelledSessions}
                         canOperate={canOperate}
-                        onManage={setSelectedSessionId}
+                        completedSessions={completed}
+                        plannedSessions={petTreatment.planned_sessions}
+                        petId={pet.id}
                         collapsible
                     />
                 </section>
-                <SessionManagementSheet
-                    session={selectedSession}
-                    open={selectedSession !== null}
-                    onOpenChange={handleSheetOpenChange}
-                    canOperate={canOperate}
-                    completedSessions={completed}
-                    plannedSessions={petTreatment.planned_sessions}
+                <EditTreatmentConditionsDialog
+                    treatment={petTreatment}
                     petId={pet.id}
-                    petName={pet.name}
-                    treatmentName={petTreatment.treatment_name}
+                    open={conditionsDialogOpen}
+                    onOpenChange={setConditionsDialogOpen}
                 />
-                {!isFinal && (
-                    <TreatmentManagementSheet
-                        treatment={petTreatment}
-                        petId={pet.id}
-                        open={treatmentManagementOpen}
-                        onOpenChange={setTreatmentManagementOpen}
-                    />
-                )}
             </div>
         </>
     );
