@@ -384,7 +384,8 @@ Debe priorizar acciones reales, no métricas decorativas. Primera versión recom
 - Accesos rápidos: Nuevo paciente, Ver solicitudes y Abrir catálogo.
 - Actividad reciente solo si el backend puede definirla sin consultas ambiguas.
 
-No mostrar “Próximas sesiones” hasta definir si incluye sesiones sin `scheduled_at`, zona horaria, horizonte y orden. Si no existe endpoint de datos, el dashboard puede comenzar con accesos rápidos y un bloque de solicitudes respaldado por consulta explícita.
+El Inicio profesional no muestra próximas sesiones. El Inicio cliente puede mostrar
+una próxima sesión cuando cumpla la regla definida en UX-CLIENT-DASHBOARD-02.
 
 ```text
 ┌────────────────────────────────────────────────────────┐
@@ -408,6 +409,15 @@ Debe dejar de duplicar el formulario de datos personales. Resume mascotas y acti
 - Solicitudes pendientes con estado y servicio.
 - Tratamientos activos con progreso.
 - Acción “Explorar servicios”.
+- La próxima sesión de la mascota seleccionada, cuando exista.
+
+La próxima sesión cliente es la `TreatmentSession` con estado `pending`,
+`scheduled_at` no nulo y mayor o igual al instante actual, perteneciente a un
+`PetTreatment` en estado `pending` o `in_progress` de una mascota autorizada
+para el cliente. Se ordena por `scheduled_at` ascendente y `session_number`
+ascendente. Se excluyen sesiones sin fecha, completadas, canceladas, anteriores
+al instante actual y las pertenecientes a tratamientos suspendidos. La fecha y
+hora se interpretan y presentan en la timezone configurada por Laravel.
 
 Si no tiene mascotas, el estado vacío concentra la acción “Registrar mi primera mascota”; solicitar atención permanece deshabilitado hasta completar ese paso.
 

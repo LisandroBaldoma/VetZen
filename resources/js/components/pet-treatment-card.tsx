@@ -19,6 +19,10 @@ export type PetTreatmentSummary = {
     completed_sessions_count: number;
     status: TreatmentStatus;
     starts_on: string | null;
+    next_session?: {
+        scheduled_at: string;
+        session_number: number;
+    } | null;
 };
 
 const dateFormatter = new Intl.DateTimeFormat('es-AR', {
@@ -28,9 +32,11 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
 export default function PetTreatmentCard({
     treatment,
     href,
+    timezone,
 }: {
     treatment: PetTreatmentSummary;
     href: string;
+    timezone?: string;
 }) {
     return (
         <Card className="gap-0 overflow-hidden border-border-subtle p-0 shadow-sm">
@@ -53,7 +59,24 @@ export default function PetTreatmentCard({
                 />
             </CardContent>
             <CardFooter className="justify-between gap-3 px-4 pt-0 pb-3 sm:px-5 sm:pb-4">
-                {treatment.starts_on ? (
+                {treatment.next_session ? (
+                    <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground tabular-nums">
+                        <CalendarDaysIcon
+                            aria-hidden
+                            className="size-3.5 shrink-0"
+                        />
+                        <span className="truncate">
+                            Próxima ·{' '}
+                            {new Intl.DateTimeFormat('es-AR', {
+                                dateStyle: 'medium',
+                                timeStyle: 'short',
+                                timeZone: timezone,
+                            }).format(
+                                new Date(treatment.next_session.scheduled_at),
+                            )}
+                        </span>
+                    </p>
+                ) : treatment.starts_on ? (
                     <p className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground tabular-nums">
                         <CalendarDaysIcon
                             aria-hidden

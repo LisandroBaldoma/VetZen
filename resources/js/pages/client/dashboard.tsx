@@ -1,20 +1,32 @@
 import { Head, Link } from '@inertiajs/react';
 import {
-    ArrowRight,
-    ClipboardList,
-    HeartPulse,
-    PawPrint,
-    Plus,
-    Stethoscope,
+    CalendarClockIcon,
+    CalendarDaysIcon,
+    ClipboardListIcon,
+    HeartPulseIcon,
+    PawPrintIcon,
+    PlusIcon,
+    StethoscopeIcon,
 } from 'lucide-react';
-import PageHeader from '@/components/page-header';
+import { DashboardHero } from '@/components/dashboard/dashboard-hero';
+import { DashboardActivityList } from '@/components/dashboard/priority-requests';
+import type { DashboardActivity } from '@/components/dashboard/priority-requests';
+import PetTreatmentCard from '@/components/pet-treatment-card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { dashboard } from '@/routes';
 import {
     create as createPet,
     index as petsIndex,
+    photo,
     show as showPet,
 } from '@/routes/pets';
 import { show as showRequest } from '@/routes/pets/service-requests';
@@ -23,348 +35,406 @@ import { index as servicesIndex } from '@/routes/services';
 import type {
     ClientDashboardProps,
     DashboardRequest,
-    DashboardTreatment,
+    DashboardSelectedPet,
 } from '@/types';
 
 const dateFormatter = new Intl.DateTimeFormat('es-AR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+    dateStyle: 'medium',
 });
 
-const treatmentStatusLabels: Record<DashboardTreatment['status'], string> = {
-    pending: 'Pendiente',
-    in_progress: 'En curso',
-    suspended: 'Suspendido',
-};
+function formatSessionDate(value: string, timezone: string): string {
+    return new Intl.DateTimeFormat('es-AR', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: timezone,
+    }).format(new Date(value));
+}
+
+function formatSex(sex: string): string {
+    if (sex.toLowerCase() === 'female') {
+        return 'Hembra';
+    }
+
+    if (sex.toLowerCase() === 'male') {
+        return 'Macho';
+    }
+
+    return sex;
+}
+
+function age(birthDate: string | null): string | null {
+    if (birthDate === null) {
+        return null;
+    }
+
+    const birth = new Date(`${birthDate}T00:00:00`);
+    const today = new Date();
+    let years = today.getFullYear() - birth.getFullYear();
+    const hasNotHadBirthday =
+        today.getMonth() < birth.getMonth() ||
+        (today.getMonth() === birth.getMonth() &&
+            today.getDate() < birth.getDate());
+
+    if (hasNotHadBirthday) {
+        years -= 1;
+    }
+
+    return `${years} ${years === 1 ? 'año' : 'años'}`;
+}
 
 export default function ClientDashboard({
     pets,
+    selectedPet,
+    nextSession,
     pendingRequests,
     activeTreatments,
+    timezone,
 }: ClientDashboardProps) {
+    const requestItems = requestActivities(pendingRequests);
+
     return (
         <>
             <Head title="Inicio" />
-            <div className="space-y-6 p-4 md:p-6">
-                <PageHeader
-                    title="Inicio"
+            <div className="workspace-reading">
+                <DashboardHero
+                    showSummary={false}
                     description="Consultá el seguimiento de tus mascotas y su atención en VetZen."
-                    actions={
-                        <Button asChild>
+                    action={
+                        <Button asChild className="min-h-11">
                             <Link href={servicesIndex()}>
-                                <Stethoscope aria-hidden="true" />
+                                <StethoscopeIcon aria-hidden="true" />
                                 Explorar servicios
                             </Link>
                         </Button>
                     }
                 />
 
-                <section aria-labelledby="pets-title" className="space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                            <h2
-                                id="pets-title"
-                                className="text-lg font-semibold"
-                            >
-                                Mis mascotas
-                            </h2>
-                            <p className="text-sm text-muted-foreground">
-                                Accedé a la información de cada una.
-                            </p>
+                {selectedPet === null ? (
+                    <Card className="items-center border-dashed p-6 text-center shadow-none sm:p-10">
+                        <div className="flex size-14 items-center justify-center rounded-full bg-surface-subtle text-primary">
+                            <PawPrintIcon aria-hidden className="size-7" />
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            {pets.length > 0 && (
-                                <Button asChild variant="outline" size="sm">
-                                    <Link href={petsIndex()}>Ver todas</Link>
-                                </Button>
+                        <CardHeader className="px-0">
+                            <CardTitle>
+                                Todavía no registraste mascotas.
+                            </CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                                Registrá una mascota para consultar su atención
+                                y solicitar servicios.
+                            </p>
+                        </CardHeader>
+                        <Button asChild>
+                            <Link href={createPet()}>
+                                <PlusIcon aria-hidden="true" />
+                                Registrar mascota
+                            </Link>
+                        </Button>
+                    </Card>
+                ) : (
+                    <>
+                        {pets.length > 1 && (
+                            <nav
+                                aria-label="Seleccionar mascota"
+                                className="overflow-x-auto pb-1"
+                            >
+                                <div className="flex min-w-max gap-2">
+                                    {pets.map((pet) => {
+                                        const isSelected =
+                                            pet.id === selectedPet.id;
+
+                                        return (
+                                            <Button
+                                                key={pet.id}
+                                                asChild
+                                                variant={
+                                                    isSelected
+                                                        ? 'default'
+                                                        : 'outline'
+                                                }
+                                                className="min-h-11 rounded-full"
+                                            >
+                                                <Link
+                                                    href={dashboard({
+                                                        query: { pet: pet.id },
+                                                    })}
+                                                    aria-current={
+                                                        isSelected
+                                                            ? 'page'
+                                                            : undefined
+                                                    }
+                                                >
+                                                    <PawPrintIcon aria-hidden />
+                                                    {pet.name}
+                                                    <span className="text-xs font-medium opacity-75">
+                                                        {pet.species}
+                                                    </span>
+                                                </Link>
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+                            </nav>
+                        )}
+
+                        <PetOverview
+                            pet={selectedPet}
+                            nextSession={nextSession}
+                            timezone={timezone}
+                        />
+
+                        {nextSession && (
+                            <Card className="gap-0 overflow-hidden border-primary/30 bg-primary/5 p-0 shadow-sm">
+                                <CardHeader className="gap-3 p-4 sm:p-5">
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
+                                        <Badge className="border-transparent bg-primary/10 text-primary">
+                                            <CalendarClockIcon aria-hidden />
+                                            Próxima sesión
+                                        </Badge>
+                                        <span className="text-sm font-semibold text-muted-foreground tabular-nums">
+                                            Sesión {nextSession.sessionNumber}{' '}
+                                            de {nextSession.plannedSessions}
+                                        </span>
+                                    </div>
+                                    <CardTitle className="text-section-title">
+                                        {nextSession.treatmentName}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="px-4 pb-4 sm:px-5">
+                                    <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-xs sm:p-4">
+                                        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                            <CalendarDaysIcon
+                                                aria-hidden
+                                                className="size-5"
+                                            />
+                                        </div>
+                                        <p className="text-section-title font-semibold text-primary tabular-nums">
+                                            {formatSessionDate(
+                                                nextSession.scheduledAt,
+                                                timezone,
+                                            )}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="justify-end px-4 pt-0 pb-4 sm:px-5 sm:pb-5">
+                                    <Button asChild variant="secondary">
+                                        <Link
+                                            href={showTreatment([
+                                                selectedPet.id,
+                                                nextSession.treatmentId,
+                                            ])}
+                                        >
+                                            Ver tratamiento
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
+
+                        <section
+                            aria-labelledby="active-treatments-title"
+                            className="space-y-4"
+                        >
+                            <div>
+                                <h2
+                                    id="active-treatments-title"
+                                    className="text-xl font-semibold tracking-tight text-balance"
+                                >
+                                    Tratamientos activos
+                                </h2>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Seguimiento de los planes asignados a{' '}
+                                    {selectedPet.name}.
+                                </p>
+                            </div>
+                            {activeTreatments.length === 0 ? (
+                                <Card className="gap-2 border-dashed p-4 shadow-none">
+                                    <p className="font-semibold">
+                                        No hay tratamientos activos.
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Los tratamientos asignados aparecerán
+                                        aquí para seguir su progreso.
+                                    </p>
+                                </Card>
+                            ) : (
+                                <div className="grid gap-4 xl:grid-cols-2">
+                                    {activeTreatments.map((treatment) => (
+                                        <PetTreatmentCard
+                                            key={treatment.id}
+                                            treatment={{
+                                                id: treatment.id,
+                                                treatment_name:
+                                                    treatment.treatmentName,
+                                                planned_sessions:
+                                                    treatment.plannedSessions,
+                                                completed_sessions_count:
+                                                    treatment.completedSessions,
+                                                status: treatment.status,
+                                                starts_on: null,
+                                                next_session:
+                                                    treatment.nextSession ===
+                                                    null
+                                                        ? null
+                                                        : {
+                                                              scheduled_at:
+                                                                  treatment
+                                                                      .nextSession
+                                                                      .scheduledAt,
+                                                              session_number:
+                                                                  treatment
+                                                                      .nextSession
+                                                                      .sessionNumber,
+                                                          },
+                                            }}
+                                            href={showTreatment.url([
+                                                selectedPet.id,
+                                                treatment.id,
+                                            ])}
+                                            timezone={timezone}
+                                        />
+                                    ))}
+                                </div>
                             )}
-                            <Button asChild size="sm">
+                        </section>
+
+                        {requestItems.length > 0 && (
+                            <DashboardActivityList
+                                title="Solicitudes pendientes"
+                                headingId="pending-requests-title"
+                                items={requestItems}
+                                compact
+                                emptyState={{
+                                    title: 'No tenés solicitudes pendientes.',
+                                    description:
+                                        'Podés explorar los servicios disponibles cuando necesites atención.',
+                                }}
+                            />
+                        )}
+
+                        <div className="flex flex-wrap gap-2 border-t pt-5">
+                            <Button asChild variant="outline">
+                                <Link href={petsIndex()}>
+                                    Ver todas las mascotas
+                                </Link>
+                            </Button>
+                            <Button asChild variant="secondary">
                                 <Link href={createPet()}>
-                                    <Plus aria-hidden="true" />
+                                    <PlusIcon aria-hidden="true" />
                                     Registrar mascota
                                 </Link>
                             </Button>
                         </div>
-                    </div>
-
-                    {pets.length === 0 ? (
-                        <Card className="border-dashed shadow-none">
-                            <CardContent className="flex flex-col items-start gap-4">
-                                <div className="rounded-full bg-muted p-3">
-                                    <PawPrint
-                                        className="size-6 text-muted-foreground"
-                                        aria-hidden="true"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="font-medium">
-                                        Todavía no registraste mascotas.
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Registrá una mascota para solicitar
-                                        atención y consultar su seguimiento.
-                                    </p>
-                                </div>
-                                <Button asChild>
-                                    <Link href={createPet()}>
-                                        Registrar mascota
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                            {pets.map((pet) => (
-                                <Link
-                                    key={pet.id}
-                                    href={showPet(pet.id)}
-                                    className="group rounded-xl border bg-card p-4 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                >
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="min-w-0">
-                                            <p className="truncate font-medium">
-                                                {pet.name}
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {pet.species}
-                                            </p>
-                                        </div>
-                                        <ArrowRight
-                                            className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </section>
-
-                <div className="grid gap-6 lg:grid-cols-2">
-                    <RequestsSection
-                        requests={pendingRequests}
-                        hasPets={pets.length > 0}
-                    />
-                    <TreatmentsSection
-                        treatments={activeTreatments}
-                        hasPets={pets.length > 0}
-                    />
-                </div>
+                    </>
+                )}
             </div>
         </>
     );
 }
 
-function RequestsSection({
-    requests,
-    hasPets,
+function PetOverview({
+    pet,
+    nextSession,
+    timezone,
 }: {
-    requests: DashboardRequest[];
-    hasPets: boolean;
+    pet: DashboardSelectedPet;
+    nextSession: ClientDashboardProps['nextSession'];
+    timezone: string;
 }) {
-    return (
-        <section aria-labelledby="pending-requests-title" className="space-y-3">
-            <div className="flex items-center gap-2">
-                <ClipboardList
-                    className="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                />
-                <h2
-                    id="pending-requests-title"
-                    className="text-lg font-semibold"
-                >
-                    Solicitudes pendientes
-                </h2>
-            </div>
+    const details = [
+        pet.species,
+        pet.breed,
+        formatSex(pet.sex),
+        age(pet.birthDate),
+        pet.weight ? `${pet.weight} kg` : null,
+    ].filter(Boolean);
 
-            {requests.length === 0 ? (
-                <Card className="h-full border-dashed shadow-none">
-                    <CardContent className="space-y-3 text-sm text-muted-foreground">
-                        <p>
-                            {hasPets
-                                ? 'No tenés solicitudes de atención pendientes.'
-                                : 'Tus solicitudes aparecerán después de registrar una mascota.'}
-                        </p>
-                        {hasPets && (
-                            <Button asChild variant="outline" size="sm">
-                                <Link href={servicesIndex()}>
-                                    Explorar servicios
-                                </Link>
-                            </Button>
+    return (
+        <Card className="gap-0 overflow-hidden border-border-subtle p-0 shadow-sm">
+            <CardContent className="p-4 sm:p-5">
+                <div className="flex min-w-0 items-start gap-3.5">
+                    <Avatar className="size-16 shrink-0 rounded-full border border-border bg-surface-subtle shadow-sm">
+                        {pet.hasPhoto && (
+                            <AvatarImage
+                                src={photo.url(pet.id)}
+                                alt={`Foto de ${pet.name}`}
+                                className="object-cover"
+                            />
                         )}
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid gap-3">
-                    {requests.map((request) => (
-                        <Card
-                            key={request.id}
-                            className="gap-4 py-4 shadow-none"
+                        <AvatarFallback className="rounded-full bg-surface-subtle text-xl font-semibold text-primary">
+                            {pet.name.slice(0, 1).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h2 className="text-page-title font-semibold tracking-tight text-balance break-words">
+                                {pet.name}
+                            </h2>
+                            <Badge variant="outline">{pet.species}</Badge>
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {details.join(' · ')}
+                        </p>
+                        <Button
+                            asChild
+                            variant="link"
+                            className="mt-2 h-auto px-0"
                         >
-                            <CardHeader className="flex-row items-start justify-between gap-3">
-                                <div className="min-w-0 space-y-1">
-                                    <CardTitle>
-                                        <Link
-                                            href={showPet(request.pet.id)}
-                                            className="underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                        >
-                                            {request.pet.name}
-                                        </Link>
-                                    </CardTitle>
-                                    <p className="text-sm text-muted-foreground">
-                                        {request.service.name}
-                                    </p>
-                                </div>
-                                <Badge variant="outline">Pendiente</Badge>
-                            </CardHeader>
-                            <CardContent className="flex flex-wrap items-center justify-between gap-3">
-                                <span className="text-sm text-muted-foreground">
-                                    {dateFormatter.format(
-                                        new Date(request.createdAt),
-                                    )}
-                                </span>
-                                <Button asChild variant="ghost" size="sm">
-                                    <Link
-                                        href={showRequest([
-                                            request.pet.id,
-                                            request.id,
-                                        ])}
-                                    >
-                                        Ver solicitud
-                                        <ArrowRight aria-hidden="true" />
-                                    </Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    ))}
+                            <Link href={showPet(pet.id)}>
+                                Ver ficha completa
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
-            )}
-        </section>
+                <div className="mt-4 grid grid-cols-2 gap-3 border-t pt-4">
+                    <div className="rounded-xl bg-surface-subtle p-3">
+                        <HeartPulseIcon
+                            aria-hidden
+                            className="size-4 text-primary"
+                        />
+                        <p className="mt-2 text-section-title font-semibold tabular-nums">
+                            {pet.activeTreatmentsCount}
+                        </p>
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Tratamientos activos
+                        </p>
+                    </div>
+                    <div className="rounded-xl bg-surface-subtle p-3">
+                        <CalendarClockIcon
+                            aria-hidden
+                            className="size-4 text-primary"
+                        />
+                        <p className="mt-2 text-sm font-semibold text-foreground tabular-nums">
+                            {nextSession
+                                ? formatSessionDate(
+                                      nextSession.scheduledAt,
+                                      timezone,
+                                  )
+                                : 'Sin programar'}
+                        </p>
+                        <p className="text-xs font-medium text-muted-foreground">
+                            Próxima sesión
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
-function TreatmentsSection({
-    treatments,
-    hasPets,
-}: {
-    treatments: DashboardTreatment[];
-    hasPets: boolean;
-}) {
-    return (
-        <section
-            aria-labelledby="active-treatments-title"
-            className="space-y-3"
-        >
-            <div className="flex items-center gap-2">
-                <HeartPulse
-                    className="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                />
-                <h2
-                    id="active-treatments-title"
-                    className="text-lg font-semibold"
-                >
-                    Tratamientos activos
-                </h2>
-            </div>
-
-            {treatments.length === 0 ? (
-                <Card className="h-full border-dashed shadow-none">
-                    <CardContent className="text-sm text-muted-foreground">
-                        {hasPets
-                            ? 'No tenés tratamientos activos.'
-                            : 'Tus tratamientos aparecerán después de registrar una mascota.'}
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid gap-3">
-                    {treatments.map((treatment) => {
-                        const percentage = Math.min(
-                            100,
-                            Math.round(
-                                (treatment.completedSessions /
-                                    treatment.plannedSessions) *
-                                    100,
-                            ),
-                        );
-
-                        return (
-                            <Card
-                                key={treatment.id}
-                                className="gap-4 py-4 shadow-none"
-                            >
-                                <CardHeader className="gap-2">
-                                    <div className="flex flex-wrap items-start justify-between gap-2">
-                                        <div className="min-w-0 space-y-1">
-                                            <CardTitle>
-                                                {treatment.treatmentName}
-                                            </CardTitle>
-                                            <Link
-                                                href={showPet(treatment.pet.id)}
-                                                className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                                            >
-                                                {treatment.pet.name}
-                                            </Link>
-                                        </div>
-                                        <Badge variant="outline">
-                                            {
-                                                treatmentStatusLabels[
-                                                    treatment.status
-                                                ]
-                                            }
-                                        </Badge>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between gap-3 text-sm">
-                                            <span>Progreso</span>
-                                            <span className="text-muted-foreground">
-                                                {treatment.completedSessions} de{' '}
-                                                {treatment.plannedSessions}{' '}
-                                                sesiones completadas
-                                            </span>
-                                        </div>
-                                        <div
-                                            role="progressbar"
-                                            aria-label={`Progreso del tratamiento ${treatment.treatmentName}`}
-                                            aria-valuemin={0}
-                                            aria-valuemax={
-                                                treatment.plannedSessions
-                                            }
-                                            aria-valuenow={
-                                                treatment.completedSessions
-                                            }
-                                            className="h-2 overflow-hidden rounded-full bg-muted"
-                                        >
-                                            <div
-                                                className="h-full rounded-full bg-primary transition-[width]"
-                                                style={{
-                                                    width: `${percentage}%`,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <Button asChild variant="ghost" size="sm">
-                                        <Link
-                                            href={showTreatment([
-                                                treatment.pet.id,
-                                                treatment.id,
-                                            ])}
-                                        >
-                                            Ver tratamiento
-                                            <ArrowRight aria-hidden="true" />
-                                        </Link>
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-                </div>
-            )}
-        </section>
-    );
+function requestActivities(requests: DashboardRequest[]): DashboardActivity[] {
+    return requests.map((request) => ({
+        id: request.id,
+        title: request.service.name,
+        subtitle: request.pet.name,
+        status: 'Pendiente',
+        statusTone: 'operational',
+        timestamp: dateFormatter.format(new Date(request.createdAt)),
+        icon: ClipboardListIcon,
+        primaryAction: {
+            label: 'Ver solicitud',
+            href: showRequest([request.pet.id, request.id]),
+        },
+    }));
 }
 
 ClientDashboard.layout = {

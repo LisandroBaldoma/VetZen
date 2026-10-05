@@ -52,14 +52,24 @@ const toneClasses: Record<MetricTone, { icon: string; status: string }> = {
 export function DashboardHero({
     pendingRequestsCount,
     action,
+    metrics,
+    description = 'Mesa de trabajo clínica para revisar la atención que requiere definición.',
+    overviewTitle = 'Resumen clínico diario',
+    overviewBadge = 'Panel operativo clínico',
+    showSummary = true,
 }: {
-    pendingRequestsCount: number;
+    pendingRequestsCount?: number;
     action: ReactNode;
+    metrics?: DashboardMetric[];
+    description?: string;
+    overviewTitle?: string;
+    overviewBadge?: string;
+    showSummary?: boolean;
 }) {
-    const metrics: DashboardMetric[] = [
+    const defaultMetrics: DashboardMetric[] = [
         {
             label: 'Solicitudes pendientes',
-            value: pendingRequestsCount.toString(),
+            value: (pendingRequestsCount ?? 0).toString(),
             status: 'Requieren revisión',
             description:
                 'Pacientes esperando confirmación de triage y evaluación inicial.',
@@ -71,71 +81,78 @@ export function DashboardHero({
 
     return (
         <section
-            aria-labelledby="dashboard-overview-title"
+            aria-labelledby={
+                showSummary ? 'dashboard-overview-title' : undefined
+            }
+            aria-label={showSummary ? undefined : 'Inicio'}
             className="space-y-4"
         >
             <PageHeader
                 title="Inicio"
-                description="Mesa de trabajo clínica para revisar la atención que requiere definición."
+                description={description}
                 actions={action}
             />
-            <div className="flex flex-wrap items-center gap-2">
-                <h2
-                    id="dashboard-overview-title"
-                    className="text-xl font-semibold tracking-tight text-balance"
-                >
-                    Resumen clínico diario
-                </h2>
-                <span className="inline-flex items-center gap-2 rounded-full bg-surface-subtle px-3 py-1 text-xs font-semibold text-primary">
-                    <span
-                        className="size-1.5 rounded-full bg-primary"
-                        aria-hidden="true"
-                    />
-                    Panel operativo clínico
-                </span>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-                {metrics.map((metric) => {
-                    const Icon = metric.icon;
-                    const tone = toneClasses[metric.tone];
-
-                    return (
-                        <article
-                            key={metric.label}
-                            className="flex min-h-48 flex-col justify-between rounded-2xl border bg-card p-5 shadow-sm"
+            {showSummary && (
+                <>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h2
+                            id="dashboard-overview-title"
+                            className="text-xl font-semibold tracking-tight text-balance"
                         >
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${tone.icon}`}
-                                    >
-                                        <Icon
-                                            className="size-6"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="text-3xl font-bold tracking-tight tabular-nums">
-                                            {metric.value}
-                                        </p>
-                                        <p className="text-sm font-semibold">
-                                            {metric.label}
-                                        </p>
-                                    </div>
-                                </div>
-                                <span
-                                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tone.status}`}
+                            {overviewTitle}
+                        </h2>
+                        <span className="inline-flex items-center gap-2 rounded-full bg-surface-subtle px-3 py-1 text-xs font-semibold text-primary">
+                            <span
+                                className="size-1.5 rounded-full bg-primary"
+                                aria-hidden="true"
+                            />
+                            {overviewBadge}
+                        </span>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {(metrics ?? defaultMetrics).map((metric) => {
+                            const Icon = metric.icon;
+                            const tone = toneClasses[metric.tone];
+
+                            return (
+                                <article
+                                    key={metric.label}
+                                    className="flex min-h-48 flex-col justify-between rounded-2xl border bg-card p-5 shadow-sm"
                                 >
-                                    {metric.status}
-                                </span>
-                            </div>
-                            <p className="mt-5 border-t border-border pt-3 text-sm leading-5 text-muted-foreground">
-                                {metric.description}
-                            </p>
-                        </article>
-                    );
-                })}
-            </div>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${tone.icon}`}
+                                            >
+                                                <Icon
+                                                    className="size-6"
+                                                    aria-hidden="true"
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-3xl font-bold tracking-tight tabular-nums">
+                                                    {metric.value}
+                                                </p>
+                                                <p className="text-sm font-semibold">
+                                                    {metric.label}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span
+                                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tone.status}`}
+                                        >
+                                            {metric.status}
+                                        </span>
+                                    </div>
+                                    <p className="mt-5 border-t border-border pt-3 text-sm leading-5 text-muted-foreground">
+                                        {metric.description}
+                                    </p>
+                                </article>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </section>
     );
 }
