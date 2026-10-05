@@ -185,11 +185,8 @@ export default function PetContextHeader({
                 </div>
             </section>
 
-            <nav
-                aria-label={`Secciones de ${pet.name}`}
-                className="overflow-x-auto pb-1"
-            >
-                <div className="flex min-w-max items-center gap-2">
+            <nav aria-label={`Secciones de ${pet.name}`} className="pb-1">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                     {navItems.map((item) => {
                         const isActive = active === item.key;
                         const Icon = item.icon;
@@ -200,7 +197,7 @@ export default function PetContextHeader({
                                 href={item.href}
                                 aria-current={isActive ? 'page' : undefined}
                                 className={cn(
-                                    'inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold whitespace-nowrap transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98]',
+                                    'inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl px-3 text-center text-sm leading-tight font-semibold transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none active:scale-[0.98] sm:w-auto sm:rounded-full sm:px-3.5 sm:whitespace-nowrap',
                                     isActive
                                         ? 'bg-primary text-primary-foreground shadow-sm'
                                         : 'bg-card text-muted-foreground shadow-sm hover:bg-surface-subtle hover:text-foreground',
