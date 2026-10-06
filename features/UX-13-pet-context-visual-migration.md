@@ -14,7 +14,8 @@ mascotas y pacientes con información real, sin alterar el shell, rutas,
   admin y cliente.
 - Presentar foto autorizada o avatar, identidad, especie, raza, sexo,
   responsable administrativo y edición mediante enlaces Wayfinder existentes.
-- Usar navegación horizontal por secciones con estado activo accesible.
+- Usar navegación por secciones con estado activo accesible: grilla de dos
+  columnas en móvil y fila compacta desde `sm`.
 - Presentar datos generales y notas reales en tarjetas responsive.
 
 ## Decisiones

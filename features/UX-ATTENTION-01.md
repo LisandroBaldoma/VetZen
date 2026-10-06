@@ -1,7 +1,8 @@
 # UX-ATTENTION-01 - Analisis funcional y UX de Atencion
 
-> Estado: investigacion. No implementar cambios hasta aprobar el modelo de
-> interaccion, la terminologia y el flujo funcional.
+> Estado: investigacion historica cerrada con Atención V1. Este documento
+> conserva el análisis, riesgos y propuestas para una eventual V2; no describe
+> cambios de dominio adoptados por V1.
 
 ## 1. Resumen ejecutivo
 
@@ -477,11 +478,14 @@ Comprender -> decidir -> resolver
 9. **Documentacion en conflicto:** F08 permite tecnicamente crear solicitudes como admin por Policy; UX-07 declara que solo cliente crea. La UI actual expone el flujo al cliente, pero la regla durable debe unificarse.
 10. **Terminologia de turnos:** no debe mezclarse con sesiones hasta que Feature 10 exista.
 
-## 18. Etapas posteriores propuestas
+## 18. Historial de etapas posteriores
 
-Estas etapas no constituyen plan de implementacion.
+Estas etapas son historial de propuestas, no un plan activo ni funcionalidad de
+V1. UX-ATTENTION-02 fue parcialmente adoptada en la entrada cliente; las demás
+etapas permanecen pospuestas.
 
-- `UX-ATTENTION-02`: aprobar modelo funcional de solicitud, terminologia y estados visibles.
+- `UX-ATTENTION-02`: propuesta de arquitectura visual; V1 adoptó la selección
+  progresiva cliente y el responsive de solicitudes, sin cambiar el dominio.
 - `UX-ATTENTION-03`: definir arquitectura de informacion y navegacion Cliente/Admin.
 - `UX-ATTENTION-04`: producir referencias Stitch con datos reales y estados aprobados.
 - `UX-ATTENTION-05`: migrar flujo Cliente reutilizando design system existente.
