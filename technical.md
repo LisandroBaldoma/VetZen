@@ -75,13 +75,16 @@ Actualmente se contempla:
 
 ### **Inteligencia artificial**
 
-* Modelo de lenguaje.  
+* OpenAI como proveedor inicial de modelo de lenguaje.
 * Embeddings.  
 * Búsqueda semántica.  
 * Arquitectura RAG.  
 * Herramientas controladas para acceder a información dinámica del sistema.
 
-La elección concreta de proveedores y servicios deberá definirse antes de implementar las funcionalidades correspondientes.
+OpenAI se integrará mediante una capa de aplicación del asistente, sin acoplar
+la lógica de dominio, autorización o acceso a datos al SDK o API del proveedor.
+La API key, el modelo, los parámetros, los límites y los timeouts serán valores
+configurables por entorno. El modelo concreto permanece pendiente de decisión.
 
 ---
 
@@ -292,15 +295,28 @@ La estrategia concreta de auditoría queda pendiente de definición.
 
 # **14\. Inteligencia artificial**
 
-El asistente virtual será un componente controlado de VetZen y no deberá tener acceso directo e irrestricto a la base de datos.
+El asistente virtual Simón será un componente controlado de VetZen y no deberá
+
+La implementación evoluciona en este orden:
+
+1. SIMON-01: Knowledge Base curada de uso del producto.
+2. SIMON-02: chunking, almacenamiento y búsqueda textual.
+3. SIMON-03: generación grounded con OpenAI y contexto recuperado.
+4. SIMON-04: embeddings y búsqueda semántica/híbrida si resultan necesarios.
+
+SIMON-01 no implementa integración de IA ni persistencia de conocimiento fuera
+de los documentos versionados.
 
 Se utilizarán dos fuentes principales de información.
 
 ## **14.1 Base de conocimiento**
 
-Contendrá información autorizada por la veterinaria.
+Contendrá información autorizada y curada sobre el uso del producto. Su contenido
+se mantiene separado de especificaciones técnicas, documentos de planificación y
 
-Esta información podrá utilizar una arquitectura RAG para recuperar contenido relevante antes de generar una respuesta.
+Esta información podrá utilizar una arquitectura RAG para recuperar contenido
+relevante antes de generar una respuesta. El retrieval deberá filtrar el
+contenido por rol antes de enviarlo al proveedor.
 
 El sistema deberá contemplar:
 
@@ -312,7 +328,8 @@ El sistema deberá contemplar:
 
 ## **14.2 Información dinámica**
 
-Los datos actualizados de VetZen, como turnos, tratamientos y pacientes, deberán obtenerse mediante mecanismos controlados.
+Los datos actualizados de VetZen, como turnos, tratamientos y pacientes, podrán
+obtenerse mediante mecanismos controlados en una feature posterior.
 
 El modelo no deberá consultar directamente la base de datos.
 
@@ -336,14 +353,16 @@ El sistema deberá evitar que una instrucción proporcionada por el usuario perm
 
 # **16\. Capacidades del asistente**
 
-El asistente podrá:
+El asistente podrá, según el alcance de cada feature:
 
 * Responder consultas sobre información autorizada de la veterinaria.  
-* Consultar información seleccionada de las mascotas del cliente.  
-* Consultar información actualizada de tratamientos.  
-* Consultar información de turnos.  
-* Ayudar a identificar opciones de turnos.  
-* Ayudar durante el proceso de solicitud de un turno.
+* Explicar el uso de funcionalidades implementadas a partir de la Knowledge Base.
+* Consultar información seleccionada de las mascotas del cliente cuando se
+  habilite explícitamente.
+* Consultar información actualizada de tratamientos cuando se habilite
+  explícitamente.
+* Consultar información de turnos o ayudar a solicitarlos cuando el módulo exista
+  y se habilite explícitamente.
 
 El asistente no deberá:
 
@@ -352,6 +371,7 @@ El asistente no deberá:
 * Acceder a información no autorizada.  
 * Modificar información clínica sin autorización.  
 * Inventar información cuando no exista contexto suficiente.
+* Proporcionar diagnósticos, recomendaciones veterinarias o prescripciones.
 
 Las reglas concretas de derivación a profesionales deberán definirse posteriormente en función del contenido y contexto autorizado para el asistente.
 
@@ -544,7 +564,8 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Inteligencia artificial**
 
-* ¿Qué proveedor de modelo de lenguaje se utilizará?  
+* Proveedor de modelo de lenguaje inicial: OpenAI. El modelo concreto, límites,
+  región, retención y parámetros siguen pendientes de definición.
 * ¿Qué modelo se utilizará inicialmente?  
 * ¿Qué proveedor de embeddings se utilizará?  
 * ¿Qué solución de almacenamiento vectorial se utilizará?  

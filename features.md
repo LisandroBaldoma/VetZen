@@ -277,19 +277,23 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 
 ## **Objetivo**
 
-Proporcionar un asistente virtual capaz de ayudar al cliente utilizando información autorizada de VetZen y datos correspondientes a sus mascotas.
+Proporcionar un asistente virtual llamado Simón. La primera etapa ayuda a
+clientes y administradores a utilizar funcionalidades implementadas de VetZen
+mediante documentación curada y filtrada por rol.
 
 ## **Alcance**
 
-El asistente podrá:
+En la evolución completa, el asistente podrá:
 
-* Responder consultas sobre la veterinaria.  
-* Consultar información autorizada.  
-* Consultar información seleccionada de las mascotas.  
-* Consultar tratamientos.  
-* Consultar turnos.  
-* Ayudar a identificar opciones de turno.  
-* Ayudar a solicitar un turno.
+* Responder consultas sobre el uso de VetZen.
+* Consultar información autorizada cuando una feature posterior lo habilite.
+* Consultar información seleccionada de las mascotas cuando una feature posterior lo habilite.
+* Consultar tratamientos cuando una feature posterior lo habilite.
+* Consultar turnos, identificar opciones o asistir en su solicitud cuando el
+  módulo de agenda exista y una feature posterior lo habilite.
+
+La primera versión no consulta datos dinámicos, no ejecuta acciones y no cubre
+turnos, ya que ese módulo no está implementado.
 
 ## **Fuentes de información**
 
@@ -324,11 +328,22 @@ Esta información deberá obtenerse respetando los permisos del usuario.
 * No podrá acceder indiscriminadamente a información clínica.  
 * Solo podrá consultar información correspondiente a mascotas autorizadas.  
 * No deberá inventar información.  
-* No deberá realizar diagnósticos autónomos.  
+* No deberá realizar diagnósticos autónomos ni orientación veterinaria.
 * No deberá reemplazar la evaluación profesional.  
 * No podrá modificar información clínica sin autorización.  
 * Podrá ayudar a iniciar procesos permitidos, como la solicitud de turnos.  
 * Las acciones realizadas por el asistente deberán respetar las mismas reglas de negocio que las realizadas directamente por el usuario.
+
+## Roadmap de Simón
+
+* **SIMON-01:** base de conocimiento de uso del producto, curada y filtrable por
+  rol. No incluye código de IA.
+* **SIMON-02:** chunking, almacenamiento y búsqueda textual de la base de
+  conocimiento.
+* **SIMON-03:** generación grounded mediante OpenAI a partir de contenido
+  recuperado.
+* **SIMON-04:** embeddings y recuperación semántica/híbrida solo si la
+  evaluación demuestra que son necesarios.
 
 ---
 

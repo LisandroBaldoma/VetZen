@@ -193,9 +193,16 @@ El procesamiento de determinadas notificaciones podrá realizarse mediante tarea
 
 # **12\. Asistente virtual**
 
-VetZen incorporará un asistente virtual capaz de responder consultas utilizando información contextualizada de la veterinaria.
+VetZen incorporará un asistente virtual llamado **Simón**. Su primera versión
+será un asistente de uso del producto: responderá cómo utilizar funcionalidades
+implementadas de VetZen con información autorizada y documentación curada.
 
-El asistente tendrá acceso controlado a dos fuentes principales de información.
+Simón no realizará diagnósticos, recomendaciones veterinarias, interpretación de
+síntomas ni prescripciones. Tampoco deberá presentar como disponibles funciones
+que aún no estén implementadas, como turnos, agenda o notificaciones.
+
+La evolución del asistente contempla dos fuentes principales de información. La
+primera versión solo usa la base de conocimiento de producto.
 
 ### **12.1 Conocimiento de la veterinaria**
 
@@ -207,18 +214,23 @@ Información previamente autorizada por la veterinaria, relacionada con:
 * Preguntas frecuentes.  
 * Contenido autorizado.
 
-Esta información podrá utilizarse mediante una arquitectura de recuperación de información basada en búsqueda semántica y RAG.
+Esta información podrá utilizarse mediante una arquitectura progresiva de
+recuperación y RAG. Antes de incorporar búsqueda semántica, la documentación se
+mantendrá como una base de conocimiento curada y filtrable por rol.
 
 ### **12.2 Información dinámica**
 
-Información actualizada del sistema relacionada con:
+En una etapa futura y mediante operaciones Laravel explícitamente autorizadas,
 
 * Turnos.  
 * Tratamientos.  
 * Pacientes.  
 * Información asociada al cliente.
 
-El acceso a esta información deberá realizarse de manera controlada y respetando los permisos del usuario autenticado.
+El acceso a esta información deberá realizarse de manera controlada y respetando
+los permisos del usuario autenticado. El modelo no tendrá acceso directo a la
+base de datos. La información clínica no podrá incorporarse sin una feature que
+defina expresamente su alcance y autorización.
 
 ---
 
