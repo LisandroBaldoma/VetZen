@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\AssistantResponseGenerator;
 use App\Models\Client;
 use App\Models\ClinicalRecord;
 use App\Models\Pet;
@@ -10,10 +11,14 @@ use App\Policies\ClientPolicy;
 use App\Policies\ClinicalRecordPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ServicePolicy;
+use App\Services\GroqAssistantResponseGenerator;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -24,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(AssistantResponseGenerator::class, GroqAssistantResponseGenerator::class);
     }
 
     /**
@@ -33,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureRateLimiting();
         Gate::policy(Client::class, ClientPolicy::class);
         Gate::policy(ClinicalRecord::class, ClinicalRecordPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
@@ -59,5 +65,14 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('simon', function (Request $request) {
+            return Limit::perMinute(config('simon.rate_limit'))->by(
+                ($request->user()?->getAuthIdentifier() ?? $request->ip()).'|'.$request->ip(),
+            );
+        });
     }
 }

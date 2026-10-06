@@ -340,8 +340,9 @@ Esta información deberá obtenerse respetando los permisos del usuario.
   rol. No incluye código de IA.
 * **SIMON-02:** chunking, almacenamiento y búsqueda textual de la base de
   conocimiento.
-* **SIMON-03:** generación grounded mediante OpenAI a partir de contenido
-  recuperado.
+* **SIMON-03:** generación grounded mediante un proveedor LLM a partir de
+  contenido recuperado. Groq se usa inicialmente para desarrollo y pruebas;
+  OpenAI permanece como alternativa futura y producción sigue pendiente.
 * **SIMON-04:** embeddings y recuperación semántica/híbrida solo si la
   evaluación demuestra que son necesarios.
 

@@ -8,6 +8,19 @@ use Illuminate\Support\Str;
 
 class AssistantKnowledgeBaseSearch
 {
+    /** @var array<int, string> */
+    private const array STOP_WORDS = [
+        'como',
+        'cual',
+        'cuales',
+        'cuando',
+        'donde',
+        'para',
+        'porque',
+        'que',
+        'quiero',
+    ];
+
     /**
      * @return Collection<int, AssistantKnowledgeChunk>
      */
@@ -55,6 +68,7 @@ class AssistantKnowledgeBaseSearch
         return collect(preg_split('/\s+/', Str::lower(Str::ascii($query))) ?: [])
             ->map(fn (string $term): string => trim($term, " \t\n\r\0\x0B.,;:!?¿¡()[]{}\"'"))
             ->filter(fn (string $term): bool => Str::length($term) >= 3)
+            ->reject(fn (string $term): bool => in_array($term, self::STOP_WORDS, true))
             ->unique()
             ->values()
             ->all();

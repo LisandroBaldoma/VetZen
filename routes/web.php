@@ -20,6 +20,7 @@ use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\PetTreatmentController;
 use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\SimonMessageController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -28,6 +29,9 @@ Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::post('simon/messages', [SimonMessageController::class, 'store'])
+        ->middleware('throttle:simon')
+        ->name('simon.messages.store');
 
     Route::get('services', [ServiceController::class, 'index'])->name('services.index');
     Route::get('services/{service}', [ServiceController::class, 'show'])->name('services.show');

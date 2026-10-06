@@ -37,7 +37,7 @@ vocabulario visible actual: "Mascota" para clientes, "Paciente" para admin,
 SIMON-01 no implementa:
 
 * chat, UI, endpoint o streaming;
-* llamadas a OpenAI, credenciales, modelos o parámetros de proveedor;
+* llamadas a un proveedor LLM, credenciales, modelos o parámetros de proveedor;
 * parsing, chunking, almacenamiento, búsqueda textual, embeddings, vector store
   o retrieval;
 * acceso del asistente a clientes, mascotas, tratamientos, sesiones o historia
@@ -106,14 +106,15 @@ La evolución prevista es:
 ```text
 SIMON-01: Knowledge Base curada
 SIMON-02: Chunking, almacenamiento y búsqueda textual
-SIMON-03: Generación grounded con OpenAI
+SIMON-03: Generación grounded mediante un proveedor LLM
 SIMON-04: Embeddings y búsqueda semántica/híbrida si la evaluación lo justifica
 ```
 
-OpenAI es el proveedor inicial aprobado para SIMON-03. Su integración deberá
-estar aislada de dominio y autorización mediante una capa de aplicación de
-Simón. API key, modelo, parámetros y límites dependerán del entorno; ninguno se
-define en esta feature.
+La generación se integra mediante una abstracción de proveedor LLM, aislada de
+dominio y autorización. Groq es el proveedor inicial para desarrollo y pruebas;
+OpenAI sigue siendo una alternativa futura. El proveedor de producción se
+definirá según calidad, costo, latencia, límites, privacidad y necesidades reales
+de VetZen. API key, modelo, parámetros y límites dependen del entorno.
 
 El modelo no tendrá acceso directo a la base de datos. Todo dato dinámico futuro
 deberá obtenerse desde operaciones Laravel explícitas y autorizadas. La
@@ -149,7 +150,7 @@ Las siguientes etapas deben respetar estas reglas:
 * [x] Ninguna guía afirma que VetZen tiene turnos, agenda, reprogramación,
   notificaciones, roles profesionales o capacidades clínicas de IA.
 * [x] Las guías contienen rutas, fuentes y terminología verificadas.
-* [x] La documentación global registra OpenAI como proveedor futuro y el roadmap
+* [x] La documentación global registra una arquitectura LLM agnóstica y el roadmap
   SIMON-01 a SIMON-04.
 
 ## 10. Testing y validación documental

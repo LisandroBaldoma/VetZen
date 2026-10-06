@@ -1,7 +1,7 @@
 # SIMON-02 - Indexación y recuperación textual
 
 > Estado: implementada y verificada automáticamente. Esta feature no integra
-> OpenAI, embeddings, vector store, chat, rutas HTTP, UI, datos dinámicos ni
+> proveedores LLM, embeddings, vector store, chat, rutas HTTP, UI, datos dinámicos ni
 > acciones del asistente.
 
 ## Objetivo
@@ -30,8 +30,8 @@ Convertir las guías curadas de `docs/help/` en documentos y chunks persistidos,
 
 ## Evolución
 
-SIMON-03 consumirá el resultado de esta búsqueda para generar respuestas
-grounded mediante OpenAI. SIMON-04 podrá reemplazar o complementar la puntuación
+SIMON-03 consume el resultado de esta búsqueda para generar respuestas grounded
+mediante un proveedor LLM. SIMON-04 podrá reemplazar o complementar la puntuación
 textual con embeddings si las evaluaciones muestran una necesidad real.
 
 ## Criterios de aceptación

@@ -75,16 +75,21 @@ Actualmente se contempla:
 
 ### **Inteligencia artificial**
 
-* OpenAI como proveedor inicial de modelo de lenguaje.
+* Arquitectura agnóstica de proveedor de modelo de lenguaje.
+* Groq como proveedor inicial para desarrollo y pruebas.
+* OpenAI como alternativa futura compatible.
 * Embeddings.  
 * Búsqueda semántica.  
 * Arquitectura RAG.  
 * Herramientas controladas para acceder a información dinámica del sistema.
 
-OpenAI se integrará mediante una capa de aplicación del asistente, sin acoplar
-la lógica de dominio, autorización o acceso a datos al SDK o API del proveedor.
-La API key, el modelo, los parámetros, los límites y los timeouts serán valores
-configurables por entorno. El modelo concreto permanece pendiente de decisión.
+La integración LLM se realiza mediante una capa de aplicación del asistente, sin
+acoplar la lógica de dominio, autorización o acceso a datos a Groq, OpenAI u
+otro proveedor. Groq es el proveedor inicial para desarrollo y pruebas. El
+proveedor de producción se decidirá posteriormente según calidad, costo,
+latencia, límites, privacidad y necesidades reales de VetZen. La API key, el
+modelo, los parámetros, los límites y los timeouts son valores configurables por
+entorno. El modelo concreto permanece pendiente de decisión.
 
 ---
 
@@ -301,7 +306,7 @@ La implementación evoluciona en este orden:
 
 1. SIMON-01: Knowledge Base curada de uso del producto.
 2. SIMON-02: chunking, almacenamiento y búsqueda textual.
-3. SIMON-03: generación grounded con OpenAI y contexto recuperado.
+3. SIMON-03: generación grounded con un proveedor LLM y contexto recuperado.
 4. SIMON-04: embeddings y búsqueda semántica/híbrida si resultan necesarios.
 
 SIMON-01 no implementa integración de IA ni persistencia de conocimiento fuera
@@ -564,8 +569,10 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Inteligencia artificial**
 
-* Proveedor de modelo de lenguaje inicial: OpenAI. El modelo concreto, límites,
-  región, retención y parámetros siguen pendientes de definición.
+* Proveedor de modelo de lenguaje inicial para desarrollo y pruebas: Groq.
+  OpenAI permanece como alternativa futura. El proveedor de producción, el
+  modelo concreto, límites, región, retención y parámetros siguen pendientes de
+  definición.
 * ¿Qué modelo se utilizará inicialmente?  
 * ¿Qué proveedor de embeddings se utilizará?  
 * ¿Qué solución de almacenamiento vectorial se utilizará?  
