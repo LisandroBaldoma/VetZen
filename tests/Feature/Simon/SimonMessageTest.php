@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\AssistantKnowledgeBaseIndexer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class SimonMessageTest extends TestCase
@@ -23,6 +24,7 @@ class SimonMessageTest extends TestCase
             'services.groq.base_url' => 'https://api.groq.com/openai/v1',
             'simon.llm.provider' => 'groq',
             'simon.llm.model' => 'test-model',
+            'simon.trace_logging' => false,
         ]);
 
         app(AssistantKnowledgeBaseIndexer::class)->sync(base_path('docs/help'));
@@ -113,6 +115,78 @@ class SimonMessageTest extends TestCase
             'module' => 'pets',
         ])->assertStatus(503)
             ->assertJsonPath('message', 'Simón no está disponible en este momento. Intentá nuevamente más tarde.');
+    }
+
+    public function test_known_unavailable_feature_uses_grounded_evidence(): void
+    {
+        $generator = $this->mock(AssistantResponseGenerator::class);
+        $generator->shouldReceive('generate')
+            ->once()
+            ->withArgs(fn (string $instructions, string $prompt): bool => str_contains($instructions, 'UNAVAILABLE')
+                && str_contains($prompt, 'Estado: unavailable')
+                && str_contains($prompt, 'Turnos y agenda no disponibles actualmente'))
+            ->andReturn('VetZen actualmente no dispone de una función de turnos o agenda.');
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->postJson(route('simon.messages.store'), [
+            'question' => '¿Cómo creo un turno para que un cliente venga mañana a las 10?',
+        ])->assertOk()
+            ->assertJsonPath('sources.0.id', 'concepts.turnos-no-disponibles');
+    }
+
+    public function test_client_treatment_assignment_prompt_preserves_the_read_only_boundary(): void
+    {
+        $generator = $this->mock(AssistantResponseGenerator::class);
+        $generator->shouldReceive('generate')
+            ->once()
+            ->withArgs(fn (string $instructions, string $prompt): bool => str_contains($instructions, 'NOT_ALLOWED_FOR_ROLE')
+                && str_contains($prompt, 'Grounding: NOT_ALLOWED_FOR_ROLE')
+                && str_contains($prompt, 'Los tratamientos los asigna la veterinaria')
+                && ! str_contains($prompt, 'Asignar y gestionar tratamientos de un paciente'))
+            ->andReturn('La veterinaria asigna los tratamientos. Como cliente podés consultarlos en modo lectura desde Mis mascotas.');
+        $client = Client::factory()->create();
+
+        $this->actingAs($client->user)->postJson(route('simon.messages.store'), [
+            'question' => '¿Cómo asigno un tratamiento a mi mascota?',
+        ])->assertOk()
+            ->assertJsonPath('answer', 'La veterinaria asigna los tratamientos. Como cliente podés consultarlos en modo lectura desde Mis mascotas.')
+            ->assertJsonPath('sources.0.id', 'client.consultar-tratamientos-y-sesiones');
+    }
+
+    public function test_trace_logging_records_metadata_without_the_question_or_answer(): void
+    {
+        config(['simon.trace_logging' => true]);
+        Log::spy();
+        $client = Client::factory()->create();
+        $question = '¿Cómo registro una mascota?';
+        $answer = 'Abrí Mis mascotas y elegí la opción para agregar una mascota.';
+        $generator = $this->mock(AssistantResponseGenerator::class);
+        $generator->shouldReceive('generate')->once()->andReturn($answer);
+
+        $this->actingAs($client->user)->postJson(route('simon.messages.store'), [
+            'question' => $question,
+            'module' => 'pets',
+        ])->assertOk();
+
+        Log::shouldHaveReceived('info')
+            ->withArgs(function (string $event, array $context) use ($question, $answer): bool {
+                return $event === 'simon.message.received'
+                    && $context['module'] === 'pets'
+                    && $context['question_length'] === mb_strlen($question)
+                    && ! array_key_exists('question', $context)
+                    && ! in_array($question, $context, true)
+                    && ! in_array($answer, $context, true);
+            })
+            ->once();
+
+        Log::shouldHaveReceived('info')
+            ->withArgs(function (string $event, array $context): bool {
+                return $event === 'simon.retrieval.completed'
+                    && $context['role'] === 'client'
+                    && $context['chunks_count'] > 0
+                    && array_key_exists('source_document_ids', $context);
+            })
+            ->once();
     }
 
     public function test_endpoint_requires_an_authenticated_supported_role(): void

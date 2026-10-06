@@ -343,8 +343,12 @@ Esta información deberá obtenerse respetando los permisos del usuario.
 * **SIMON-03:** generación grounded mediante un proveedor LLM a partir de
   contenido recuperado. Groq se usa inicialmente para desarrollo y pruebas;
   OpenAI permanece como alternativa futura y producción sigue pendiente.
-* **SIMON-04:** embeddings y recuperación semántica/híbrida solo si la
-  evaluación demuestra que son necesarios.
+* **Interfaz de evaluación de Simón:** acceso autenticado y conversación
+  temporal para evaluar SIMON-01 a SIMON-03, sin memoria ni datos dinámicos.
+* **SIMON-04:** evaluación, grounding y observabilidad del MVP antes de
+  incorporar nuevas capacidades.
+* **Evolución posterior:** embeddings y recuperación semántica/híbrida solo si
+  la evaluación demuestra que son necesarios.
 
 ---
 

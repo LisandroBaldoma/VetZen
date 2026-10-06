@@ -107,7 +107,8 @@ La evolución prevista es:
 SIMON-01: Knowledge Base curada
 SIMON-02: Chunking, almacenamiento y búsqueda textual
 SIMON-03: Generación grounded mediante un proveedor LLM
-SIMON-04: Embeddings y búsqueda semántica/híbrida si la evaluación lo justifica
+SIMON-04: Evaluación, grounding y observabilidad del MVP
+Evolución posterior: Embeddings y búsqueda semántica/híbrida si la evaluación lo justifica
 ```
 
 La generación se integra mediante una abstracción de proveedor LLM, aislada de

@@ -4,10 +4,10 @@ title: Gestionar sesiones de un tratamiento
 roles: [admin]
 module: treatments
 route_names: [admin.pets.treatments.show, admin.treatment-sessions.update]
-keywords: [sesión, completar sesión, programar sesión, cancelar sesión]
+keywords: [sesión, registrar sesión, completo una sesión, completar sesión, programar sesión, cancelar sesión]
 status: available
 feature_ids: [08, UX-08]
-source_refs: [routes/web.php, features/08-treatments-and-sessions.md, features/UX-08-patient-treatments-and-sessions.md]
+source_refs: [routes/web.php, resources/js/pages/admin/pets/treatments/components/session-row.tsx, features/08-treatments-and-sessions.md]
 reviewed_at: 2026-10-06
 ---
 
@@ -23,7 +23,8 @@ Usalo para actualizar la fecha, el precio, las notas o el estado de una sesión
 2. Seleccioná el tratamiento correspondiente.
 3. Buscá la sesión que querés administrar.
 4. Actualizá los datos permitidos, incluida la fecha programada si corresponde.
-5. Para completar una sesión, seleccioná el estado **Completada** y guardá.
+5. Para completar una sesión pendiente, seleccioná **Completar**.
+6. Confirmá con **Completar sesión**.
 
 ## Qué sucede después
 

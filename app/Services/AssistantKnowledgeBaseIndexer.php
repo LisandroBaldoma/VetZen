@@ -26,6 +26,12 @@ class AssistantKnowledgeBaseIndexer
     /** @var array<int, string> */
     private const array ROLES = ['admin', 'client'];
 
+    /** @var array<int, string> */
+    private const array STATUSES = ['available', 'unavailable'];
+
+    /** @var array<int, string> */
+    private const array GROUNDINGS = ['allowed', 'unavailable', 'not_allowed_for_role'];
+
     public function __construct(private Filesystem $files) {}
 
     public function sync(string $path): int
@@ -76,6 +82,7 @@ class AssistantKnowledgeBaseIndexer
                 'route_names' => $metadata['route_names'],
                 'keywords' => $metadata['keywords'],
                 'status' => $metadata['status'],
+                'grounding' => $metadata['grounding'],
                 'feature_ids' => $metadata['feature_ids'],
                 'source_refs' => $metadata['source_refs'],
                 'reviewed_at' => $metadata['reviewed_at'],
@@ -122,6 +129,18 @@ class AssistantKnowledgeBaseIndexer
         if (array_diff($metadata['roles'], self::ROLES) !== []) {
             throw new InvalidArgumentException("Knowledge Base document [{$file}] contains an unsupported role.");
         }
+
+        if (! in_array($metadata['status'], self::STATUSES, true)) {
+            throw new InvalidArgumentException("Knowledge Base document [{$file}] contains an unsupported status.");
+        }
+
+        $grounding = $metadata['grounding'] ?? ($metadata['status'] === 'unavailable' ? 'unavailable' : 'allowed');
+
+        if (! in_array($grounding, self::GROUNDINGS, true)) {
+            throw new InvalidArgumentException("Knowledge Base document [{$file}] contains an unsupported grounding.");
+        }
+
+        $metadata['grounding'] = $grounding;
 
         return [
             'metadata' => $metadata,

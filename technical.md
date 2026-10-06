@@ -76,7 +76,8 @@ Actualmente se contempla:
 ### **Inteligencia artificial**
 
 * Arquitectura agnóstica de proveedor de modelo de lenguaje.
-* Groq como proveedor inicial para desarrollo y pruebas.
+* Groq como proveedor inicial para desarrollo y pruebas con
+  `openai/gpt-oss-20b` como baseline de SIMON-04.
 * OpenAI como alternativa futura compatible.
 * Embeddings.  
 * Búsqueda semántica.  
@@ -89,7 +90,8 @@ otro proveedor. Groq es el proveedor inicial para desarrollo y pruebas. El
 proveedor de producción se decidirá posteriormente según calidad, costo,
 latencia, límites, privacidad y necesidades reales de VetZen. La API key, el
 modelo, los parámetros, los límites y los timeouts son valores configurables por
-entorno. El modelo concreto permanece pendiente de decisión.
+entorno. `openai/gpt-oss-20b` es el baseline de desarrollo/pruebas de
+SIMON-04. El modelo de producción permanece pendiente de decisión.
 
 ---
 
@@ -307,7 +309,8 @@ La implementación evoluciona en este orden:
 1. SIMON-01: Knowledge Base curada de uso del producto.
 2. SIMON-02: chunking, almacenamiento y búsqueda textual.
 3. SIMON-03: generación grounded con un proveedor LLM y contexto recuperado.
-4. SIMON-04: embeddings y búsqueda semántica/híbrida si resultan necesarios.
+4. SIMON-04: evaluación, grounding y observabilidad del MVP.
+5. Embeddings y búsqueda semántica/híbrida si la evaluación los justifica.
 
 SIMON-01 no implementa integración de IA ni persistencia de conocimiento fuera
 de los documentos versionados.
@@ -322,6 +325,11 @@ se mantiene separado de especificaciones técnicas, documentos de planificación
 Esta información podrá utilizar una arquitectura RAG para recuperar contenido
 relevante antes de generar una respuesta. El retrieval deberá filtrar el
 contenido por rol antes de enviarlo al proveedor.
+
+El grounding de cada documento distingue entre `allowed`, `unavailable` y
+`not_allowed_for_role`. Esta última clasificación representa una funcionalidad
+existente cuya acción no está permitida para el rol que puede recuperar la guía;
+la respuesta debe rechazar la acción y orientar hacia una alternativa permitida.
 
 El sistema deberá contemplar:
 
@@ -569,11 +577,10 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Inteligencia artificial**
 
-* Proveedor de modelo de lenguaje inicial para desarrollo y pruebas: Groq.
-  OpenAI permanece como alternativa futura. El proveedor de producción, el
-  modelo concreto, límites, región, retención y parámetros siguen pendientes de
-  definición.
-* ¿Qué modelo se utilizará inicialmente?  
+* Proveedor de modelo de lenguaje inicial para desarrollo y pruebas: Groq, con
+  `openai/gpt-oss-20b` como baseline de SIMON-04. OpenAI permanece como
+  alternativa futura. El proveedor de producción, límites, región, retención y
+  parámetros siguen pendientes de definición.
 * ¿Qué proveedor de embeddings se utilizará?  
 * ¿Qué solución de almacenamiento vectorial se utilizará?  
 * ¿La búsqueda vectorial estará dentro de la misma base de datos o será independiente?  

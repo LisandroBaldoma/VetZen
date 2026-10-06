@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'route_names',
     'keywords',
     'status',
+    'grounding',
     'feature_ids',
     'source_refs',
     'reviewed_at',

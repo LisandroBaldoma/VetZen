@@ -32,8 +32,10 @@ return new class extends Migration
 
         Schema::create('assistant_knowledge_chunks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('assistant_knowledge_document_id')
-                ->constrained()
+            $table->foreignId('assistant_knowledge_document_id');
+            $table->foreign('assistant_knowledge_document_id', 'ak_chunks_document_fk')
+                ->references('id')
+                ->on('assistant_knowledge_documents')
                 ->cascadeOnDelete();
             $table->unsignedSmallInteger('position');
             $table->string('heading')->nullable();
@@ -41,7 +43,7 @@ return new class extends Migration
             $table->text('search_text');
             $table->timestamps();
 
-            $table->unique(['assistant_knowledge_document_id', 'position']);
+            $table->unique(['assistant_knowledge_document_id', 'position'], 'ak_chunks_document_position_unique');
         });
     }
 

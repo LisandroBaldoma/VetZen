@@ -6,6 +6,7 @@ module: treatments
 route_names: [pets.treatments.index, pets.treatments.show]
 keywords: [mi tratamiento, ver sesiones, progreso, tratamiento mascota]
 status: available
+grounding: not_allowed_for_role
 feature_ids: [08, UX-08]
 source_refs: [routes/web.php, docs/ui-audit/06-user-flows.md, features/08-treatments-and-sessions.md]
 reviewed_at: 2026-10-06

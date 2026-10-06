@@ -43,6 +43,7 @@ keywords:
   - solicitar atención
   - nueva solicitud
 status: available
+grounding: allowed
 feature_ids: [08, UX-07]
 source_refs:
   - routes/web.php
@@ -53,8 +54,14 @@ reviewed_at: 2026-10-06
 
 `route_names` usa nombres de Laravel, no URLs. `roles` permite filtrar antes de
 un retrieval futuro. `module`, `route_names` y `keywords` permiten priorizar una
-guía según el contexto de página. `source_refs` y `reviewed_at` permiten revisar
-la vigencia. Git reemplaza la necesidad de un campo de versión manual.
+guía según el contexto de página. `status` solo puede ser `available` para una
+funcionalidad implementada o `unavailable` para una funcionalidad verificada
+como no disponible. `grounding` puede ser `allowed` (valor predeterminado),
+`unavailable` (valor predeterminado cuando el estado es `unavailable`) o
+`not_allowed_for_role` cuando la funcionalidad existe, pero el rol indicado no
+puede realizar la acción. Este último debe incluir una alternativa permitida en
+el contenido. `source_refs` y `reviewed_at` permiten revisar la vigencia. Git
+reemplaza la necesidad de un campo de versión manual.
 
 ## Estructura de contenido
 

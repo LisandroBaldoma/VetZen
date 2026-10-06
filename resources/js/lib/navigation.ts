@@ -2,6 +2,7 @@ import {
     ClipboardList,
     ClipboardPlus,
     LayoutGrid,
+    MessageSquare,
     PawPrint,
     Stethoscope,
     Syringe,
@@ -16,6 +17,7 @@ import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
+import { index as simonIndex } from '@/routes/simon';
 import type { NavGroup } from '@/types';
 
 export type NavigationSection =
@@ -25,6 +27,7 @@ export type NavigationSection =
     | 'service-requests'
     | 'services'
     | 'procedures'
+    | 'simon'
     | 'treatments';
 
 const matches = (path: string, route: RegExp): boolean => route.test(path);
@@ -35,6 +38,10 @@ export function getNavigationSection(
 ): NavigationSection | null {
     if (matches(path, /(?:^|\/)dashboard\/?$/)) {
         return 'dashboard';
+    }
+
+    if (matches(path, /(?:^|\/)simon\/?$/)) {
+        return 'simon';
     }
 
     if (role === 'admin') {
@@ -91,15 +98,21 @@ export function getNavigationGroups(
             ? [
                   {
                       title: 'General',
-                      items: [
-                          {
-                              title: 'Inicio',
+                        items: [
+                            {
+                                title: 'Inicio',
                               href: dashboard(),
                               icon: LayoutGrid,
                               isActive: activeSection === 'dashboard',
-                              mobileTitle: 'Inicio',
-                          },
-                      ],
+                                mobileTitle: 'Inicio',
+                            },
+                            {
+                                title: 'Simón',
+                                href: simonIndex(),
+                                icon: MessageSquare,
+                                isActive: activeSection === 'simon',
+                            },
+                        ],
                   },
               ]
             : []),

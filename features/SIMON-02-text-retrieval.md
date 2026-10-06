@@ -31,8 +31,8 @@ Convertir las guías curadas de `docs/help/` en documentos y chunks persistidos,
 ## Evolución
 
 SIMON-03 consume el resultado de esta búsqueda para generar respuestas grounded
-mediante un proveedor LLM. SIMON-04 podrá reemplazar o complementar la puntuación
-textual con embeddings si las evaluaciones muestran una necesidad real.
+mediante un proveedor LLM. SIMON-04 evalúa y mide la puntuación textual antes de
+que una evolución posterior pueda reemplazarla o complementarla con embeddings.
 
 ## Criterios de aceptación
 

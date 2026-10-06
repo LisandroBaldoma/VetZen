@@ -7,6 +7,7 @@ use App\Services\AssistantKnowledgeBaseIndexer;
 use App\Services\AssistantKnowledgeBaseSearch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Tests\TestCase;
 
@@ -127,6 +128,68 @@ MARKDOWN);
 
         $this->assertGreaterThan(0, $indexed);
         $this->assertSame('admin.gestionar-sesiones', $results->first()->document->document_id);
+        $this->assertSame(
+            'not_allowed_for_role',
+            AssistantKnowledgeDocument::query()
+                ->where('document_id', 'client.consultar-tratamientos-y-sesiones')
+                ->sole()
+                ->grounding,
+        );
+    }
+
+    public function test_evaluation_dataset_retrieves_its_expected_documents(): void
+    {
+        app(AssistantKnowledgeBaseIndexer::class)->sync(base_path('docs/help'));
+
+        /** @var array<int, array{id: string, role: string, question: string, expected_documents: array<int, string>}> $cases */
+        $cases = require base_path('tests/Fixtures/Simon/evaluation.php');
+
+        $this->assertCount(10, $cases);
+
+        foreach ($cases as $case) {
+            $results = app(AssistantKnowledgeBaseSearch::class)->search($case['question'], $case['role']);
+            $documentIds = $results->pluck('document.document_id')->unique()->values()->all();
+
+            foreach ($case['expected_documents'] as $documentId) {
+                $this->assertContains($documentId, $documentIds, $case['id']);
+            }
+        }
+    }
+
+    public function test_procedural_chunks_are_prioritized_for_c2_and_a4_without_module_context(): void
+    {
+        app(AssistantKnowledgeBaseIndexer::class)->sync(base_path('docs/help'));
+        $search = app(AssistantKnowledgeBaseSearch::class);
+
+        $clientResult = $search->search('Quiero que atiendan a mi mascota, ¿cómo solicito atención?', 'client')->first();
+        $adminResult = $search->search('¿Cómo registro o completo una sesión de un tratamiento?', 'admin')->first();
+
+        $this->assertSame('client.solicitar-atencion', $clientResult?->document->document_id);
+        $this->assertSame('Cómo hacerlo', $clientResult?->heading);
+        $this->assertSame('admin.gestionar-sesiones', $adminResult?->document->document_id);
+        $this->assertSame('Cómo hacerlo', $adminResult?->heading);
+    }
+
+    public function test_retrieval_trace_reports_aggregate_context_metrics_without_content(): void
+    {
+        $this->writeDocument('client/solicitudes.md', 'client.solicitudes', ['client'], 'service-requests', 'Solicitudes', ['solicitud'], "# Solicitudes\n\n## Cómo hacerlo\n\nCreá una solicitud.");
+        app(AssistantKnowledgeBaseIndexer::class)->sync($this->knowledgeBasePath);
+        config(['simon.trace_logging' => true]);
+        Log::spy();
+
+        app(AssistantKnowledgeBaseSearch::class)->search('solicitud', 'client');
+
+        Log::shouldHaveReceived('info')
+            ->withArgs(function (string $event, array $context): bool {
+                return $event === 'simon.retrieval.completed'
+                    && $context['outcome'] === 'matched'
+                    && $context['chunks_count'] === 2
+                    && $context['unique_documents_count'] === 1
+                    && $context['retrieved_characters'] > 0
+                    && $context['retrieved_words'] > 0
+                    && ! in_array('Creá una solicitud.', $context, true);
+            })
+            ->once();
     }
 
     /** @param array<int, string> $roles */
