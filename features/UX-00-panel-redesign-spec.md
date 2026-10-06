@@ -138,7 +138,6 @@ flowchart TD
     P --> L[Listado de pacientes]
     L --> F[Ficha del paciente]
     F --> HC[Historia clínica]
-    F --> SA[Solicitudes de atención]
     F --> TP[Tratamientos del paciente]
     TP --> ST[Sesiones del tratamiento]
     A --> AT[Atención]
@@ -311,7 +310,7 @@ flowchart LR
     S -->|Completada| EV[Ofrecer registrar evolución]
 ```
 
-1. Admin abre una solicitud pendiente desde Atención o la ficha del paciente.
+1. Admin abre una solicitud pendiente desde la cola global de Atención.
 2. La pantalla conserva paciente, responsable, servicio y nota del cliente.
 3. Admin elige una plantilla activa compatible con el servicio.
 4. Define sesiones previstas, precio por sesión, moneda, inicio, estado y notas.

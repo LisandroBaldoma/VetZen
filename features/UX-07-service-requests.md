@@ -1,7 +1,8 @@
 # UX-07 - Solicitudes de atención
 
-> Estado: implementada y verificada automáticamente. Permanece pendiente la
-> revisión visual manual responsive y de teclado.
+> Estado: Atención V1 implementada. Verificación automática completada en el
+> cierre; la revisión visual manual responsive y de teclado es no bloqueante y
+> queda como mejora futura.
 
 ## 1. Objetivo
 
@@ -29,7 +30,10 @@ notificaciones ni cancelación cliente.
 
 ## 4. Contrato funcional
 
-1. El cliente solo crea solicitudes `pending` para un Service activo y una Pet propia.
+1. La UI cliente crea solicitudes `pending` para un Service activo y una Pet
+   propia. La Policy actual también autoriza creación administrativa para una
+   Pet autorizada; la regla durable de exposición administrativa queda pendiente
+   de unificación con F08.
 2. El backend deriva la Pet desde la ruta y rechaza ownership manipulado.
 3. El cliente no selecciona Treatment ni controla estados profesionales.
 4. Admin resuelve únicamente solicitudes pendientes.
@@ -66,6 +70,9 @@ notificaciones ni cancelación cliente.
 - [x] Pruebas HTTP cubren éxito, validación, ownership y estados.
 - [ ] Revisión visual manual responsive y de teclado completada.
 
-## 8. Decisiones pendientes
+## 8. Decisiones y mejoras futuras
 
-No existen decisiones pendientes dentro de UX-07.
+- Unificar la documentación de creación administrativa: F08/Policy la permiten,
+  mientras este flujo V1 solo expone la entrada cliente.
+- La revisión manual responsive y de teclado no bloquea el cierre funcional de
+  Atención V1.

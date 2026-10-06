@@ -1,8 +1,36 @@
 # UX-ATTENTION-02 - Rediseño visual del flujo de Atención
 
-> Estado: pendiente de aprobación para referencias visuales en Stitch. No
-> implementar código, backend ni cambios de dominio a partir de este documento
-> sin una decisión posterior explícita.
+> Estado: cierre Atención V1. Parcialmente adoptada en la experiencia cliente;
+> las propuestas administrativas y de terminología no implementadas quedan
+> documentadas para una V2. No se aprobaron cambios de dominio ni backend.
+
+## Estado de adopción V1
+
+Implementado en V1:
+
+- `/services`: selección progresiva de un tipo de atención, después una mascota
+  propia y navegación a la ruta existente con `?service={id}`.
+- Creación cliente: cuando el servicio llega preseleccionado, se conserva en el
+  envío y se muestra solo en el resumen; el acceso directo conserva el selector.
+- Listado cliente de solicitudes: cards responsive, estado vacío y enlaces a la
+  solicitud o al tratamiento resultante.
+- Contexto de mascota: grilla de secciones en móvil y fila compacta desde `sm`,
+  sin scroll horizontal.
+
+No implementado en V1:
+
+- Rediseño de `/services/{service}`.
+- Rediseño de detalle cliente de solicitud.
+- Rediseño de cola y detalle administrativo de solicitudes.
+- Acción visible "Volver a solicitudes", nueva composición de resolución,
+  `ConfirmActionDialog` y cambios de copy administrativo.
+- Etiquetas propuestas de estados y campos. La UI actual conserva `Pendiente`,
+  `Resuelta`, `Cancelada`, `Nueva solicitud`, `Nota opcional`, `Sesiones
+  previstas` y las etiquetas administrativas existentes.
+
+Las secciones siguientes conservan la propuesta original. Cuando difieran de
+este estado de adopción, se consideran referencia de V2 y no comportamiento
+implementado.
 
 ## 1. Alcance confirmado
 
@@ -74,7 +102,8 @@ decisión clínica, diagnóstico, turno, compra o tratamiento ya definido.
 1. Pregunta guía: "¿Qué tipo de atención necesitás para tu mascota?"
 2. Descripción breve que aclare que se solicitará una evaluación.
 3. Servicios activos: nombre y descripción existente.
-4. Acción por servicio: "Solicitar atención".
+4. Selección de servicio; tras elegir mascota, la acción existente es
+   "Continuar".
 5. Acceso secundario: "Ver detalles".
 
 Las cards no deben parecer productos, precios ni planes contratables. No se
@@ -102,12 +131,13 @@ crear persistencia temporal, ruta nueva ni un paso de negocio adicional.
 
 **Orden visual:**
 
-1. "Solicitud de atención".
+1. "Nueva solicitud".
 2. Contexto de mascota: identidad básica y enlace a ficha si ya existe en el
    patrón de pantalla.
 3. "Tipo de atención": `service_id`, fijado cuando proviene del catálogo;
    conserva el selector solo al acceder directamente sin una preselección.
-4. "Contanos qué necesitás": `notes`, opcional.
+4. "Nota opcional": `notes`, opcional, con el placeholder actual para contar
+   brevemente el motivo de la consulta.
 5. Mensaje de alcance: la solicitud será evaluada; no reserva turno ni define
    tratamiento.
 6. Acción primaria: "Enviar solicitud".
@@ -222,7 +252,7 @@ relacionado, no la sección activa de la solicitud.
 No se incrustan historia clínica, tratamientos, sesiones ni formularios de
 paciente dentro del detalle de solicitud.
 
-## 6. Terminología visual definitiva
+## 6. Terminología visual propuesta para V2
 
 Los nombres técnicos, tablas, clases, valores de estado y contratos no cambian.
 
@@ -262,7 +292,7 @@ asignado como atención clínica ni que existe turno.
 pero no reemplaza la acción primaria porque no describe por sí misma la
 operación persistida.
 
-## 7. Navegación
+## 7. Navegación propuesta para V2
 
 ### 7.1. Cliente
 
@@ -286,9 +316,9 @@ La jerarquía de navegación es siempre:
 Inicio / Solicitudes de atención / Solicitud #[id]
 ```
 
-El detalle incluye una acción clara "Volver a solicitudes" hacia el listado
-existente. El bloque relacionado de paciente ofrece el sistema normal de
-navegación:
+El detalle actual vuelve al listado mediante breadcrumbs. Una acción visible
+"Volver a solicitudes" queda como propuesta V2. El bloque relacionado de
+paciente ofrece el sistema normal de navegación:
 
 ```text
 Resumen | Historia clínica | Tratamientos
@@ -474,7 +504,7 @@ En todos los formatos:
 - Truncar o permitir wrap seguro para nombre de paciente, responsable y
   servicio.
 
-## 13. Mejoras futuras fuera de alcance
+## 13. Mejoras futuras fuera de alcance de V1
 
 Estas posibilidades se documentan pero no se diseñan ni implementan en
 UX-ATTENTION-02:
@@ -489,8 +519,48 @@ UX-ATTENTION-02:
 - Contexto clínico resumido dentro del detalle de solicitud, si requiere datos
   nuevos o queries nuevas.
 - Cambios de etiquetas persistidas, estados, validaciones o reglas de negocio.
+- Rediseños visuales restantes de detalle de servicio, detalle cliente, cola y
+  detalle administrativo de solicitudes.
 
-## 14. Fuentes
+## 14. Cierre V1
+
+Atención V1 conserva el flujo funcional vigente:
+
+```text
+Cliente: Servicio -> Mascota -> Solicitud de atención
+Admin: Solicitud -> Servicio solicitado -> Plantilla compatible
+       -> Tratamiento asignado -> Sesiones
+```
+
+No se introdujeron solicitudes sin `service_id`, categorías nuevas, turnos,
+agenda, reservas, profesionales asignados, prioridades, motivos de cancelación,
+prevención de duplicados, listado global cliente ni contexto clínico adicional.
+Las propuestas de este documento que no aparecen en el estado de adopción se
+mantienen como historial para V2.
+
+## 15. Continuación prevista
+
+La siguiente feature funcional planificada es **F09 - Planes de seguimiento**.
+Su objetivo es extender el seguimiento clínico estructurado sobre tratamientos
+asignados, sin redefinir las sesiones operativas de F08.
+
+Dependencias disponibles:
+
+- F06: historia clínica, ownership, autorización y auditoría de registros.
+- F07: servicios y procedimientos.
+- F08: `PetTreatment`, `TreatmentSession`, snapshots y progreso.
+
+Antes de iniciarla debe existir una especificación individual de F09 y releerse
+`spec.md`, `technical.md`, `features.md`, `features/06-MedicalRecords.md`,
+`features/07-services.md` y `features/08-treatments-and-sessions.md`.
+
+No existe aún una especificación individual de F09. Debe resolver antes de
+implementar entidades, lifecycle, asociación con historia clínica, asignación
+de procedimientos por sesión, autorización y estrategia de auditoría. Las
+propuestas pendientes de Atención solo afectan F09 si se decide acoplar su
+intake o contexto clínico; no bloquean su definición inicial.
+
+## 16. Fuentes
 
 - `features/UX-ATTENTION-01.md`
 - `features/UX-03-patient-and-pet-context.md`
