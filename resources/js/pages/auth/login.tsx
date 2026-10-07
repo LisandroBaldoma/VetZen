@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { ArrowRight, LockKeyhole, Mail } from 'lucide-react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
@@ -24,28 +25,31 @@ export default function Login({ status, canResetPassword }: Props) {
 
             <PasskeyVerify />
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
+            <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-6">
+                        <div className="grid gap-5">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">
                                     Correo electrónico
                                 </Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
+                                <div className="relative">
+                                    <Mail
+                                        aria-hidden
+                                        className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+                                    />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        required
+                                        autoFocus
+                                        tabIndex={1}
+                                        autoComplete="email"
+                                        placeholder="correo@ejemplo.com"
+                                        className="h-12 bg-surface-subtle pr-4 pl-10 focus-visible:bg-card"
+                                    />
+                                </div>
                                 <InputError message={errors.email} />
                             </div>
 
@@ -62,18 +66,25 @@ export default function Login({ status, canResetPassword }: Props) {
                                         </TextLink>
                                     )}
                                 </div>
-                                <PasswordInput
-                                    id="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Contraseña"
-                                />
+                                <div className="relative">
+                                    <LockKeyhole
+                                        aria-hidden
+                                        className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-4 -translate-y-1/2 text-muted-foreground"
+                                    />
+                                    <PasswordInput
+                                        id="password"
+                                        name="password"
+                                        required
+                                        tabIndex={2}
+                                        autoComplete="current-password"
+                                        placeholder="Ingresá tu contraseña"
+                                        className="h-12 bg-surface-subtle pr-10 pl-10 focus-visible:bg-card"
+                                    />
+                                </div>
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center gap-2.5 pt-1">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
@@ -84,13 +95,14 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-2 h-12 w-full"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
                             >
                                 {processing && <Spinner />}
-                                Iniciar sesión
+                                Ingresar
+                                {!processing && <ArrowRight aria-hidden />}
                             </Button>
                         </div>
 
