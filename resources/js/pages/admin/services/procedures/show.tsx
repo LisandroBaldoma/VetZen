@@ -20,38 +20,38 @@ export default function AdminProcedureShow({
                     <div className="space-y-2">
                         <Heading
                             title={procedure.name}
-                            description={`Procedure within ${service.name}.`}
+                            description={`Procedimiento de ${service.name}.`}
                         />
                         <Badge
                             variant={
                                 procedure.is_active ? 'secondary' : 'outline'
                             }
                         >
-                            {procedure.is_active ? 'Active' : 'Inactive'}
+                            {procedure.is_active ? 'Activo' : 'Inactivo'}
                         </Badge>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" asChild>
                             <Link href={index(service.id)}>
-                                Back to procedures
+                                Volver a procedimientos
                             </Link>
                         </Button>
                         <Button asChild>
                             <Link href={edit([service.id, procedure.id])}>
-                                Edit
+                                Editar
                             </Link>
                         </Button>
                     </div>
                 </div>
                 <div className="space-y-4 rounded-xl border p-6 text-sm">
                     <p className="leading-6 whitespace-pre-wrap">
-                        {procedure.description || 'No description provided.'}
+                        {procedure.description || 'Sin descripción.'}
                     </p>
                     <p className="text-muted-foreground">
-                        Suggested duration:{' '}
+                        Duración orientativa:{' '}
                         {procedure.duration_minutes
-                            ? `${procedure.duration_minutes} minutes`
-                            : 'not specified'}
+                            ? `${procedure.duration_minutes} minutos`
+                            : 'No especificada'}
                     </p>
                 </div>
             </div>

@@ -32,7 +32,7 @@ class ClientController extends Controller
     {
         $client->update($request->validated());
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Client updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Cliente actualizado.')]);
 
         return to_route('admin.clients.edit', $client);
     }

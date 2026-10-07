@@ -44,16 +44,6 @@ export function getNavigationSection(
             return 'clients';
         }
 
-        if (
-            matches(path, /(?:^|\/)admin\/pets\/[^/]+\/medical-records(?:\/|$)/)
-        ) {
-            return 'medical-records';
-        }
-
-        if (matches(path, /(?:^|\/)admin\/pets\/[^/]+\/treatments(?:\/|$)/)) {
-            return 'treatments';
-        }
-
         if (matches(path, /(?:^|\/)admin\/pets(?:\/|$)/)) {
             return 'pets';
         }
@@ -82,14 +72,6 @@ export function getNavigationSection(
     }
 
     if (role === 'client') {
-        if (matches(path, /(?:^|\/)pets\/[^/]+\/medical-records(?:\/|$)/)) {
-            return 'medical-records';
-        }
-
-        if (matches(path, /(?:^|\/)pets\/[^/]+\/treatments(?:\/|$)/)) {
-            return 'treatments';
-        }
-
         if (matches(path, /(?:^|\/)pets(?:\/|$)/)) {
             return 'pets';
         }
@@ -165,7 +147,7 @@ export function getNavigationGroups(
                       title: 'Atención',
                       items: [
                           {
-                              title: 'Solicitudes de atención',
+                              title: 'Solicitudes',
                               href: serviceRequestsIndex(),
                               icon: ClipboardPlus,
                               isActive: activeSection === 'service-requests',
@@ -174,22 +156,22 @@ export function getNavigationGroups(
                       ],
                   },
                   {
-                      title: 'Catálogo clínico',
+                      title: 'Catálogo',
                       items: [
                           {
-                              title: 'Servicios clínicos',
+                              title: 'Servicios',
                               href: adminServicesIndex(),
                               icon: Stethoscope,
                               isActive: activeSection === 'services',
                           },
                           {
-                              title: 'Procedimientos clínicos',
+                              title: 'Procedimientos',
                               href: proceduresIndex(),
                               icon: ClipboardList,
                               isActive: activeSection === 'procedures',
                           },
                           {
-                              title: 'Plantillas de tratamiento',
+                              title: 'Tratamientos',
                               href: treatmentsIndex(),
                               icon: Syringe,
                               isActive: activeSection === 'treatments',

@@ -11,7 +11,6 @@ export type PriorityRequest = {
     petName: string;
     petDetails: string;
     service: string;
-    notes: string | null;
     receivedAt: string;
     petHref: InertiaLinkProps['href'];
     requestHref: InertiaLinkProps['href'];
@@ -210,20 +209,19 @@ export function PriorityRequests({
 }) {
     return (
         <DashboardActivityList
-            title="Solicitudes prioritarias"
+            title="Solicitudes"
             badge={`${pendingRequestsCount} pendientes`}
             allHref={requestsHref}
             emptyState={{
-                title: 'Bandeja de triage al día',
+                title: 'Solicitudes al día',
                 description:
-                    'No hay solicitudes de atención pendientes de revisión en este momento.',
+                    'No hay solicitudes pendientes de revisión en este momento.',
             }}
             items={requests.map((request) => ({
                 id: request.id,
                 title: request.petName,
                 subtitle: request.petDetails,
                 status: 'Pendiente',
-                detail: request.notes,
                 timestamp: request.receivedAt,
                 icon: Stethoscope,
                 secondaryAction: {

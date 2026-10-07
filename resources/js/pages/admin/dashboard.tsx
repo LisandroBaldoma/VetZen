@@ -60,7 +60,6 @@ export default function AdminDashboard({
                         petDetails:
                             request.pet.species ?? 'Especie no informada',
                         service: request.service.name,
-                        notes: request.notes ?? null,
                         receivedAt: `Recibida el ${dateFormatter.format(new Date(request.createdAt))}`,
                         petHref: showPatient(request.pet.id),
                         requestHref: showRequest(request.id),
@@ -70,31 +69,34 @@ export default function AdminDashboard({
                     items={[
                         {
                             title: 'Pacientes',
-                            description: 'Expedientes activos',
+                            description: 'Consultá y gestioná pacientes.',
                             icon: PawPrint,
                             href: patientsIndex(),
                         },
                         {
-                            title: 'Admisiones',
-                            description: 'Solicitudes de triage',
+                            title: 'Solicitudes',
+                            description: 'Revisá solicitudes pendientes.',
                             icon: ClipboardList,
                             href: requestsIndex(),
                         },
                         {
                             title: 'Servicios',
-                            description: 'Terapias y medicina',
+                            description:
+                                'Administrá los servicios disponibles.',
                             icon: Stethoscope,
                             href: servicesIndex(),
                         },
                         {
                             title: 'Procedimientos',
-                            description: 'Maniobras y pautas',
+                            description:
+                                'Administrá los procedimientos disponibles.',
                             icon: Workflow,
                             href: proceduresIndex(),
                         },
                         {
-                            title: 'Plantillas',
-                            description: 'Planes terapéuticos',
+                            title: 'Tratamientos',
+                            description:
+                                'Administrá tratamientos del catálogo.',
                             icon: FileText,
                             href: treatmentsIndex(),
                         },

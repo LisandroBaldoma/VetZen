@@ -22,7 +22,7 @@ class ClientProfileController extends Controller
     {
         $client->update($request->validated());
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Client profile updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Datos personales actualizados.')]);
 
         return to_route('clients.edit', $client);
     }

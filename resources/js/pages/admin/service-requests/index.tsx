@@ -100,10 +100,10 @@ export default function AdminRequests({
 
     return (
         <>
-            <Head title="Solicitudes de atención" />
+            <Head title="Solicitudes" />
             <div className="workspace-operational">
                 <PageHeader
-                    title="Solicitudes de atención"
+                    title="Solicitudes"
                     description="Revisá solicitudes y definí el tratamiento luego de la evaluación profesional."
                 />
 
@@ -413,6 +413,6 @@ export default function AdminRequests({
 AdminRequests.layout = {
     breadcrumbs: [
         { title: 'Inicio', href: dashboard() },
-        { title: 'Solicitudes de atención', href: index() },
+        { title: 'Solicitudes', href: index() },
     ],
 };

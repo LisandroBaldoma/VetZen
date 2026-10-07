@@ -21,13 +21,13 @@ class TreatmentAssignmentService
                 ->findOrFail($treatment->id);
 
             if (! $treatment->is_active || ! $treatment->service->is_active) {
-                throw ValidationException::withMessages(['treatment_id' => __('The selected treatment is not available.')]);
+                throw ValidationException::withMessages(['treatment_id' => __('El tratamiento seleccionado no está disponible.')]);
             }
 
             if ($treatment->procedures->isEmpty() || $treatment->procedures->contains(
                 fn ($procedure): bool => ! $procedure->is_active || $procedure->service_id !== $treatment->service_id,
             )) {
-                throw ValidationException::withMessages(['treatment_id' => __('The selected treatment has no valid procedures for its service.')]);
+                throw ValidationException::withMessages(['treatment_id' => __('El tratamiento seleccionado no tiene procedimientos válidos para su servicio.')]);
             }
 
             $petTreatment = new PetTreatment([
@@ -61,12 +61,12 @@ class TreatmentAssignmentService
             $plannedSessions = $attributes['planned_sessions'];
 
             if (! in_array($locked->status, ['pending', 'in_progress'], true)) {
-                throw ValidationException::withMessages(['planned_sessions' => __('This treatment cannot change its conditions in its current status.')]);
+                throw ValidationException::withMessages(['planned_sessions' => __('Este tratamiento no puede cambiar sus condiciones en su estado actual.')]);
             }
 
             $completed = $locked->sessions()->where('status', 'completed')->count();
             if ($plannedSessions < max(1, $completed)) {
-                throw ValidationException::withMessages(['planned_sessions' => __('Planned sessions cannot be lower than completed sessions.')]);
+                throw ValidationException::withMessages(['planned_sessions' => __('Las sesiones planificadas no pueden ser menores que las sesiones completadas.')]);
             }
 
             $coverage = $locked->sessions()->whereIn('status', ['pending', 'completed'])->count();
@@ -80,7 +80,7 @@ class TreatmentAssignmentService
                 $pendingIds = $locked->sessions()->where('status', 'pending')->orderByDesc('session_number')->limit($remove)->pluck('id');
 
                 if ($pendingIds->count() !== $remove) {
-                    throw ValidationException::withMessages(['planned_sessions' => __('Only the latest pending sessions can be removed.')]);
+                    throw ValidationException::withMessages(['planned_sessions' => __('Solo se pueden eliminar las últimas sesiones pendientes.')]);
                 }
 
                 $locked->sessions()->whereIn('id', $pendingIds)->delete();
@@ -98,11 +98,11 @@ class TreatmentAssignmentService
             $petTreatment = PetTreatment::query()->lockForUpdate()->findOrFail($locked->pet_treatment_id);
 
             if (! in_array($petTreatment->status, ['pending', 'in_progress'], true)) {
-                throw ValidationException::withMessages(['status' => __('Only pending or in-progress treatments can have their sessions modified.')]);
+                throw ValidationException::withMessages(['status' => __('Solo se pueden modificar las sesiones de tratamientos pendientes o en curso.')]);
             }
 
             if (in_array($locked->status, ['completed', 'cancelled'], true) && $attributes['status'] !== $locked->status) {
-                throw ValidationException::withMessages(['status' => __('Completed or cancelled sessions cannot change status.')]);
+                throw ValidationException::withMessages(['status' => __('Las sesiones completadas o canceladas no pueden cambiar de estado.')]);
             }
 
             $locked->update($attributes);
@@ -130,12 +130,12 @@ class TreatmentAssignmentService
             $locked = PetTreatment::query()->lockForUpdate()->findOrFail($petTreatment->id);
 
             if (in_array($locked->status, ['completed', 'cancelled'], true)) {
-                throw ValidationException::withMessages(['status' => __('Completed or cancelled treatments cannot change status.')]);
+                throw ValidationException::withMessages(['status' => __('Los tratamientos completados o cancelados no pueden cambiar de estado.')]);
             }
 
             if ($requestedStatus === 'resume') {
                 if ($locked->status !== 'suspended') {
-                    throw ValidationException::withMessages(['status' => __('Only suspended treatments can be resumed.')]);
+                    throw ValidationException::withMessages(['status' => __('Solo se pueden reanudar los tratamientos suspendidos.')]);
                 }
 
                 $completed = $locked->sessions()->where('status', 'completed')->count();

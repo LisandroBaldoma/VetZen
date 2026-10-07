@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     return (
         <div className="px-4 py-6">
             <PageHeader
-                title="Cuenta"
+                title={isClient ? 'Mis datos' : 'Cuenta'}
                 description="Administrá tus datos, seguridad y preferencias de apariencia."
             />
 
@@ -54,7 +54,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
                         className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Secciones de la cuenta"
+                        aria-label={
+                            isClient
+                                ? 'Secciones de mis datos'
+                                : 'Secciones de la cuenta'
+                        }
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Button

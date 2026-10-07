@@ -41,7 +41,7 @@ export default function ServicesIndex({
                 {services.length === 0 ? (
                     <EmptyState
                         icon={<Stethoscope aria-hidden className="size-7" />}
-                        title="No hay tipos de atención disponibles"
+                        title="No hay servicios disponibles"
                         description="No hay servicios disponibles en este momento."
                     />
                 ) : (
@@ -55,10 +55,10 @@ export default function ServicesIndex({
                                     id="attention-types-title"
                                     className="text-xl font-semibold tracking-tight text-balance"
                                 >
-                                    Tipos de atención
+                                    Servicios
                                 </h2>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Elegí el tipo de atención por el que querés
+                                    Elegí el servicio por el que querés
                                     consultar.
                                 </p>
                             </div>
@@ -133,7 +133,7 @@ export default function ServicesIndex({
                                                                     aria-hidden
                                                                     className="size-4"
                                                                 />
-                                                                Tipo de atención
+                                                                Servicio
                                                                 seleccionado
                                                             </span>
                                                         )}
@@ -167,7 +167,7 @@ export default function ServicesIndex({
                                 <div className="flex flex-wrap items-end justify-between gap-3">
                                     <div>
                                         <p className="text-sm font-medium text-primary">
-                                            Tipo de atención seleccionado
+                                            Servicio seleccionado
                                         </p>
                                         <h2
                                             id="pet-selection-title"

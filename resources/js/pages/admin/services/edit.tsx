@@ -16,7 +16,7 @@ export default function AdminServiceEdit({ service }: { service: Service }) {
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Servicios clínicos', href: index() },
+            { title: 'Servicios', href: index() },
             { title: service.name, href: edit(service.id) },
         ],
     });

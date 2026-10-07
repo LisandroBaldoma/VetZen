@@ -38,7 +38,7 @@ export default function RequestCreate({
             { title: 'Inicio', href: dashboard() },
             { title: 'Mis mascotas', href: petsIndex() },
             { title: pet.name, href: petShow(pet.id) },
-            { title: 'Solicitudes de atención', href: index(pet.id) },
+            { title: 'Solicitudes', href: index(pet.id) },
             { title: 'Nueva solicitud' },
         ],
     });
@@ -83,7 +83,7 @@ export default function RequestCreate({
                                 ) : (
                                     <div className="grid gap-2">
                                         <Label htmlFor="service_id">
-                                            Tipo de atención
+                                            Servicio
                                         </Label>
                                         <select
                                             id="service_id"
@@ -155,7 +155,7 @@ export default function RequestCreate({
                             </div>
                             <div>
                                 <dt className="text-muted-foreground">
-                                    Tipo de atención
+                                    Servicio
                                 </dt>
                                 <dd className="font-medium">
                                     {selectedService?.name ?? 'A elegir'}

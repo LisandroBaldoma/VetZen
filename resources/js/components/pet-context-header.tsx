@@ -103,7 +103,7 @@ export default function PetContextHeader({
               },
               {
                   key: 'service-requests' as const,
-                  label: 'Solicitudes de atención',
+                  label: 'Solicitudes',
                   href: serviceRequestsIndex(pet.id),
                   icon: ClipboardList,
               },

@@ -67,10 +67,10 @@ export default function AdminProcedureCatalog({
 
     return (
         <>
-            <Head title="Procedimientos clínicos" />
+            <Head title="Procedimientos" />
             <div className="workspace-operational">
                 <PageHeader
-                    title="Procedimientos clínicos"
+                    title="Procedimientos"
                     description="Consultá y administrá todos los procedimientos del catálogo."
                 />
 
@@ -350,6 +350,6 @@ export default function AdminProcedureCatalog({
 AdminProcedureCatalog.layout = {
     breadcrumbs: [
         { title: 'Inicio', href: dashboard() },
-        { title: 'Procedimientos clínicos', href: index() },
+        { title: 'Procedimientos', href: index() },
     ],
 };

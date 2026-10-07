@@ -19,9 +19,9 @@ const sectionLabels: Partial<Record<NavigationSection, string>> = {
     clients: 'Clientes',
     'medical-records': 'Historia clínica',
     pets: 'Pacientes',
-    procedures: 'Procedimientos clínicos',
-    'service-requests': 'Solicitudes de atención',
-    services: 'Servicios clínicos',
+    procedures: 'Procedimientos',
+    'service-requests': 'Solicitudes',
+    services: 'Servicios',
     treatments: 'Tratamientos',
 };
 

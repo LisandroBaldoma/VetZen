@@ -52,7 +52,7 @@ export default function RequestShow({
             { title: 'Inicio', href: dashboard() },
             { title: 'Mis mascotas', href: petsIndex() },
             { title: pet.name, href: petShow(pet.id) },
-            { title: 'Solicitudes de atención', href: index(pet.id) },
+            { title: 'Solicitudes', href: index(pet.id) },
             {
                 title: `Solicitud #${serviceRequest.id}`,
                 href: show([pet.id, serviceRequest.id]),

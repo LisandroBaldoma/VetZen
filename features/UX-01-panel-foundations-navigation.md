@@ -3,6 +3,13 @@
 > Estado: implementada y verificada automáticamente. Permanece pendiente la
 > validación manual responsive, visual y de accesibilidad de la sección 21.
 
+> Actualización UX-CONTENT-01: la nomenclatura visible definida inicialmente en
+> este documento fue simplificada. La navegación profesional usa Catálogo,
+> Servicios, Procedimientos, Tratamientos y Solicitudes. El rol visible es
+> Profesional; `admin` se mantiene como detalle interno. Para clientes, el área
+> personal se denomina Mis datos. Estas decisiones prevalecen sobre las etiquetas
+> históricas de las secciones siguientes.
+
 ## 1. Identificador
 
 Esta feature utiliza el identificador `UX-01` porque el número funcional F09 está reservado en `features.md` para Planes de seguimiento. El rediseño UX mantiene una secuencia propia para no alterar ni ocupar la numeración del roadmap de producto.

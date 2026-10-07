@@ -12,27 +12,27 @@ export default function TreatmentsIndex({
 }) {
     return (
         <>
-            <Head title="Plantillas" />
+            <Head title="Tratamientos" />
             <div className="workspace-operational max-w-6xl">
                 <div className="flex justify-between gap-4">
                     <Heading
-                        title={`Plantillas de ${service.name}`}
-                        description="Plantillas reutilizables del catálogo."
+                        title={`Tratamientos de ${service.name}`}
+                        description="Tratamientos disponibles en el catálogo."
                     />
                     <Button asChild>
-                        <Link href={create(service.id)}>Crear plantilla</Link>
+                        <Link href={create(service.id)}>Crear tratamiento</Link>
                     </Button>
                 </div>
                 {treatments.length === 0 ? (
                     <p className="border-y border-dashed py-8 text-muted-foreground">
-                        No hay plantillas para este servicio.
+                        No hay tratamientos para este servicio.
                     </p>
                 ) : (
                     <div className="overflow-x-auto border-y border-border">
                         <table className="w-full text-left text-sm">
                             <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                 <tr>
-                                    <th className="p-3">Plantilla</th>
+                                    <th className="p-3">Tratamiento</th>
                                     <th className="p-3">Sesiones</th>
                                     <th className="p-3">Procedimientos</th>
                                     <th className="p-3">Estado</th>

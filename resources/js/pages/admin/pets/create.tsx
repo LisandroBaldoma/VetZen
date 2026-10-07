@@ -12,11 +12,11 @@ export default function AdminPetCreate({
 }) {
     return (
         <>
-            <Head title="Add pet" />
+            <Head title="Registrar paciente" />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title="Add pet"
-                    description="Register a pet for a client."
+                    title="Registrar paciente"
+                    description="Registrá un paciente para un cliente."
                 />
                 <Form
                     {...PetController.store.form()}
@@ -27,7 +27,7 @@ export default function AdminPetCreate({
                             clients={clients}
                             errors={errors}
                             processing={processing}
-                            submitLabel="Create pet"
+                            submitLabel="Registrar paciente"
                         />
                     )}
                 </Form>

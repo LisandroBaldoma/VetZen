@@ -9,7 +9,7 @@ export default function AdminServiceCreate() {
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Servicios clínicos', href: index() },
+            { title: 'Servicios', href: index() },
             { title: 'Crear servicio', href: create() },
         ],
     });

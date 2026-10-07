@@ -68,7 +68,7 @@ export default function AdminRequestShow({
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Solicitudes de atención', href: index() },
+            { title: 'Solicitudes', href: index() },
             {
                 title: `Solicitud #${serviceRequest.id}`,
                 href: show(serviceRequest.id),
@@ -212,8 +212,8 @@ export default function AdminRequestShow({
                         ) : treatments.length === 0 ? (
                             <section className="space-y-3 border-l-2 border-operational-foreground/50 bg-operational/25 px-5 py-5 sm:px-6">
                                 <Heading
-                                    title="Sin plantillas compatibles"
-                                    description="Creá una plantilla activa para este servicio antes de resolver la solicitud."
+                                    title="Sin tratamientos compatibles"
+                                    description="Creá un tratamiento activo para este servicio antes de resolver la solicitud."
                                 />
                                 <Button asChild>
                                     <Link
@@ -221,7 +221,7 @@ export default function AdminRequestShow({
                                             serviceRequest.service.id,
                                         )}
                                     >
-                                        Crear plantilla
+                                        Crear tratamiento
                                     </Link>
                                 </Button>
                             </section>
@@ -261,7 +261,7 @@ export default function AdminRequestShow({
 
                                         <div className="grid gap-2">
                                             <Label htmlFor="treatment_id">
-                                                Plantilla compatible
+                                                Tratamiento compatible
                                             </Label>
                                             <select
                                                 id="treatment_id"

@@ -8,11 +8,11 @@ import type { Pet } from '@/types';
 export default function AdminPetEdit({ pet }: { pet: Pet }) {
     return (
         <>
-            <Head title={`Edit ${pet.name}`} />
+            <Head title={`Editar ${pet.name}`} />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title={`Edit ${pet.name}`}
-                    description="Update patient information."
+                    title={`Editar ${pet.name}`}
+                    description="Actualizá la información del paciente."
                 />
                 <Form
                     {...PetController.update.form(pet.id)}
@@ -23,7 +23,7 @@ export default function AdminPetEdit({ pet }: { pet: Pet }) {
                             pet={pet}
                             errors={errors}
                             processing={processing}
-                            submitLabel="Save pet"
+                            submitLabel="Guardar paciente"
                         />
                     )}
                 </Form>
@@ -33,7 +33,7 @@ export default function AdminPetEdit({ pet }: { pet: Pet }) {
                             type="submit"
                             className="text-sm text-destructive underline"
                         >
-                            Remove photo
+                            Eliminar foto
                         </button>
                     </Form>
                 )}

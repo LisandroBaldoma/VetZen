@@ -39,7 +39,10 @@ class ClientProfileTest extends TestCase
                 'birth_date' => '1990-01-15',
             ]);
 
-        $response->assertSessionHasNoErrors()->assertRedirect(route('clients.edit', $client));
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Datos personales actualizados.'])
+            ->assertRedirect(route('clients.edit', $client));
 
         $this->assertDatabaseHas('clients', [
             'id' => $client->id,

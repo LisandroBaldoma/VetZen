@@ -34,6 +34,7 @@ class ProfileUpdateTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Perfil actualizado.'])
             ->assertRedirect(route('profile.edit'));
 
         $user->refresh();

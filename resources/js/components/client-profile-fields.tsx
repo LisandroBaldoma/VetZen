@@ -15,12 +15,12 @@ export default function ClientProfileFields({
     client,
     errors,
     processing,
-    submitLabel = 'Save client profile',
+    submitLabel = 'Guardar datos personales',
 }: Props) {
     return (
         <>
             <div className="grid gap-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">Teléfono</Label>
                 <Input
                     id="phone"
                     name="phone"
@@ -33,7 +33,7 @@ export default function ClientProfileFields({
             </div>
 
             <div className="grid gap-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Dirección</Label>
                 <Input
                     id="address"
                     name="address"
@@ -45,7 +45,7 @@ export default function ClientProfileFields({
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city">Ciudad</Label>
                     <Input
                         id="city"
                         name="city"
@@ -54,7 +54,7 @@ export default function ClientProfileFields({
                     <InputError message={errors.city} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="province">Province</Label>
+                    <Label htmlFor="province">Provincia</Label>
                     <Input
                         id="province"
                         name="province"
@@ -66,7 +66,7 @@ export default function ClientProfileFields({
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label htmlFor="postal_code">Postal code</Label>
+                    <Label htmlFor="postal_code">Código postal</Label>
                     <Input
                         id="postal_code"
                         name="postal_code"
@@ -76,7 +76,7 @@ export default function ClientProfileFields({
                     <InputError message={errors.postal_code} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="document">Document</Label>
+                    <Label htmlFor="document">Documento</Label>
                     <Input
                         id="document"
                         name="document"
@@ -87,7 +87,7 @@ export default function ClientProfileFields({
             </div>
 
             <div className="grid gap-2">
-                <Label htmlFor="birth_date">Date of birth</Label>
+                <Label htmlFor="birth_date">Fecha de nacimiento</Label>
                 <Input
                     id="birth_date"
                     name="birth_date"

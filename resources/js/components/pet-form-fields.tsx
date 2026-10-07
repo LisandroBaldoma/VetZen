@@ -23,14 +23,14 @@ export default function PetFormFields({
         <>
             {clients && (
                 <div className="grid gap-2">
-                    <Label htmlFor="client_id">Client</Label>
+                    <Label htmlFor="client_id">Cliente</Label>
                     <select
                         id="client_id"
                         name="client_id"
                         required
                         className="h-9 rounded-md border bg-transparent px-3 text-sm"
                     >
-                        <option value="">Select a client</option>
+                        <option value="">Seleccionar cliente</option>
                         {clients.map((client) => (
                             <option key={client.id} value={client.id}>
                                 {client.user.name} · {client.user.email}
@@ -42,7 +42,7 @@ export default function PetFormFields({
             )}
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="name">Nombre</Label>
                     <Input
                         id="name"
                         name="name"
@@ -52,7 +52,7 @@ export default function PetFormFields({
                     <InputError message={errors.name} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="species">Species</Label>
+                    <Label htmlFor="species">Especie</Label>
                     <Input
                         id="species"
                         name="species"
@@ -62,7 +62,7 @@ export default function PetFormFields({
                     <InputError message={errors.species} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="breed">Breed</Label>
+                    <Label htmlFor="breed">Raza</Label>
                     <Input
                         id="breed"
                         name="breed"
@@ -71,7 +71,7 @@ export default function PetFormFields({
                     <InputError message={errors.breed} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="sex">Sex</Label>
+                    <Label htmlFor="sex">Sexo</Label>
                     <Input
                         id="sex"
                         name="sex"
@@ -81,7 +81,7 @@ export default function PetFormFields({
                     <InputError message={errors.sex} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="birth_date">Date of birth</Label>
+                    <Label htmlFor="birth_date">Fecha de nacimiento</Label>
                     <Input
                         id="birth_date"
                         name="birth_date"
@@ -91,7 +91,7 @@ export default function PetFormFields({
                     <InputError message={errors.birth_date} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="weight">Weight</Label>
+                    <Label htmlFor="weight">Peso</Label>
                     <Input
                         id="weight"
                         name="weight"
@@ -112,7 +112,7 @@ export default function PetFormFields({
                     <InputError message={errors.color} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="photo">Photo</Label>
+                    <Label htmlFor="photo">Foto</Label>
                     <Input
                         id="photo"
                         name="photo"
@@ -123,7 +123,7 @@ export default function PetFormFields({
                 </div>
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Notas</Label>
                 <textarea
                     id="notes"
                     name="notes"

@@ -7,11 +7,11 @@ import type { Pet } from '@/types';
 export default function PetEdit({ pet }: { pet: Pet }) {
     return (
         <>
-            <Head title={`Edit ${pet.name}`} />
+            <Head title={`Editar ${pet.name}`} />
             <div className="mx-auto max-w-2xl space-y-6 p-4">
                 <Heading
-                    title={`Edit ${pet.name}`}
-                    description="Update general information."
+                    title={`Editar ${pet.name}`}
+                    description="Actualizá la información general de tu mascota."
                 />
                 <Form
                     {...PetController.update.form(pet.id)}
@@ -22,7 +22,7 @@ export default function PetEdit({ pet }: { pet: Pet }) {
                             pet={pet}
                             errors={errors}
                             processing={processing}
-                            submitLabel="Save pet"
+                            submitLabel="Guardar mascota"
                         />
                     )}
                 </Form>
@@ -32,7 +32,7 @@ export default function PetEdit({ pet }: { pet: Pet }) {
                             type="submit"
                             className="text-sm text-destructive underline"
                         >
-                            Remove photo
+                            Eliminar foto
                         </button>
                     </Form>
                 )}

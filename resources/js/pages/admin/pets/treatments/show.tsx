@@ -267,7 +267,7 @@ function EditTreatmentConditionsDialog({
                                 </Button>
                                 <Button disabled={processing}>
                                     {processing
-                                        ? 'Guardando...'
+                                        ? 'Guardando…'
                                         : 'Guardar cambios'}
                                 </Button>
                             </DialogFooter>

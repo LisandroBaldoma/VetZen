@@ -60,7 +60,7 @@ class PetController extends Controller
             return $pet;
         });
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Pet created.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Mascota creada.')]);
 
         return to_route('pets.show', $pet);
     }
@@ -89,7 +89,7 @@ class PetController extends Controller
             $photos->replace($pet, $request->file('photo'));
         }
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Pet updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Mascota actualizada.')]);
 
         return to_route('pets.show', $pet);
     }
@@ -107,7 +107,7 @@ class PetController extends Controller
         Gate::authorize('update', $pet);
         $photos->delete($pet);
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Pet photo removed.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Foto de la mascota eliminada.')]);
 
         return back();
     }

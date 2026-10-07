@@ -38,7 +38,7 @@ export default function TreatmentEdit({
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Plantillas', href: templatesIndex() },
+            { title: 'Tratamientos', href: templatesIndex() },
             { title: service.name, href: serviceTemplatesIndex(service.id) },
             { title: treatment.name, href: edit([service.id, treatment.id]) },
         ],
@@ -46,7 +46,7 @@ export default function TreatmentEdit({
 
     return (
         <>
-            <Head title="Editar plantilla" />
+            <Head title="Editar tratamiento" />
             <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
                     title={`Editar ${treatment.name}`}
@@ -142,7 +142,7 @@ export default function TreatmentEdit({
                             </label>
                             <div className="flex justify-end border-t pt-5">
                                 <Button disabled={processing}>
-                                    Guardar plantilla
+                                    Guardar tratamiento
                                 </Button>
                             </div>
                         </>
