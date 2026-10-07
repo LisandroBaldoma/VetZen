@@ -29,9 +29,6 @@ Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
-    Route::inertia('simon', 'simon/index')
-        ->middleware(RoleMiddleware::using('admin|client'))
-        ->name('simon.index');
     Route::post('simon/messages', [SimonMessageController::class, 'store'])
         ->middleware('throttle:simon')
         ->name('simon.messages.store');

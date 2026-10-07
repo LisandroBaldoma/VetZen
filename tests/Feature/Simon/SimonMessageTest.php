@@ -201,6 +201,15 @@ class SimonMessageTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_dedicated_simon_page_is_not_available(): void
+    {
+        $client = Client::factory()->create();
+
+        $this->actingAs($client->user)
+            ->get('/simon')
+            ->assertNotFound();
+    }
+
     public function test_endpoint_validates_question_and_module(): void
     {
         $client = Client::factory()->create();

@@ -2,12 +2,12 @@ import {
     ClipboardList,
     ClipboardPlus,
     LayoutGrid,
-    MessageSquare,
     PawPrint,
     Stethoscope,
     Syringe,
     Users,
 } from 'lucide-react';
+import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
@@ -17,17 +17,16 @@ import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
-import { index as simonIndex } from '@/routes/simon';
 import type { NavGroup } from '@/types';
 
 export type NavigationSection =
     | 'dashboard'
     | 'clients'
+    | 'medical-records'
     | 'pets'
     | 'service-requests'
     | 'services'
     | 'procedures'
-    | 'simon'
     | 'treatments';
 
 const matches = (path: string, route: RegExp): boolean => route.test(path);
@@ -40,13 +39,19 @@ export function getNavigationSection(
         return 'dashboard';
     }
 
-    if (matches(path, /(?:^|\/)simon\/?$/)) {
-        return 'simon';
-    }
-
     if (role === 'admin') {
         if (matches(path, /(?:^|\/)admin\/clients(?:\/|$)/)) {
             return 'clients';
+        }
+
+        if (
+            matches(path, /(?:^|\/)admin\/pets\/[^/]+\/medical-records(?:\/|$)/)
+        ) {
+            return 'medical-records';
+        }
+
+        if (matches(path, /(?:^|\/)admin\/pets\/[^/]+\/treatments(?:\/|$)/)) {
+            return 'treatments';
         }
 
         if (matches(path, /(?:^|\/)admin\/pets(?:\/|$)/)) {
@@ -77,6 +82,14 @@ export function getNavigationSection(
     }
 
     if (role === 'client') {
+        if (matches(path, /(?:^|\/)pets\/[^/]+\/medical-records(?:\/|$)/)) {
+            return 'medical-records';
+        }
+
+        if (matches(path, /(?:^|\/)pets\/[^/]+\/treatments(?:\/|$)/)) {
+            return 'treatments';
+        }
+
         if (matches(path, /(?:^|\/)pets(?:\/|$)/)) {
             return 'pets';
         }
@@ -89,6 +102,23 @@ export function getNavigationSection(
     return null;
 }
 
+export function getSimonModule(
+    section: NavigationSection | null,
+): SimonModule | undefined {
+    switch (section) {
+        case 'clients':
+        case 'medical-records':
+        case 'pets':
+        case 'procedures':
+        case 'service-requests':
+        case 'services':
+        case 'treatments':
+            return section;
+        default:
+            return undefined;
+    }
+}
+
 export function getNavigationGroups(
     role: 'admin' | 'client' | null,
     activeSection: NavigationSection | null,
@@ -98,21 +128,15 @@ export function getNavigationGroups(
             ? [
                   {
                       title: 'General',
-                        items: [
-                            {
-                                title: 'Inicio',
+                      items: [
+                          {
+                              title: 'Inicio',
                               href: dashboard(),
                               icon: LayoutGrid,
                               isActive: activeSection === 'dashboard',
-                                mobileTitle: 'Inicio',
-                            },
-                            {
-                                title: 'Simón',
-                                href: simonIndex(),
-                                icon: MessageSquare,
-                                isActive: activeSection === 'simon',
-                            },
-                        ],
+                              mobileTitle: 'Inicio',
+                          },
+                      ],
                   },
               ]
             : []),

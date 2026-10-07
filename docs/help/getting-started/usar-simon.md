@@ -3,11 +3,11 @@ id: common.usar-simon
 title: Usar Simón para consultar sobre VetZen
 roles: [admin, client]
 module: account
-route_names: [simon.index]
+route_names: [dashboard]
 keywords: [simon, asistente, ayuda, como usar vetzen]
 status: available
 feature_ids: [SIMON-UI]
-source_refs: [routes/web.php, resources/js/pages/simon/index.tsx, features/simon-chat-evaluation.md]
+source_refs: [resources/js/components/simon/simon-assistant.tsx, features/simon-chat-evaluation.md]
 reviewed_at: 2026-10-06
 ---
 
@@ -21,7 +21,7 @@ solicitud de atención.
 
 ## Cómo hacerlo
 
-1. En el menú principal, abrí **Simón**.
+1. Seleccioná el avatar de Simón en la esquina inferior derecha.
 2. Escribí una pregunta sobre cómo usar VetZen.
 3. Enviá la pregunta y esperá la respuesta.
 4. Revisá las fuentes que acompañan la respuesta si necesitás identificar la
@@ -35,5 +35,5 @@ encuentra información suficiente, te lo indicará.
 
 ## Qué sucede después
 
-La conversación se conserva solo mientras mantenés abierta la página. Al salir
+La conversación se conserva solo mientras mantenés abierto el panel. Al cerrarlo
 o recargar, las preguntas y respuestas anteriores dejan de mostrarse.
