@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -68,6 +69,11 @@ Route::middleware(['auth'])->group(function () {
             ->name('services.status.update');
         Route::get('procedures', AdminProcedureCatalogController::class)->name('procedures.index');
         Route::get('treatments', AdminTreatmentCatalogController::class)->name('treatments.index');
+        Route::get('schedule-dates', [AdminAppointmentScheduleDateController::class, 'index'])->name('schedule-dates.index');
+        Route::get('schedule-dates/create', [AdminAppointmentScheduleDateController::class, 'create'])->name('schedule-dates.create');
+        Route::post('schedule-dates', [AdminAppointmentScheduleDateController::class, 'store'])->name('schedule-dates.store');
+        Route::get('schedule-dates/{scheduleDate}/edit', [AdminAppointmentScheduleDateController::class, 'edit'])->name('schedule-dates.edit');
+        Route::patch('schedule-dates/{scheduleDate}', [AdminAppointmentScheduleDateController::class, 'update'])->name('schedule-dates.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');
         Route::get('service-requests/{serviceRequest}', [AdminServiceRequestController::class, 'show'])->name('service-requests.show');
         Route::post('service-requests/{serviceRequest}/resolution', [AdminServiceRequestController::class, 'resolve'])->name('service-requests.resolve');

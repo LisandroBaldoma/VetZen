@@ -1,7 +1,7 @@
 # UX-15 — Turnos y agenda
 
-> Estado: diseño funcional para Feature 10. No describe una interfaz disponible
-> hasta que F10 se implemente y verifique.
+> Estado: Etapa 1 implementada para administración de fechas publicadas. Los
+> flujos de reserva y agenda operativa permanecen pendientes.
 
 ## 1. Navegación
 

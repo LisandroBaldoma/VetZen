@@ -1,4 +1,5 @@
 import {
+    CalendarDays,
     ClipboardList,
     ClipboardPlus,
     LayoutGrid,
@@ -12,6 +13,7 @@ import { dashboard } from '@/routes';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
+import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
@@ -25,6 +27,7 @@ export type NavigationSection =
     | 'medical-records'
     | 'pets'
     | 'service-requests'
+    | 'schedule-dates'
     | 'services'
     | 'procedures'
     | 'treatments';
@@ -50,6 +53,10 @@ export function getNavigationSection(
 
         if (matches(path, /(?:^|\/)admin\/service-requests(?:\/|$)/)) {
             return 'service-requests';
+        }
+
+        if (matches(path, /(?:^|\/)admin\/schedule-dates(?:\/|$)/)) {
+            return 'schedule-dates';
         }
 
         if (
@@ -152,6 +159,13 @@ export function getNavigationGroups(
                               icon: ClipboardPlus,
                               isActive: activeSection === 'service-requests',
                               mobileTitle: 'Solicitudes',
+                          },
+                          {
+                              title: 'Agenda',
+                              href: scheduleDatesIndex(),
+                              icon: CalendarDays,
+                              isActive: activeSection === 'schedule-dates',
+                              mobileTitle: 'Agenda',
                           },
                       ],
                   },

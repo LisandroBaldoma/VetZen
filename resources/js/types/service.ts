@@ -13,6 +13,7 @@ export type Service = {
     id: number;
     name: string;
     description: string;
+    appointment_duration_minutes?: number | null;
     is_active?: boolean;
     procedures?: CommercialProcedure[];
     procedures_count?: number;

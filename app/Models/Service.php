@@ -12,9 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name
  * @property string $description
+ * @property int|null $appointment_duration_minutes
  * @property bool $is_active
  */
-#[Fillable(['name', 'description', 'is_active'])]
+#[Fillable(['name', 'description', 'appointment_duration_minutes', 'is_active'])]
 class Service extends Model
 {
     /** @use HasFactory<ServiceFactory> */
@@ -45,6 +46,7 @@ class Service extends Model
     protected function casts(): array
     {
         return [
+            'appointment_duration_minutes' => 'integer',
             'is_active' => 'boolean',
         ];
     }

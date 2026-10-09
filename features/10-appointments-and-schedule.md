@@ -134,3 +134,16 @@ tratamiento y registrar sesión cuando no existe tratamiento.
 - Turno, solicitud de atención y sesión de tratamiento conservan sus ciclos de
   vida independientes.
 - Las notificaciones no duplican envíos ni hacen fallar reservas.
+
+## 12. Estado de implementación
+
+### Etapa 1 — Publicación administrativa de agenda
+
+Implementada: fechas concretas, alta múltiple con configuración común, edición
+individual, bloques de trabajo no superpuestos, inicios reservables explícitos,
+servicios activos habilitados por fecha y capacidad de uno a cinco pacientes.
+También se incorporó la duración predeterminada de turno de Service. Los servicios
+existentes sin duración deben configurarla antes de poder habilitarse en agenda.
+
+Esta etapa no implementa reservas, disponibilidad para clientes ni control de
+capacidad ocupada; esos comportamientos pertenecen a la siguiente etapa.
