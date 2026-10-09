@@ -243,6 +243,58 @@ class AppointmentBookingTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_reschedule_an_approved_appointment_and_preserves_interval_history(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $originalDate = $this->scheduleDate($service, 2);
+        $newDate = AppointmentScheduleDate::query()->create(['date' => '2026-10-14', 'capacity' => 2]);
+        $newDate->blocks()->create(['starts_at' => '10:00', 'ends_at' => '12:00']);
+        $newDate->starts()->create(['starts_at' => '10:00']);
+        $newDate->services()->attach($service);
+        $appointment = $this->appointment($pet, $service, $originalDate, '2026-10-13 13:00:00', 'approved');
+
+        $this->actingAs($admin)->patch(route('admin.appointments.reschedule', $appointment), [
+            'schedule_date_id' => $newDate->id,
+            'starts_at' => '10:00',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $appointment->id,
+            'appointment_schedule_date_id' => $newDate->id,
+            'starts_at' => '2026-10-14 13:00:00',
+            'ends_at' => '2026-10-14 13:30:00',
+            'status' => 'approved',
+        ]);
+        $this->assertDatabaseHas('appointment_reschedule_histories', [
+            'appointment_id' => $appointment->id,
+            'changed_by' => $admin->id,
+            'old_starts_at' => '2026-10-13 13:00:00',
+            'new_starts_at' => '2026-10-14 13:00:00',
+        ]);
+    }
+
+    public function test_client_can_reschedule_an_approved_appointment_to_pending_at_the_exact_lead_time(): void
+    {
+        [$user, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $originalDate = $this->scheduleDate($service, 2);
+        $newDate = AppointmentScheduleDate::query()->create(['date' => '2026-10-14', 'capacity' => 2]);
+        $newDate->blocks()->create(['starts_at' => '10:00', 'ends_at' => '12:00']);
+        $newDate->starts()->create(['starts_at' => '10:00']);
+        $newDate->services()->attach($service);
+        $appointment = $this->appointment($pet, $service, $originalDate, '2026-10-10 12:00:00', 'approved');
+
+        $this->actingAs($user)->patch(route('appointments.reschedule', $appointment), [
+            'schedule_date_id' => $newDate->id,
+            'starts_at' => '10:00',
+        ])->assertRedirect(route('appointments.show', $appointment));
+
+        $this->assertDatabaseHas('appointments', ['id' => $appointment->id, 'status' => 'pending', 'appointment_schedule_date_id' => $newDate->id]);
+        $this->assertDatabaseHas('appointment_reschedule_histories', ['appointment_id' => $appointment->id, 'changed_by' => $user->id]);
+    }
+
     /** @return array{User, Pet} */
     private function clientWithPet(): array
     {

@@ -44,6 +44,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::get('appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
     Route::patch('appointments/{appointment}/cancellation', [AppointmentController::class, 'cancel'])->name('appointments.cancellation');
+    Route::get('appointments/{appointment}/reschedule', [AppointmentController::class, 'editReschedule'])->name('appointments.reschedule.edit');
+    Route::patch('appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
 
     Route::get('pets', [PetController::class, 'index'])->name('pets.index');
     Route::get('pets/create', [PetController::class, 'create'])->name('pets.create');
@@ -86,6 +88,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('appointments/schedule', [AdminAppointmentController::class, 'schedule'])->name('appointments.schedule');
         Route::get('appointments/create', [AdminAppointmentController::class, 'create'])->name('appointments.create');
         Route::post('appointments', [AdminAppointmentController::class, 'store'])->name('appointments.store');
+        Route::get('appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'editReschedule'])->name('appointments.reschedule.edit');
+        Route::patch('appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'reschedule'])->name('appointments.reschedule');
         Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
         Route::patch('appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');

@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Models\AppointmentRescheduleHistory;
 use App\Models\AppointmentScheduleDate;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -15,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 class AppointmentBookingService
 {
     /** @return array<int, array{id: int, date: string, starts: array<int, array{time: string, ends_at: string}>}> */
-    public function availability(Pet $pet, Service $service, bool $enforceLeadTime = true): array
+    public function availability(Pet $pet, Service $service, bool $enforceLeadTime = true, ?Appointment $excludedAppointment = null): array
     {
         if (! $service->is_active || $service->appointment_duration_minutes === null) {
             return [];
@@ -33,8 +35,8 @@ class AppointmentBookingService
             ])
             ->orderBy('date')
             ->get()
-            ->map(function (AppointmentScheduleDate $scheduleDate) use ($pet, $service, $enforceLeadTime): array {
-                $starts = $this->availableStarts($scheduleDate, $pet, $service, $enforceLeadTime);
+            ->map(function (AppointmentScheduleDate $scheduleDate) use ($pet, $service, $enforceLeadTime, $excludedAppointment): array {
+                $starts = $this->availableStarts($scheduleDate, $pet, $service, $enforceLeadTime, $excludedAppointment);
 
                 return [
                     'id' => $scheduleDate->id,
@@ -103,25 +105,70 @@ class AppointmentBookingService
         });
     }
 
+    public function reschedule(Appointment $appointment, User $user, int $scheduleDateId, string $start, string $status = 'approved', bool $enforceLeadTime = false): Appointment
+    {
+        return DB::transaction(function () use ($appointment, $user, $scheduleDateId, $start, $status, $enforceLeadTime): Appointment {
+            $locked = Appointment::query()->lockForUpdate()->findOrFail($appointment->id);
+            if ($locked->status !== 'approved') {
+                throw ValidationException::withMessages(['status' => __('Solo se pueden reprogramar turnos aprobados.')]);
+            }
+            if ($enforceLeadTime && $locked->starts_at->setTimezone(config('appointments.timezone'))->lessThan(now(config('appointments.timezone'))->addMinutes(config('appointments.client_cancellation_lead_minutes')))) {
+                throw ValidationException::withMessages(['status' => __('El turno solo se puede reprogramar con la anticipación mínima requerida.')]);
+            }
+
+            $scheduleDates = AppointmentScheduleDate::query()
+                ->whereIn('id', [$locked->appointment_schedule_date_id, $scheduleDateId])
+                ->with(['blocks', 'starts', 'services'])
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+            $scheduleDate = $scheduleDates->get($scheduleDateId) ?? throw new ModelNotFoundException;
+            $service = Service::query()->lockForUpdate()->findOrFail($locked->service_id);
+            $interval = $this->appointmentForStart($scheduleDate, $service, $start, false);
+            $overlaps = Appointment::query()->where('appointment_schedule_date_id', $scheduleDate->id)->whereKeyNot($locked->id)->whereIn('status', ['pending', 'approved'])->where('starts_at', '<', $interval['ends_at'])->where('ends_at', '>', $interval['starts_at'])->lockForUpdate()->get();
+
+            if ($this->maximumOccupancy($overlaps, $interval['starts_at'], $interval['ends_at']) > $scheduleDate->capacity) {
+                throw ValidationException::withMessages(['starts_at' => __('El horario seleccionado ya no tiene capacidad disponible.')]);
+            }
+            if (Appointment::query()->where('pet_id', $locked->pet_id)->whereKeyNot($locked->id)->whereIn('status', ['pending', 'approved'])->where('starts_at', '<', $interval['ends_at'])->where('ends_at', '>', $interval['starts_at'])->lockForUpdate()->exists()) {
+                throw ValidationException::withMessages(['starts_at' => __('Esta mascota ya tiene un turno en ese horario.')]);
+            }
+
+            $history = new AppointmentRescheduleHistory(['old_starts_at' => $locked->starts_at, 'old_ends_at' => $locked->ends_at, 'new_starts_at' => $interval['starts_at'], 'new_ends_at' => $interval['ends_at']]);
+            $history->appointment()->associate($locked);
+            $history->changedBy()->associate($user);
+            $locked->scheduleDate()->associate($scheduleDate);
+            $locked->starts_at = $interval['starts_at'];
+            $locked->ends_at = $interval['ends_at'];
+            $locked->status = $status;
+            $locked->save();
+            $history->save();
+
+            return $locked;
+        });
+    }
+
     /** @return array<int, array{time: string, ends_at: string}> */
-    private function availableStarts(AppointmentScheduleDate $scheduleDate, Pet $pet, Service $service, bool $enforceLeadTime): array
+    private function availableStarts(AppointmentScheduleDate $scheduleDate, Pet $pet, Service $service, bool $enforceLeadTime, ?Appointment $excludedAppointment): array
     {
         return $scheduleDate->starts
             ->map(fn ($start): string => $this->normalizeTime($start->starts_at))
-            ->filter(function (string $start) use ($scheduleDate, $pet, $service, $enforceLeadTime): bool {
+            ->filter(function (string $start) use ($scheduleDate, $pet, $service, $enforceLeadTime, $excludedAppointment): bool {
                 try {
                     $appointment = $this->appointmentForStart($scheduleDate, $service, $start, $enforceLeadTime);
                 } catch (ValidationException) {
                     return false;
                 }
 
-                $overlaps = $scheduleDate->appointments->filter(
+                $appointments = $scheduleDate->appointments->when($excludedAppointment, fn ($appointments) => $appointments->where('id', '!=', $excludedAppointment->id));
+                $overlaps = $appointments->filter(
                     fn (Appointment $existing): bool => $existing->starts_at < $appointment['ends_at']
                         && $existing->ends_at > $appointment['starts_at'],
                 );
 
                 return $this->maximumOccupancy($overlaps, $appointment['starts_at'], $appointment['ends_at']) <= $scheduleDate->capacity
-                    && ! $scheduleDate->appointments->contains(
+                    && ! $appointments->contains(
                         fn (Appointment $existing): bool => $existing->pet_id === $pet->id
                             && $existing->starts_at < $appointment['ends_at']
                             && $existing->ends_at > $appointment['starts_at'],

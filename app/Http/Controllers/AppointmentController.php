@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Appointment\CancelAppointmentRequest;
+use App\Http\Requests\Appointment\ClientRescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\Service;
@@ -94,6 +95,8 @@ class AppointmentController extends Controller
             'appointment' => $this->appointmentData($appointment),
             'canCancel' => in_array($appointment->status, ['pending', 'approved'], true)
                 && $appointment->starts_at->setTimezone(config('appointments.timezone'))->greaterThanOrEqualTo(now(config('appointments.timezone'))->addMinutes(config('appointments.client_cancellation_lead_minutes'))),
+            'canReschedule' => $appointment->status === 'approved'
+                && $appointment->starts_at->setTimezone(config('appointments.timezone'))->greaterThanOrEqualTo(now(config('appointments.timezone'))->addMinutes(config('appointments.client_cancellation_lead_minutes'))),
         ]);
     }
 
@@ -101,6 +104,14 @@ class AppointmentController extends Controller
     {
         $statuses->transition($appointment, $request->user(), 'cancelled', null, true);
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno cancelado.')]);
+
+        return to_route('appointments.show', $appointment);
+    }
+
+    public function reschedule(ClientRescheduleAppointmentRequest $request, Appointment $appointment, AppointmentBookingService $booking): RedirectResponse
+    {
+        $booking->reschedule($appointment, $request->user(), $request->integer('schedule_date_id'), $request->string('starts_at')->toString(), 'pending', true);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno reprogramado y pendiente de revisión.')]);
 
         return to_route('appointments.show', $appointment);
     }

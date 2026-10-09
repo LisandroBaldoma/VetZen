@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAdminAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentStatusRequest;
 use App\Models\Appointment;
@@ -146,6 +147,25 @@ class AppointmentController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno creado y aprobado.')]);
 
         return to_route('admin.appointments.show', $appointment);
+    }
+
+    public function reschedule(RescheduleAppointmentRequest $request, Appointment $appointment, AppointmentBookingService $booking): RedirectResponse
+    {
+        $booking->reschedule($appointment, $request->user(), $request->integer('schedule_date_id'), $request->string('starts_at')->toString());
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno reprogramado.')]);
+
+        return back();
+    }
+
+    public function editReschedule(Appointment $appointment, AppointmentBookingService $booking): Response
+    {
+        Gate::authorize('reschedule', $appointment);
+        $appointment->loadMissing(['pet', 'service']);
+
+        return Inertia::render('admin/appointments/reschedule', [
+            'appointment' => $this->appointmentData($appointment->loadMissing('pet.client.user')),
+            'availability' => $booking->availability($appointment->pet, $appointment->service, false, $appointment),
+        ]);
     }
 
     /** @return array<string, int|string> */

@@ -584,8 +584,7 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
   cálculo de capacidad por intervalos.
 * Valores iniciales: reserva cliente 2 horas; cancelación y reprogramación cliente
   24 horas; recordatorio 24 horas.
-* Pendiente: estado resultante de una reprogramación administrativa, matriz
-  completa de transiciones, cardinalidad
+* Pendiente: matriz completa de transiciones, cardinalidad
   ServiceRequest--Appointment, permisos para editar duración individual y el
   mecanismo que identifica el ClinicalRecord que resuelve una tarea clínica.
 

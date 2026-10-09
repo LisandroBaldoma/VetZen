@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->timestamps();
 
-            $table->index(['appointment_schedule_date_id', 'status', 'starts_at', 'ends_at']);
-            $table->index(['pet_id', 'status', 'starts_at', 'ends_at']);
+            $table->index(['appointment_schedule_date_id', 'status', 'starts_at', 'ends_at'], 'appointments_schedule_interval_idx');
+            $table->index(['pet_id', 'status', 'starts_at', 'ends_at'], 'appointments_pet_interval_idx');
         });
     }
 

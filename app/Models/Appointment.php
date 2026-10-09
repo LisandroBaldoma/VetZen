@@ -42,6 +42,12 @@ class Appointment extends Model
         return $this->hasMany(AppointmentStatusHistory::class);
     }
 
+    /** @return HasMany<AppointmentRescheduleHistory, $this> */
+    public function rescheduleHistory(): HasMany
+    {
+        return $this->hasMany(AppointmentRescheduleHistory::class);
+    }
+
     protected function casts(): array
     {
         return [

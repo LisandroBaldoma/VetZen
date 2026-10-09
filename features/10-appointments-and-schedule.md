@@ -57,7 +57,7 @@ Transiciones cerradas: `pending → approved`, `pending → rejected`,
 `pending → cancelled`, `approved → cancelled`, `approved → attended` y
 `approved → absent`. Ningún estado terminal se reabre o reprograma. La
 reprogramación conserva el mismo turno e historial; el estado resultante de una
-reprogramación administrativa permanece pendiente de decisión.
+reprogramación administrativa conserva el estado `approved`.
 
 ## 5. Relaciones clínicas
 
@@ -114,8 +114,7 @@ tratamiento y registrar sesión cuando no existe tratamiento.
 
 ## 10. Decisiones pendientes
 
-1. Estado resultante de una reprogramación administrativa.
-2. Permiso y reglas para editar duración individual de un turno.
+1. Permiso y reglas para editar duración individual de un turno.
 3. Cardinalidad definitiva ServiceRequest--Appointment y prevención de vínculos
    activos duplicados.
 4. Regla exacta para una sesión pendiente vinculada a un turno atendido.
@@ -189,3 +188,10 @@ solicitudes de clientes.
 Implementada: el cliente puede cancelar un turno propio `pending` o `approved`
 cuando faltan al menos 24 horas, inclusive, para el inicio original. El límite se
 revalida dentro de la transacción y la cancelación queda registrada en historial.
+
+### Etapa 5b — Reprogramación administrativa
+
+Implementada: un administrador puede reprogramar un turno `approved` sin crear
+otro registro. La operación conserva el estado `approved`, bloquea las fechas
+involucradas por ID ascendente, vuelve a validar disponibilidad y persiste el
+intervalo anterior y nuevo junto al actor.

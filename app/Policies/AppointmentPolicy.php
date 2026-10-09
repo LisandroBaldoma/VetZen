@@ -37,4 +37,14 @@ class AppointmentPolicy
     {
         return $user->hasRole('client') && $appointment->pet->client->user_id === $user->id;
     }
+
+    public function reschedule(User $user, Appointment $appointment): bool
+    {
+        return $user->hasRole('admin') && $appointment->status === 'approved';
+    }
+
+    public function rescheduleClient(User $user, Appointment $appointment): bool
+    {
+        return $user->hasRole('client') && $appointment->status === 'approved' && $appointment->pet->client->user_id === $user->id;
+    }
 }

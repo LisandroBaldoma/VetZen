@@ -17,23 +17,29 @@ return new class extends Migration
 
         Schema::create('appointment_schedule_blocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('appointment_schedule_date_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('appointment_schedule_date_id');
+            $table->foreign('appointment_schedule_date_id', 'asb_schedule_date_fk')
+                ->references('id')->on('appointment_schedule_dates')->cascadeOnDelete();
             $table->time('starts_at');
             $table->time('ends_at');
             $table->timestamps();
-            $table->unique(['appointment_schedule_date_id', 'starts_at']);
+            $table->unique(['appointment_schedule_date_id', 'starts_at'], 'asb_date_start_unique');
         });
 
         Schema::create('appointment_schedule_starts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('appointment_schedule_date_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('appointment_schedule_date_id');
+            $table->foreign('appointment_schedule_date_id', 'ass_schedule_date_fk')
+                ->references('id')->on('appointment_schedule_dates')->cascadeOnDelete();
             $table->time('starts_at');
             $table->timestamps();
-            $table->unique(['appointment_schedule_date_id', 'starts_at']);
+            $table->unique(['appointment_schedule_date_id', 'starts_at'], 'ass_date_start_unique');
         });
 
         Schema::create('appointment_schedule_date_service', function (Blueprint $table) {
-            $table->foreignId('appointment_schedule_date_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('appointment_schedule_date_id');
+            $table->foreign('appointment_schedule_date_id', 'asds_schedule_date_fk')
+                ->references('id')->on('appointment_schedule_dates')->cascadeOnDelete();
             $table->foreignId('service_id')->constrained()->restrictOnDelete();
             $table->primary(['appointment_schedule_date_id', 'service_id']);
         });
