@@ -15,7 +15,7 @@
 
 | Fuente | Diferencia observada |
 |---|---|
-| `technical.md` | sigue preguntando Vue 3/stack por definir, pero el repositorio usa React + Inertia. Decisión técnica desactualizada. |
+| `technical.md` | La referencia pendiente a Vue 3 fue corregida: el stack actual es React + Inertia. |
 | `spec.md` / `features.md` | agenda, disponibilidad, notificaciones, IA, múltiples profesionales y permisos avanzados son alcance producto pero no están implementados. |
 | UX-00 / UX-01 | exige español y retiro de contenido starter-kit; persiste en auth/welcome y componentes/layouts alternos. |
 | UX-08 | especifica sesiones como tabla desktop/cards móvil; la implementación usa timeline en desktop y móvil. |

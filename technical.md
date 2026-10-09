@@ -71,7 +71,7 @@ Actualmente se contempla:
 ### **Notificaciones**
 
 * Email.  
-* Notificaciones Push.
+* Notificaciones internas.
 
 ### **Inteligencia artificial**
 
@@ -202,15 +202,25 @@ El hecho de que una información exista en la base de datos no implica que el us
 
 # **10\. Gestión de turnos**
 
-El sistema deberá contemplar una agenda basada en disponibilidad y servicios.
+La agenda única se implementará con fechas publicadas, bloques de trabajo,
+inicios explícitamente habilitados, servicios habilitados por fecha y capacidad
+compartida configurable de uno a cinco pacientes.
 
-Los turnos solicitados por clientes requerirán aprobación profesional antes de quedar confirmados.
+La fuente de verdad de disponibilidad será el backend. Las reservas y cambios de
+agenda usarán transacciones y bloqueos de filas sobre la fecha de agenda afectada.
+La ocupación incluye estados `pending` y `approved`, y se calcula sobre todo el
+intervalo `[starts_at, ends_at)`, no mediante un conteo simple de turnos
+solapados. Las operaciones entre dos fechas bloquean las fechas en orden estable
+para evitar interbloqueos.
 
-Los clientes podrán modificar y cancelar sus propios turnos, respetando los límites establecidos por la veterinaria.
+Los instantes se persistirán en UTC y se validarán y presentarán en la zona
+horaria explícita de la veterinaria. Las pruebas de concurrencia deberán ejecutarse
+contra el motor relacional de producción; SQLite no valida semánticas de bloqueo
+equivalentes.
 
-Los límites de anticipación y cancelación deberán ser configurables.
-
-La implementación deberá garantizar que no se produzcan inconsistencias en la disponibilidad ante solicitudes concurrentes.
+La reprogramación debe ser atómica: reserva el intervalo destino y libera el
+origen en la misma transacción, o conserva el turno original. Las modificaciones
+de agenda no pueden invalidar turnos pendientes o aprobados existentes.
 
 ---
 
@@ -271,7 +281,7 @@ diferentes por número de sesión.
 VetZen utilizará inicialmente:
 
 * Email.  
-* Notificaciones Push.
+* Notificaciones internas.
 
 Las notificaciones deberán poder procesarse de forma asíncrona cuando corresponda.
 
@@ -279,7 +289,9 @@ Los recordatorios estarán habilitados para los eventos definidos por el product
 
 La implementación deberá contemplar mecanismos adecuados para evitar notificaciones duplicadas cuando un mismo evento sea procesado más de una vez.
 
-El proveedor concreto de Push Notifications queda pendiente de definición.
+Push Notifications queda fuera de la primera versión de turnos. La implementación
+de recordatorios deberá registrar entregas idempotentes, invalidar entregas
+obsoletas y no bloquear una reserva si falla el email.
 
 ---
 
@@ -524,7 +536,7 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Arquitectura**
 
-* ¿Se utilizará Laravel con Inertia \+ Vue como arquitectura principal?  
+* Laravel con Inertia \+ React es la arquitectura actual.
 * ¿La aplicación será monolítica o se separará frontend y backend?  
 * ¿Se utilizará API además de Inertia?  
 * ¿Se requiere una API pública o solamente una API interna?
@@ -554,7 +566,7 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Frontend**
 
-* ¿Se utilizará Vue 3 \+ Inertia?  
+* React \+ Inertia es el frontend actual.
 * ¿Qué sistema de estilos se utilizará?  
 * ¿Se utilizará una librería de componentes?  
 * ¿Se requiere una estrategia mobile-first?  
@@ -562,17 +574,24 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Turnos**
 
-* ¿Cómo se configurarán los horarios de disponibilidad?  
-* ¿La duración será definida únicamente por servicio?  
-* ¿Se permitirán excepciones de disponibilidad?  
-* ¿Cómo se evitarán conflictos de turnos?  
-* ¿Qué límites de anticipación y cancelación se utilizarán inicialmente?
+* La agenda usa fechas concretas, bloques, inicios explícitos, servicios por fecha
+  y capacidad compartida; no hay disponibilidad implícita.
+* La duración predeterminada del turno pertenece a Service y se snapshottea al
+  reservar; no se deriva de procedimientos ni tratamientos.
+* Las excepciones se representan publicando o editando fechas concretas; no se
+  agrega un sistema separado de recurrencias.
+* Los conflictos se evitan con transacciones, bloqueo de la fecha de agenda y
+  cálculo de capacidad por intervalos.
+* Valores iniciales: reserva cliente 2 horas; cancelación y reprogramación cliente
+  24 horas; recordatorio 24 horas.
+* Pendiente: confirmar motor y versión de producción, estado resultante de una
+  reprogramación administrativa, matriz completa de transiciones, cardinalidad
+  ServiceRequest--Appointment, permisos para editar duración individual y el
+  mecanismo que identifica el ClinicalRecord que resuelve una tarea clínica.
 
 ## **Notificaciones**
 
-* ¿Se utilizará Firebase Cloud Messaging para Push Notifications?  
 * ¿Qué proveedor de email se utilizará?  
-* ¿Qué eventos generarán notificaciones?  
 * ¿El usuario podrá configurar preferencias de notificación?
 
 ## **Inteligencia artificial**

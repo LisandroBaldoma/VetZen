@@ -32,7 +32,8 @@ Esta feature no implementa protocolos clínicos complejos, planificación de pro
 
 La definición anterior de F07 trataba cada servicio como una prestación con duración, precio y modalidades propias, y postergaba los tratamientos. La validación con el veterinario reemplaza ese modelo:
 
-* un servicio es el área terapéutica general y no tiene precio ni duración;
+* un servicio es el área terapéutica general y no tiene precio ni duración
+  clínica; Feature 10 incorpora una duración predeterminada exclusiva de turnos;
 * un procedimiento pertenece a un servicio y puede tener duración orientativa, pero no precio;
 * un tratamiento pertenece a un servicio, combina uno o más procedimientos y propone una cantidad estimada de sesiones;
 * el catálogo de tratamientos no contiene un precio general;
@@ -164,7 +165,9 @@ trazabilidad entre solicitud y asignación.
 | `is_active` | Booleano, default `true` |
 | timestamps | Timestamps convencionales |
 
-Un servicio no tiene precio, moneda, duración, modalidad, disponibilidad horaria, profesional ni relación directa con mascotas o historia clínica.
+Un servicio no tiene precio, moneda, duración clínica, modalidad, disponibilidad
+horaria, profesional ni relación directa con mascotas o historia clínica. Feature
+10 agrega una duración predeterminada exclusiva de turnos, sin alterar F08.
 
 Ejemplos: Fisioterapia, Acupuntura, Fitoterapia y Flores de Bach.
 
@@ -291,7 +294,8 @@ Al generarse, cada sesión copia precio y moneda de `PetTreatment`. Su precio pu
 
 ## 12. Reglas de negocio
 
-1. `Service` es un área terapéutica y no tiene precio ni duración.
+1. `Service` es un área terapéutica y no tiene precio ni duración clínica. Su
+   duración predeterminada de turno pertenece a Feature 10.
 2. Todo `Procedure` pertenece a un `Service` y no tiene precio.
 3. Todo `Treatment` pertenece a un `Service` y requiere al menos un `Procedure` de ese mismo servicio.
 4. `estimated_sessions` y `planned_sessions` son enteros mayores que cero.
@@ -753,7 +757,8 @@ nuevos reemplazos. Cambiar el catálogo tampoco altera la composición acordada.
 
 No se incluyen:
 
-* precio, moneda o duración en Service;
+* precio, moneda o duración clínica en Service; la duración predeterminada de
+  turno pertenece a F10;
 * precio en Procedure o Treatment;
 * protocolos clínicos versionados o plantillas por sesión;
 * procedimientos planificados o realizados por sesión;

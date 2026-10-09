@@ -149,7 +149,8 @@ Permitir administrar el catálogo terapéutico y su estructura general.
 
 ## **Reglas principales**
 
-* Service representa un área terapéutica y no tiene precio ni duración.
+* Service representa un área terapéutica y no tiene precio. Su duración
+  predeterminada de turno pertenece exclusivamente a Feature 10.
 * Procedure pertenece a Service, puede tener duración orientativa y no tiene
   precio.
 * La baja comercial se realiza mediante estado, sin eliminar referencias
@@ -226,25 +227,24 @@ Permitir administrar la disponibilidad de la veterinaria y gestionar los turnos 
 
 ## **Alcance**
 
-* Configuración de horarios.  
-* Configuración de disponibilidad.  
-* Definición de duración según servicio.  
-* Solicitud de turnos.  
-* Aprobación de turnos.  
-* Modificación de turnos.  
-* Cancelación de turnos.  
-* Administración profesional de la agenda.  
-* Estados de turno.
+* Agenda única con fechas, bloques, inicios explícitos y capacidad compartida.
+* Duración predeterminada por servicio y snapshot histórico por turno.
+* Solicitud, aprobación, rechazo, cancelación y reprogramación de turnos.
+* Creación administrativa sin bypass de disponibilidad.
+* Visualización diaria y semanal de agenda.
+* Vínculos opcionales con ServiceRequest y TreatmentSession.
+* Tareas de registro clínico posteriores a una atención.
 
 ## **Reglas principales**
 
-* El cliente podrá solicitar un turno.  
-* La solicitud deberá ser aprobada por un profesional.  
-* El turno no estará confirmado hasta su aprobación.  
-* El cliente podrá modificar sus propios turnos.  
-* El cliente podrá cancelar sus propios turnos.  
-* Las modificaciones y cancelaciones estarán sujetas a límites configurables.  
-* El sistema deberá evitar conflictos de disponibilidad.
+* Solo fechas, servicios e inicios publicados pueden reservarse.
+* Pendientes y aprobados consumen capacidad durante todo su intervalo.
+* El cliente solicita para mascotas propias y el admin administra la agenda.
+* La aprobación no consume capacidad adicional; rechazo y cancelación la liberan.
+* Las modificaciones y cancelaciones cliente respetan límites configurables.
+* El sistema evita conflictos con validación backend, transacciones y bloqueos.
+* F10 no incorpora profesionales asignados, agendas por profesional, recurrencias,
+  planificación de equipos, pagos ni Push Notifications.
 
 ---
 
@@ -257,7 +257,7 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 ## **Alcance**
 
 * Notificaciones por email.  
-* Notificaciones Push.  
+* Notificaciones internas.
 * Confirmaciones.  
 * Solicitudes.  
 * Cancelaciones.  
@@ -270,6 +270,7 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 * Las notificaciones deberán generarse a partir de eventos relevantes.  
 * Las operaciones que puedan ejecutarse de forma asíncrona deberán procesarse sin bloquear las operaciones principales.  
 * El sistema deberá evitar notificaciones duplicadas.
+* Push Notifications queda fuera de la primera versión de turnos.
 
 ---
 
@@ -429,7 +430,7 @@ Las funcionalidades deberán implementarse progresivamente.
 ## **Fase 4 — Comunicación**
 
 * Email.  
-* Push Notifications.
+* Notificaciones internas y email de turnos.
 
 ## **Fase 5 — Asistente virtual**
 

@@ -42,7 +42,8 @@ frontend no constituye una barrera de seguridad.
 | `description` | requerida, string, texto plano |
 | `is_active` | booleano, default `true` |
 
-Service no tiene precio, moneda, duración ni modalidades.
+Service no tiene precio, moneda ni modalidades. Feature 10 agrega una duración
+predeterminada exclusiva para turnos; F07 no la administra ni la expone.
 
 ## 5. Procedure
 
