@@ -102,6 +102,35 @@ class AppointmentBookingTest extends TestCase
             ->assertSessionHasErrors('starts_at');
     }
 
+    public function test_client_sees_only_their_appointments_in_upcoming_and_history(): void
+    {
+        $this->withoutVite();
+        [$user, $pet] = $this->clientWithPet();
+        [, $otherPet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $ownAppointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $this->appointment($otherPet, $service, $scheduleDate, '2026-10-13 13:30:00', 'approved');
+
+        $this->actingAs($user)->get(route('appointments.index'))
+            ->assertInertia(fn ($page) => $page
+                ->component('appointments/index')
+                ->has('upcoming', 1)
+                ->where('upcoming.0.id', $ownAppointment->id)
+                ->has('history', 0));
+    }
+
+    public function test_client_cannot_view_another_clients_appointment(): void
+    {
+        [$user] = $this->clientWithPet();
+        [, $otherPet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $appointment = $this->appointment($otherPet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+
+        $this->actingAs($user)->get(route('appointments.show', $appointment))->assertForbidden();
+    }
+
     /** @return array{User, Pet} */
     private function clientWithPet(): array
     {
@@ -137,5 +166,20 @@ class AppointmentBookingTest extends TestCase
     private function route(): string
     {
         return route('appointments.store');
+    }
+
+    private function appointment(Pet $pet, Service $service, AppointmentScheduleDate $scheduleDate, string $startsAt, string $status): Appointment
+    {
+        return Appointment::query()->forceCreate([
+            'pet_id' => $pet->id,
+            'service_id' => $service->id,
+            'appointment_schedule_date_id' => $scheduleDate->id,
+            'requested_by' => $pet->client->user_id,
+            'service_name' => $service->name,
+            'duration_minutes' => 30,
+            'starts_at' => $startsAt,
+            'ends_at' => CarbonImmutable::parse($startsAt)->addMinutes(30),
+            'status' => $status,
+        ]);
     }
 }

@@ -17,7 +17,7 @@ import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
-import { create as appointmentsCreate } from '@/routes/appointments';
+import { index as appointmentsIndex } from '@/routes/appointments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
 import type { NavGroup } from '@/types';
@@ -218,7 +218,7 @@ export function getNavigationGroups(
                         items: [
                             {
                                 title: 'Turnos',
-                                href: appointmentsCreate(),
+                                href: appointmentsIndex(),
                                 icon: CalendarDays,
                                 isActive: activeSection === 'appointments',
                                 mobileTitle: 'Turnos',

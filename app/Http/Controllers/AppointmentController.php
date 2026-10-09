@@ -14,6 +14,34 @@ use Inertia\Response;
 
 class AppointmentController extends Controller
 {
+    public function index(Request $request): Response
+    {
+        abort_unless($request->user()?->hasRole('client'), 403);
+        Gate::authorize('viewAny', Appointment::class);
+
+        $appointments = Appointment::query()
+            ->whereIn('pet_id', $request->user()->client->pets()->select('id'))
+            ->with('pet:id,name')
+            ->orderByDesc('starts_at')
+            ->get();
+
+        $now = now('UTC');
+
+        return Inertia::render('appointments/index', [
+            'upcoming' => $appointments
+                ->filter(fn (Appointment $appointment): bool => in_array($appointment->status, ['pending', 'approved'], true)
+                    && $appointment->ends_at->greaterThan($now))
+                ->sortBy('starts_at')
+                ->values()
+                ->map(fn (Appointment $appointment): array => $this->appointmentData($appointment)),
+            'history' => $appointments
+                ->filter(fn (Appointment $appointment): bool => ! in_array($appointment->status, ['pending', 'approved'], true)
+                    || $appointment->ends_at->lessThanOrEqualTo($now))
+                ->values()
+                ->map(fn (Appointment $appointment): array => $this->appointmentData($appointment)),
+        ]);
+    }
+
     public function create(Request $request, AppointmentBookingService $booking): Response
     {
         abort_unless($request->user()?->hasRole('client'), 403);
@@ -53,5 +81,31 @@ class AppointmentController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno solicitado.')]);
 
         return to_route('appointments.create');
+    }
+
+    public function show(Appointment $appointment): Response
+    {
+        Gate::authorize('view', $appointment);
+        $appointment->loadMissing('pet:id,name');
+
+        return Inertia::render('appointments/show', [
+            'appointment' => $this->appointmentData($appointment),
+        ]);
+    }
+
+    /** @return array{id: int, pet_name: string, service_name: string, duration_minutes: int, starts_at: string, ends_at: string, status: string} */
+    private function appointmentData(Appointment $appointment): array
+    {
+        $timezone = config('appointments.timezone');
+
+        return [
+            'id' => $appointment->id,
+            'pet_name' => $appointment->pet->name,
+            'service_name' => $appointment->service_name,
+            'duration_minutes' => $appointment->duration_minutes,
+            'starts_at' => $appointment->starts_at->setTimezone($timezone)->toIso8601String(),
+            'ends_at' => $appointment->ends_at->setTimezone($timezone)->toIso8601String(),
+            'status' => $appointment->status,
+        ];
     }
 }

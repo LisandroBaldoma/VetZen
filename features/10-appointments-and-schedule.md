@@ -155,3 +155,10 @@ compartida por intervalo y ausencia de solapamiento para la misma mascota.
 La disponibilidad mostrada es informativa y se revalida al confirmar la
 solicitud. Esta etapa no incorpora todavía el listado de próximos/historial ni
 las transiciones administrativas de estado.
+
+### Etapa 3 — Consulta de turnos del cliente
+
+Implementada: el cliente consulta sus próximos turnos y su historial, y puede
+abrir el detalle de un turno propio. La lectura se autoriza recorriendo
+`User → Client → Pet → Appointment`; no se exponen turnos de otras mascotas.
+Las transiciones, cancelación y reprogramación no forman parte de esta etapa.
