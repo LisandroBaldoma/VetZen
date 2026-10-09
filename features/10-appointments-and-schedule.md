@@ -170,3 +170,9 @@ detalle y puede ejecutar únicamente las transiciones cerradas aplicables. Cada
 cambio bloquea el turno y conserva un historial inmutable con actor, estados y
 motivo. La agenda diaria/semanal y la creación administrativa de turnos quedan
 para una etapa posterior.
+
+### Etapa 4b — Agenda administrativa semanal
+
+Implementada: el administrador consulta una semana de agenda con sus fechas
+publicadas, capacidad y todos los turnos por día. Cada tarjeta abre el detalle
+administrativo. La vista no crea, reprograma ni altera reservas.

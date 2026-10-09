@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Appointment\UpdateAppointmentStatusRequest;
 use App\Models\Appointment;
+use App\Models\AppointmentScheduleDate;
 use App\Models\AppointmentStatusHistory;
 use App\Services\AppointmentStatusService;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -15,6 +17,46 @@ use Inertia\Response;
 
 class AppointmentController extends Controller
 {
+    public function schedule(Request $request): Response
+    {
+        Gate::authorize('viewAny', Appointment::class);
+
+        $date = $request->string('date')->toString();
+        abort_unless($date === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) === 1, 422);
+        $weekStart = ($date === ''
+            ? now(config('appointments.timezone'))->toImmutable()
+            : CarbonImmutable::createFromFormat('Y-m-d', $date, config('appointments.timezone')))
+            ->startOfWeek();
+        $weekEnd = $weekStart->addDays(6);
+
+        $scheduleDates = AppointmentScheduleDate::query()
+            ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->with(['appointments' => fn ($query) => $query->with('pet:id,name')->orderBy('starts_at')])
+            ->get()
+            ->keyBy(fn ($scheduleDate) => $scheduleDate->date->toDateString());
+
+        return Inertia::render('admin/appointments/schedule', [
+            'weekStart' => $weekStart->toDateString(),
+            'week' => collect(range(0, 6))->map(function (int $offset) use ($weekStart, $scheduleDates): array {
+                $date = $weekStart->addDays($offset);
+                $scheduleDate = $scheduleDates->get($date->toDateString());
+
+                return [
+                    'date' => $date->toDateString(),
+                    'capacity' => $scheduleDate?->capacity,
+                    'appointments' => $scheduleDate?->appointments->map(fn (Appointment $appointment): array => [
+                        'id' => $appointment->id,
+                        'pet_name' => $appointment->pet->name,
+                        'service_name' => $appointment->service_name,
+                        'status' => $appointment->status,
+                        'starts_at' => $appointment->starts_at->setTimezone(config('appointments.timezone'))->toIso8601String(),
+                        'ends_at' => $appointment->ends_at->setTimezone(config('appointments.timezone'))->toIso8601String(),
+                    ])->values() ?? [],
+                ];
+            }),
+        ]);
+    }
+
     public function index(Request $request): Response
     {
         Gate::authorize('viewAny', Appointment::class);
