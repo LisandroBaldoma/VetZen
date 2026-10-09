@@ -2,7 +2,9 @@
 
 > Estado: Etapas 1 a 3 y 4a implementadas: publicación administrativa de
 > fechas, solicitud y consulta cliente, y cola administrativa con transiciones.
-> La agenda operativa diaria/semanal permanece pendiente.
+> La agenda semanal de administración está implementada; en móvil usa selector
+> de fecha y lista cronológica diaria. Permanecen pendientes reprogramación,
+> vínculos clínicos y notificaciones.
 
 ## 1. Navegación
 
