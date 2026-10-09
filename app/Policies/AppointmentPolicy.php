@@ -32,4 +32,9 @@ class AppointmentPolicy
     {
         return $user->hasRole('admin');
     }
+
+    public function cancel(User $user, Appointment $appointment): bool
+    {
+        return $user->hasRole('client') && $appointment->pet->client->user_id === $user->id;
+    }
 }

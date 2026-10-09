@@ -16,14 +16,20 @@ class AppointmentStatusService
         'approved' => ['cancelled', 'attended', 'absent'],
     ];
 
-    public function transition(Appointment $appointment, User $user, string $status, ?string $reason): Appointment
+    public function transition(Appointment $appointment, User $user, string $status, ?string $reason, bool $enforceCancellationLeadTime = false): Appointment
     {
-        return DB::transaction(function () use ($appointment, $user, $status, $reason): Appointment {
+        return DB::transaction(function () use ($appointment, $user, $status, $reason, $enforceCancellationLeadTime): Appointment {
             $locked = Appointment::query()->lockForUpdate()->findOrFail($appointment->id);
 
             if (! in_array($status, self::TRANSITIONS[$locked->status] ?? [], true)) {
                 throw ValidationException::withMessages([
                     'status' => __('La transición de estado solicitada no está permitida.'),
+                ]);
+            }
+
+            if ($enforceCancellationLeadTime && $status === 'cancelled' && $locked->starts_at->setTimezone(config('appointments.timezone'))->lessThan(now(config('appointments.timezone'))->addMinutes(config('appointments.client_cancellation_lead_minutes')))) {
+                throw ValidationException::withMessages([
+                    'status' => __('El turno solo se puede cancelar con la anticipación mínima requerida.'),
                 ]);
             }
 

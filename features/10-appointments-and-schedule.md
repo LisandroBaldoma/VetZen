@@ -183,3 +183,9 @@ Implementada: el administrador crea un turno `approved` para cualquier paciente
 existente usando inicios, bloques, servicios y capacidad publicados. Reutiliza la
 validación transaccional de reservas, sin la anticipación mínima exclusiva de
 solicitudes de clientes.
+
+### Etapa 5a — Cancelación de cliente
+
+Implementada: el cliente puede cancelar un turno propio `pending` o `approved`
+cuando faltan al menos 24 horas, inclusive, para el inicio original. El límite se
+revalida dentro de la transacción y la cancelación queda registrada en historial.

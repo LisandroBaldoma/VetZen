@@ -221,6 +221,28 @@ class AppointmentBookingTest extends TestCase
         ]);
     }
 
+    public function test_client_can_cancel_at_the_exact_twenty_four_hour_limit_but_not_after_it(): void
+    {
+        [$user, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $cancellable = $this->appointment($pet, $service, $scheduleDate, '2026-10-10 12:00:00', 'pending');
+        $late = $this->appointment($pet, $service, $scheduleDate, '2026-10-10 11:59:00', 'approved');
+
+        $this->actingAs($user)->patch(route('appointments.cancellation', $cancellable))
+            ->assertRedirect(route('appointments.show', $cancellable));
+        $this->actingAs($user)->patch(route('appointments.cancellation', $late))
+            ->assertSessionHasErrors('status');
+
+        $this->assertSame('cancelled', $cancellable->refresh()->status);
+        $this->assertSame('approved', $late->refresh()->status);
+        $this->assertDatabaseHas('appointment_status_histories', [
+            'appointment_id' => $cancellable->id,
+            'changed_by' => $user->id,
+            'to_status' => 'cancelled',
+        ]);
+    }
+
     /** @return array{User, Pet} */
     private function clientWithPet(): array
     {

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Appointment\CancelAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Services\AppointmentBookingService;
+use App\Services\AppointmentStatusService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -90,7 +92,17 @@ class AppointmentController extends Controller
 
         return Inertia::render('appointments/show', [
             'appointment' => $this->appointmentData($appointment),
+            'canCancel' => in_array($appointment->status, ['pending', 'approved'], true)
+                && $appointment->starts_at->setTimezone(config('appointments.timezone'))->greaterThanOrEqualTo(now(config('appointments.timezone'))->addMinutes(config('appointments.client_cancellation_lead_minutes'))),
         ]);
+    }
+
+    public function cancel(CancelAppointmentRequest $request, Appointment $appointment, AppointmentStatusService $statuses): RedirectResponse
+    {
+        $statuses->transition($appointment, $request->user(), 'cancelled', null, true);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno cancelado.')]);
+
+        return to_route('appointments.show', $appointment);
     }
 
     /** @return array{id: int, pet_name: string, service_name: string, duration_minutes: int, starts_at: string, ends_at: string, status: string} */
