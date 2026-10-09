@@ -214,9 +214,9 @@ solapados. Las operaciones entre dos fechas bloquean las fechas en orden estable
 para evitar interbloqueos.
 
 Los instantes se persistirán en UTC y se validarán y presentarán en la zona
-horaria explícita de la veterinaria. Las pruebas de concurrencia deberán ejecutarse
-contra el motor relacional de producción; SQLite no valida semánticas de bloqueo
-equivalentes.
+horaria explícita de la veterinaria, `America/Argentina/Buenos_Aires`. El motor
+objetivo es MySQL. Las pruebas de concurrencia deberán ejecutarse contra MySQL;
+SQLite no valida semánticas de bloqueo equivalentes.
 
 La reprogramación debe ser atómica: reserva el intervalo destino y libera el
 origen en la misma transacción, o conserva el turno original. Las modificaciones
@@ -584,8 +584,8 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
   cálculo de capacidad por intervalos.
 * Valores iniciales: reserva cliente 2 horas; cancelación y reprogramación cliente
   24 horas; recordatorio 24 horas.
-* Pendiente: confirmar motor y versión de producción, estado resultante de una
-  reprogramación administrativa, matriz completa de transiciones, cardinalidad
+* Pendiente: estado resultante de una reprogramación administrativa, matriz
+  completa de transiciones, cardinalidad
   ServiceRequest--Appointment, permisos para editar duración individual y el
   mecanismo que identifica el ClinicalRecord que resuelve una tarea clínica.
 

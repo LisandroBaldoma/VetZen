@@ -61,6 +61,12 @@ class Pet extends Model
         return $this->hasMany(ServiceRequest::class);
     }
 
+    /** @return HasMany<Appointment, $this> */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     /**
      * @return array<string, string>
      */

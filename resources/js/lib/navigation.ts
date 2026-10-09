@@ -17,6 +17,7 @@ import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
+import { create as appointmentsCreate } from '@/routes/appointments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
 import type { NavGroup } from '@/types';
@@ -24,6 +25,7 @@ import type { NavGroup } from '@/types';
 export type NavigationSection =
     | 'dashboard'
     | 'clients'
+    | 'appointments'
     | 'medical-records'
     | 'pets'
     | 'service-requests'
@@ -79,6 +81,10 @@ export function getNavigationSection(
     }
 
     if (role === 'client') {
+        if (matches(path, /(?:^|\/)appointments(?:\/|$)/)) {
+            return 'appointments';
+        }
+
         if (matches(path, /(?:^|\/)pets(?:\/|$)/)) {
             return 'pets';
         }
@@ -210,6 +216,13 @@ export function getNavigationGroups(
                     {
                         title: 'Atención',
                         items: [
+                            {
+                                title: 'Turnos',
+                                href: appointmentsCreate(),
+                                icon: CalendarDays,
+                                isActive: activeSection === 'appointments',
+                                mobileTitle: 'Turnos',
+                            },
                             {
                                 title: 'Servicios disponibles',
                                 href: servicesIndex(),

@@ -119,10 +119,8 @@ tratamiento y registrar sesión cuando no existe tratamiento.
 3. Cardinalidad definitiva ServiceRequest--Appointment y prevención de vínculos
    activos duplicados.
 4. Regla exacta para una sesión pendiente vinculada a un turno atendido.
-5. Motor y versión de base de datos de producción para fijar el contrato de
-   locking y pruebas de concurrencia.
-6. Destinatarios administrativos y proveedor de email.
-7. Mecanismo para identificar qué ClinicalRecord resuelve una tarea de registro
+5. Destinatarios administrativos y proveedor de email.
+6. Mecanismo para identificar qué ClinicalRecord resuelve una tarea de registro
    clínico, ya que F06 no vincula registros clínicos con sesiones o turnos.
 
 ## 11. Criterios de aceptación por dominio
@@ -145,5 +143,15 @@ servicios activos habilitados por fecha y capacidad de uno a cinco pacientes.
 También se incorporó la duración predeterminada de turno de Service. Los servicios
 existentes sin duración deben configurarla antes de poder habilitarse en agenda.
 
-Esta etapa no implementa reservas, disponibilidad para clientes ni control de
-capacidad ocupada; esos comportamientos pertenecen a la siguiente etapa.
+### Etapa 2 — Disponibilidad y solicitud de cliente
+
+Implementada: el cliente selecciona una de sus mascotas y un servicio activo
+para consultar fechas e inicios publicados. La solicitud crea un turno
+`pending` con snapshots de servicio y duración, y persiste los instantes en UTC.
+La reserva se ejecuta en una transacción MySQL bloqueando la fecha de agenda;
+valida anticipación mínima de dos horas, bloques, inicio publicado, capacidad
+compartida por intervalo y ausencia de solapamiento para la misma mascota.
+
+La disponibilidad mostrada es informativa y se revalida al confirmar la
+solicitud. Esta etapa no incorpora todavía el listado de próximos/historial ni
+las transiciones administrativas de estado.

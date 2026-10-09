@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Contracts\AssistantResponseGenerator;
+use App\Models\Appointment;
 use App\Models\AppointmentScheduleDate;
 use App\Models\Client;
 use App\Models\ClinicalRecord;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Policies\AppointmentPolicy;
 use App\Policies\AppointmentScheduleDatePolicy;
 use App\Policies\ClientPolicy;
 use App\Policies\ClinicalRecordPolicy;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Client::class, ClientPolicy::class);
         Gate::policy(ClinicalRecord::class, ClinicalRecordPolicy::class);
         Gate::policy(AppointmentScheduleDate::class, AppointmentScheduleDatePolicy::class);
+        Gate::policy(Appointment::class, AppointmentPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
     }

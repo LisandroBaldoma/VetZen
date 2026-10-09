@@ -28,6 +28,11 @@ class AppointmentScheduleDate extends Model
         return $this->belongsToMany(Service::class);
     }
 
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     protected function casts(): array
     {
         return [

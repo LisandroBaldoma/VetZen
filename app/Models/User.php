@@ -69,6 +69,12 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasMany(ClinicalRecordAudit::class);
     }
 
+    /** @return HasMany<Appointment, $this> */
+    public function requestedAppointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'requested_by');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

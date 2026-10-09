@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\TreatmentCatalogController as AdminTreatmentCatal
 use App\Http\Controllers\Admin\TreatmentController as AdminTreatmentController;
 use App\Http\Controllers\Admin\TreatmentSessionController as AdminTreatmentSessionController;
 use App\Http\Controllers\Admin\TreatmentStatusController as AdminTreatmentStatusController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
@@ -36,6 +37,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('services', [ServiceController::class, 'index'])->name('services.index');
     Route::get('services/{service}', [ServiceController::class, 'show'])->name('services.show');
+
+    Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 
     Route::get('pets', [PetController::class, 'index'])->name('pets.index');
     Route::get('pets/create', [PetController::class, 'create'])->name('pets.create');
