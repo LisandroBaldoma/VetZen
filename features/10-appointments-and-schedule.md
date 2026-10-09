@@ -176,3 +176,10 @@ para una etapa posterior.
 Implementada: el administrador consulta una semana de agenda con sus fechas
 publicadas, capacidad y todos los turnos por día. Cada tarjeta abre el detalle
 administrativo. La vista no crea, reprograma ni altera reservas.
+
+### Etapa 4c — Creación administrativa
+
+Implementada: el administrador crea un turno `approved` para cualquier paciente
+existente usando inicios, bloques, servicios y capacidad publicados. Reutiliza la
+validación transaccional de reservas, sin la anticipación mínima exclusiva de
+solicitudes de clientes.

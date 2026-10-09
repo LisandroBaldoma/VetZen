@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 class AppointmentBookingService
 {
     /** @return array<int, array{id: int, date: string, starts: array<int, array{time: string, ends_at: string}>}> */
-    public function availability(Pet $pet, Service $service): array
+    public function availability(Pet $pet, Service $service, bool $enforceLeadTime = true): array
     {
         if (! $service->is_active || $service->appointment_duration_minutes === null) {
             return [];
@@ -33,8 +33,8 @@ class AppointmentBookingService
             ])
             ->orderBy('date')
             ->get()
-            ->map(function (AppointmentScheduleDate $scheduleDate) use ($pet, $service): array {
-                $starts = $this->availableStarts($scheduleDate, $pet, $service);
+            ->map(function (AppointmentScheduleDate $scheduleDate) use ($pet, $service, $enforceLeadTime): array {
+                $starts = $this->availableStarts($scheduleDate, $pet, $service, $enforceLeadTime);
 
                 return [
                     'id' => $scheduleDate->id,
@@ -47,16 +47,16 @@ class AppointmentBookingService
             ->all();
     }
 
-    public function book(User $user, Pet $pet, Service $service, int $scheduleDateId, string $start): Appointment
+    public function book(User $user, Pet $pet, Service $service, int $scheduleDateId, string $start, string $status = 'pending', bool $enforceLeadTime = true): Appointment
     {
-        return DB::transaction(function () use ($user, $pet, $service, $scheduleDateId, $start): Appointment {
+        return DB::transaction(function () use ($user, $pet, $service, $scheduleDateId, $start, $status, $enforceLeadTime): Appointment {
             $scheduleDate = AppointmentScheduleDate::query()
                 ->with(['blocks', 'starts', 'services'])
                 ->lockForUpdate()
                 ->findOrFail($scheduleDateId);
 
             $service = Service::query()->lockForUpdate()->findOrFail($service->id);
-            $appointment = $this->appointmentForStart($scheduleDate, $pet, $service, $start);
+            $appointment = $this->appointmentForStart($scheduleDate, $service, $start, $enforceLeadTime);
 
             $overlappingAppointments = Appointment::query()
                 ->where('appointment_schedule_date_id', $scheduleDate->id)
@@ -91,7 +91,7 @@ class AppointmentBookingService
                 'duration_minutes' => $service->appointment_duration_minutes,
                 'starts_at' => $appointment['starts_at'],
                 'ends_at' => $appointment['ends_at'],
-                'status' => 'pending',
+                'status' => $status,
             ]);
             $booking->pet()->associate($pet);
             $booking->service()->associate($service);
@@ -104,13 +104,13 @@ class AppointmentBookingService
     }
 
     /** @return array<int, array{time: string, ends_at: string}> */
-    private function availableStarts(AppointmentScheduleDate $scheduleDate, Pet $pet, Service $service): array
+    private function availableStarts(AppointmentScheduleDate $scheduleDate, Pet $pet, Service $service, bool $enforceLeadTime): array
     {
         return $scheduleDate->starts
             ->map(fn ($start): string => $this->normalizeTime($start->starts_at))
-            ->filter(function (string $start) use ($scheduleDate, $pet, $service): bool {
+            ->filter(function (string $start) use ($scheduleDate, $pet, $service, $enforceLeadTime): bool {
                 try {
-                    $appointment = $this->appointmentForStart($scheduleDate, $pet, $service, $start);
+                    $appointment = $this->appointmentForStart($scheduleDate, $service, $start, $enforceLeadTime);
                 } catch (ValidationException) {
                     return false;
                 }
@@ -140,7 +140,7 @@ class AppointmentBookingService
     }
 
     /** @return array{starts_at: CarbonImmutable, ends_at: CarbonImmutable} */
-    private function appointmentForStart(AppointmentScheduleDate $scheduleDate, Pet $pet, Service $service, string $start): array
+    private function appointmentForStart(AppointmentScheduleDate $scheduleDate, Service $service, string $start, bool $enforceLeadTime): array
     {
         if (! $service->is_active || $service->appointment_duration_minutes === null) {
             throw ValidationException::withMessages(['service_id' => __('El servicio seleccionado no está disponible.')]);
@@ -156,7 +156,7 @@ class AppointmentBookingService
         }
 
         $startsAt = $this->localStart($scheduleDate, $time);
-        if ($startsAt->lessThan($this->nowInVeterinaryTimezone()->addMinutes(config('appointments.client_booking_lead_minutes')))) {
+        if ($enforceLeadTime && $startsAt->lessThan($this->nowInVeterinaryTimezone()->addMinutes(config('appointments.client_booking_lead_minutes')))) {
             throw ValidationException::withMessages(['starts_at' => __('El turno debe solicitarse con la anticipación mínima requerida.')]);
         }
 

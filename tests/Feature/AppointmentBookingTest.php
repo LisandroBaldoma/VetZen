@@ -204,6 +204,23 @@ class AppointmentBookingTest extends TestCase
                 ->where('week.1.appointments.0.id', $appointment->id));
     }
 
+    public function test_admin_can_create_an_approved_appointment_without_client_lead_time(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+
+        $this->actingAs($admin)->post(route('admin.appointments.store'), $this->payload($pet, $service, $scheduleDate, '10:00'))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', [
+            'pet_id' => $pet->id,
+            'requested_by' => $admin->id,
+            'status' => 'approved',
+        ]);
+    }
+
     /** @return array{User, Pet} */
     private function clientWithPet(): array
     {

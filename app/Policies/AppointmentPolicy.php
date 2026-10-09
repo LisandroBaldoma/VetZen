@@ -27,4 +27,9 @@ class AppointmentPolicy
     {
         return $user->hasRole('admin');
     }
+
+    public function createAdmin(User $user): bool
+    {
+        return $user->hasRole('admin');
+    }
 }

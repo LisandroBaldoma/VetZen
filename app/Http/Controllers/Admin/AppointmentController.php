@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Appointment\StoreAdminAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentStatusRequest;
 use App\Models\Appointment;
 use App\Models\AppointmentScheduleDate;
 use App\Models\AppointmentStatusHistory;
+use App\Models\Pet;
+use App\Models\Service;
+use App\Services\AppointmentBookingService;
 use App\Services\AppointmentStatusService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +21,24 @@ use Inertia\Response;
 
 class AppointmentController extends Controller
 {
+    public function create(Request $request, AppointmentBookingService $booking): Response
+    {
+        Gate::authorize('createAdmin', Appointment::class);
+
+        $pets = Pet::query()->with('client.user:id,name')->orderBy('name')->get();
+        $services = Service::query()->where('is_active', true)->whereNotNull('appointment_duration_minutes')->orderBy('name')->get(['id', 'name']);
+        $pet = $request->integer('pet') ? $pets->firstWhere('id', $request->integer('pet')) : null;
+        $service = $request->integer('service') ? $services->firstWhere('id', $request->integer('service')) : null;
+
+        return Inertia::render('admin/appointments/create', [
+            'pets' => $pets->map(fn (Pet $pet): array => ['id' => $pet->id, 'name' => $pet->name, 'responsible_name' => $pet->client->user->name]),
+            'services' => $services,
+            'selectedPetId' => $pet?->id,
+            'selectedServiceId' => $service?->id,
+            'availability' => $pet && $service ? $booking->availability($pet, $service, false) : [],
+        ]);
+    }
+
     public function schedule(Request $request): Response
     {
         Gate::authorize('viewAny', Appointment::class);
@@ -106,6 +128,24 @@ class AppointmentController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado del turno actualizado.')]);
 
         return back();
+    }
+
+    public function store(StoreAdminAppointmentRequest $request, AppointmentBookingService $booking): RedirectResponse
+    {
+        Gate::authorize('createAdmin', Appointment::class);
+        $appointment = $booking->book(
+            $request->user(),
+            Pet::query()->findOrFail($request->integer('pet_id')),
+            Service::query()->findOrFail($request->integer('service_id')),
+            $request->integer('schedule_date_id'),
+            $request->string('starts_at')->toString(),
+            'approved',
+            false,
+        );
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Turno creado y aprobado.')]);
+
+        return to_route('admin.appointments.show', $appointment);
     }
 
     /** @return array<string, int|string> */

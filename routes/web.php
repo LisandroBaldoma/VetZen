@@ -83,6 +83,8 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('schedule-dates/{scheduleDate}', [AdminAppointmentScheduleDateController::class, 'update'])->name('schedule-dates.update');
         Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
         Route::get('appointments/schedule', [AdminAppointmentController::class, 'schedule'])->name('appointments.schedule');
+        Route::get('appointments/create', [AdminAppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('appointments', [AdminAppointmentController::class, 'store'])->name('appointments.store');
         Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
         Route::patch('appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');
