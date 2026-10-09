@@ -1,8 +1,8 @@
 # UX-15 — Turnos y agenda
 
-> Estado: Etapas 1 a 3 implementadas: publicación administrativa de fechas,
-> solicitud cliente y consulta de próximos/historial. La agenda operativa y las
-> acciones administrativas sobre turnos permanecen pendientes.
+> Estado: Etapas 1 a 3 y 4a implementadas: publicación administrativa de
+> fechas, solicitud y consulta cliente, y cola administrativa con transiciones.
+> La agenda operativa diaria/semanal permanece pendiente.
 
 ## 1. Navegación
 

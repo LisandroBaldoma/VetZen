@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'service_name',
@@ -33,6 +34,12 @@ class Appointment extends Model
     public function requestedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    /** @return HasMany<AppointmentStatusHistory, $this> */
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(AppointmentStatusHistory::class);
     }
 
     protected function casts(): array

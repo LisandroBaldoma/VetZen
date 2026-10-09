@@ -131,6 +131,63 @@ class AppointmentBookingTest extends TestCase
         $this->actingAs($user)->get(route('appointments.show', $appointment))->assertForbidden();
     }
 
+    public function test_admin_can_approve_a_pending_appointment_and_history_records_the_actor(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'approved'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', ['id' => $appointment->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('appointment_status_histories', [
+            'appointment_id' => $appointment->id,
+            'changed_by' => $admin->id,
+            'from_status' => 'pending',
+            'to_status' => 'approved',
+            'reason' => null,
+        ]);
+    }
+
+    public function test_transition_matrix_and_admin_authorization_are_enforced(): void
+    {
+        [$client, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($client)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'cancelled', 'reason' => 'No puedo asistir'])
+            ->assertForbidden();
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'attended'])
+            ->assertSessionHasErrors('status');
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'cancelled'])
+            ->assertSessionHasErrors('reason');
+
+        $this->assertDatabaseCount('appointment_status_histories', 0);
+        $this->assertSame('pending', $appointment->refresh()->status);
+    }
+
+    public function test_admin_pending_queue_excludes_already_processed_appointments(): void
+    {
+        $this->withoutVite();
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2);
+        $pending = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:30:00', 'approved');
+
+        $this->actingAs($admin)->get(route('admin.appointments.index'))
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/appointments/index')
+                ->has('appointments.data', 1)
+                ->where('appointments.data.0.id', $pending->id));
+    }
+
     /** @return array{User, Pet} */
     private function clientWithPet(): array
     {

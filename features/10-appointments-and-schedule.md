@@ -162,3 +162,11 @@ Implementada: el cliente consulta sus próximos turnos y su historial, y puede
 abrir el detalle de un turno propio. La lectura se autoriza recorriendo
 `User → Client → Pet → Appointment`; no se exponen turnos de otras mascotas.
 Las transiciones, cancelación y reprogramación no forman parte de esta etapa.
+
+### Etapa 4a — Cola administrativa y transiciones
+
+Implementada: el administrador consulta la cola de turnos `pending`, abre el
+detalle y puede ejecutar únicamente las transiciones cerradas aplicables. Cada
+cambio bloquea el turno y conserva un historial inmutable con actor, estados y
+motivo. La agenda diaria/semanal y la creación administrativa de turnos quedan
+para una etapa posterior.

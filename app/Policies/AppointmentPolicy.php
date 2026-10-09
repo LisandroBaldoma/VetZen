@@ -22,4 +22,9 @@ class AppointmentPolicy
     {
         return $user->hasRole('client') && $pet->client->user_id === $user->id;
     }
+
+    public function updateStatus(User $user, Appointment $appointment): bool
+    {
+        return $user->hasRole('admin');
+    }
 }

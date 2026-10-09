@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
@@ -80,6 +81,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('schedule-dates', [AdminAppointmentScheduleDateController::class, 'store'])->name('schedule-dates.store');
         Route::get('schedule-dates/{scheduleDate}/edit', [AdminAppointmentScheduleDateController::class, 'edit'])->name('schedule-dates.edit');
         Route::patch('schedule-dates/{scheduleDate}', [AdminAppointmentScheduleDateController::class, 'update'])->name('schedule-dates.update');
+        Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+        Route::patch('appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');
         Route::get('service-requests/{serviceRequest}', [AdminServiceRequestController::class, 'show'])->name('service-requests.show');
         Route::post('service-requests/{serviceRequest}/resolution', [AdminServiceRequestController::class, 'resolve'])->name('service-requests.resolve');

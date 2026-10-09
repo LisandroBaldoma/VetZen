@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
+import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as petsIndex } from '@/routes/admin/pets';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
@@ -17,7 +18,7 @@ import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
-import { index as appointmentsIndex } from '@/routes/appointments';
+import { index as clientAppointmentsIndex } from '@/routes/appointments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
 import type { NavGroup } from '@/types';
@@ -47,6 +48,10 @@ export function getNavigationSection(
     if (role === 'admin') {
         if (matches(path, /(?:^|\/)admin\/clients(?:\/|$)/)) {
             return 'clients';
+        }
+
+        if (matches(path, /(?:^|\/)admin\/appointments(?:\/|$)/)) {
+            return 'appointments';
         }
 
         if (matches(path, /(?:^|\/)admin\/pets(?:\/|$)/)) {
@@ -157,9 +162,16 @@ export function getNavigationGroups(
                       ],
                   },
                   {
-                      title: 'Atención',
-                      items: [
-                          {
+                       title: 'Atención',
+                       items: [
+                            {
+                                title: 'Turnos',
+                                href: adminAppointmentsIndex(),
+                                icon: CalendarDays,
+                                isActive: activeSection === 'appointments',
+                                mobileTitle: 'Turnos',
+                            },
+                            {
                               title: 'Solicitudes',
                               href: serviceRequestsIndex(),
                               icon: ClipboardPlus,
@@ -218,7 +230,7 @@ export function getNavigationGroups(
                         items: [
                             {
                                 title: 'Turnos',
-                                href: appointmentsIndex(),
+                                href: clientAppointmentsIndex(),
                                 icon: CalendarDays,
                                 isActive: activeSection === 'appointments',
                                 mobileTitle: 'Turnos',
