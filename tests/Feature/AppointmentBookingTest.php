@@ -5,10 +5,15 @@ namespace Tests\Feature;
 use App\Models\Appointment;
 use App\Models\AppointmentScheduleDate;
 use App\Models\Client;
+use App\Models\ClinicalRecord;
 use App\Models\Pet;
+use App\Models\Procedure;
 use App\Models\Service;
 use App\Models\ServiceRequest;
+use App\Models\Treatment;
+use App\Models\TreatmentSession;
 use App\Models\User;
+use App\Services\TreatmentAssignmentService;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -203,6 +208,95 @@ class AppointmentBookingTest extends TestCase
         $this->assertDatabaseCount('appointment_link_histories', 0);
     }
 
+    public function test_admin_cannot_link_an_incompatible_treatment_session(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 1);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $session = $this->sessionFor(Pet::factory()->create(), Service::factory()->create());
+
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $appointment), [
+            'treatment_session_id' => $session->id,
+        ])->assertSessionHasErrors('treatment_session_id');
+
+        $this->assertNull($appointment->refresh()->treatment_session_id);
+        $this->assertDatabaseCount('appointment_link_histories', 0);
+    }
+
+    public function test_only_one_active_appointment_can_link_a_service_request_or_treatment_session(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2, ['10:00', '11:00']);
+        $first = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $second = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 14:00:00', 'approved');
+        $request = ServiceRequest::factory()->for($pet)->for($service)->create();
+        $session = $this->sessionFor($pet, $service);
+
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $first), [
+            'service_request_id' => $request->id,
+            'treatment_session_id' => $session->id,
+        ])->assertRedirect();
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $second), [
+            'service_request_id' => $request->id,
+        ])->assertSessionHasErrors('service_request_id');
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $second), [
+            'treatment_session_id' => $session->id,
+        ])->assertSessionHasErrors('treatment_session_id');
+
+        $this->assertNull($second->refresh()->service_request_id);
+        $this->assertNull($second->treatment_session_id);
+    }
+
+    public function test_unresolved_attended_task_blocks_linking_its_session_to_a_new_appointment(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 2, ['10:00', '11:00']);
+        $attended = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'approved');
+        $newAppointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 14:00:00', 'approved');
+        $session = $this->sessionFor($pet, $service);
+
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $attended), ['treatment_session_id' => $session->id])->assertRedirect();
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $attended), ['status' => 'attended'])->assertRedirect();
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $newAppointment), ['treatment_session_id' => $session->id])
+            ->assertSessionHasErrors('treatment_session_id');
+
+        $this->assertNull($newAppointment->refresh()->treatment_session_id);
+    }
+
+    public function test_explicit_record_resolves_task_only_after_linked_session_is_completed_and_locks_links(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 1);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'approved');
+        $session = $this->sessionFor($pet, $service);
+
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $appointment), ['treatment_session_id' => $session->id])->assertRedirect();
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'attended'])->assertRedirect();
+        $this->actingAs($admin)->post(route('admin.pets.medical-records.store', $pet), $this->clinicalRecordPayload($session->id))->assertRedirect();
+        $this->assertDatabaseHas('appointment_clinical_tasks', ['appointment_id' => $appointment->id, 'clinical_record_id' => null, 'resolved_at' => null]);
+
+        $this->actingAs($admin)->patch(route('admin.treatment-sessions.update', $session), [
+            'scheduled_at' => null,
+            'price' => $session->price,
+            'currency' => $session->currency,
+            'status' => 'completed',
+            'notes' => null,
+        ])->assertRedirect();
+
+        $record = ClinicalRecord::query()->where('treatment_session_id', $session->id)->sole();
+        $this->assertDatabaseHas('appointment_clinical_tasks', ['appointment_id' => $appointment->id, 'clinical_record_id' => $record->id]);
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $appointment), ['treatment_session_id' => null])
+            ->assertSessionHasErrors('links');
+    }
+
     public function test_admin_pending_queue_excludes_already_processed_appointments(): void
     {
         $this->withoutVite();
@@ -252,7 +346,6 @@ class AppointmentBookingTest extends TestCase
             'status' => 'approved',
         ]);
     }
-
 
     public function test_client_can_cancel_at_the_exact_twenty_four_hour_limit_but_not_after_it(): void
     {
@@ -378,5 +471,33 @@ class AppointmentBookingTest extends TestCase
             'ends_at' => CarbonImmutable::parse($startsAt)->addMinutes(30),
             'status' => $status,
         ]);
+    }
+
+    private function sessionFor(Pet $pet, Service $service): TreatmentSession
+    {
+        $procedure = Procedure::factory()->for($service)->create();
+        $treatment = Treatment::factory()->for($service)->create();
+        $treatment->procedures()->attach($procedure);
+
+        return app(TreatmentAssignmentService::class)->assign($pet, $treatment, [
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-10-01',
+            'status' => 'pending',
+        ])->sessions->sole();
+    }
+
+    /** @return array<string, int|string|bool> */
+    private function clinicalRecordPayload(int $sessionId): array
+    {
+        return [
+            'type' => 'session',
+            'title' => 'Registro de sesión',
+            'content' => 'Evolución registrada.',
+            'occurred_at' => '2026-10-09 12:00:00',
+            'is_visible_to_client' => true,
+            'treatment_session_id' => $sessionId,
+        ];
     }
 }

@@ -11,6 +11,11 @@ export type TreatmentSession = {
     currency: string;
     status: 'pending' | 'completed' | 'cancelled';
     notes: string | null;
+    clinical_task?: {
+        appointment_id: number;
+        clinical_record_id: number | null;
+        resolved_at: string | null;
+    } | null;
 };
 
 const statusLabels: Record<TreatmentSession['status'], string> = {
@@ -88,6 +93,20 @@ export default function TreatmentSessionCard({
                     {showNotes && (
                         <p className="mt-2 text-sm whitespace-pre-wrap text-muted-foreground">
                             {session.notes || 'Sin notas.'}
+                        </p>
+                    )}
+                    {session.clinical_task && (
+                        <p
+                            className={`mt-2 text-sm ${session.clinical_task.resolved_at === null ? 'font-medium text-primary' : 'text-muted-foreground'}`}
+                        >
+                            {session.clinical_task.resolved_at === null
+                                ? session.status === 'pending'
+                                    ? 'Atención atendida: completá la sesión para continuar con el registro clínico.'
+                                    : session.clinical_task
+                                            .clinical_record_id === null
+                                      ? 'Atención atendida: falta registrar la evolución clínica.'
+                                      : 'Atención documentada.'
+                                : 'Atención documentada.'}
                         </p>
                     )}
                 </div>

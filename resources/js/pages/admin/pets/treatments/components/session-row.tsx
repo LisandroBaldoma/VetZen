@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { show as showAppointment } from '@/routes/admin/appointments';
 import { create as createClinicalRecord } from '@/routes/admin/pets/medical-records';
 
 export type { TreatmentSession } from '@/components/treatment-session-card';
@@ -181,6 +182,9 @@ export default function SessionRow({
     >(null);
     const isPending = session.status === 'pending';
     const isFinal = !isPending;
+    const clinicalTask = session.clinical_task;
+    const hasUnresolvedClinicalTask = clinicalTask?.resolved_at === null;
+    const hasClinicalRecord = clinicalTask?.clinical_record_id !== null;
     const completedAfterTransition = completedSessions + 1;
     const completesTreatment = completedAfterTransition >= plannedSessions;
 
@@ -202,13 +206,19 @@ export default function SessionRow({
                 <Button
                     type="button"
                     size="sm"
-                    variant="secondary"
+                    variant={
+                        hasUnresolvedClinicalTask ? 'default' : 'secondary'
+                    }
                     className="size-10 px-0 sm:h-9 sm:w-auto sm:px-3"
                     aria-label="Marcar como completada"
                     onClick={() => setConfirmation('completed')}
                 >
                     <CircleCheckIcon aria-hidden />
-                    <span className="hidden sm:inline">Completar</span>
+                    <span className="hidden sm:inline">
+                        {hasUnresolvedClinicalTask
+                            ? 'Completar sesión'
+                            : 'Completar'}
+                    </span>
                 </Button>
             )}
             <Button
@@ -224,21 +234,34 @@ export default function SessionRow({
                     {isFinal ? 'Corregir' : 'Editar'}
                 </span>
             </Button>
-            {session.status === 'completed' && (
+            {session.status === 'completed' && !hasClinicalRecord && (
                 <Button
                     asChild
                     size="sm"
-                    variant="outline"
+                    variant={hasUnresolvedClinicalTask ? 'default' : 'outline'}
                     className="size-10 px-0 sm:h-9 sm:w-auto sm:px-3"
                     aria-label="Registrar evolución"
                 >
                     <Link
                         href={createClinicalRecord(petId, {
-                            query: { type: 'evolution', treatment_session_id: session.id },
+                            query: {
+                                type: 'evolution',
+                                treatment_session_id: session.id,
+                            },
                         })}
                     >
                         <FilePlus2Icon aria-hidden />
-                        <span className="hidden sm:inline">Evolución</span>
+                        <span className="hidden sm:inline">
+                            Registrar evolución
+                        </span>
+                    </Link>
+                </Button>
+            )}
+            {hasClinicalRecord && clinicalTask && (
+                <Button asChild size="sm" variant="outline">
+                    <Link href={showAppointment(clinicalTask.appointment_id)}>
+                        <CircleCheckIcon aria-hidden />
+                        <span className="hidden sm:inline">Documentada</span>
                     </Link>
                 </Button>
             )}
@@ -263,7 +286,7 @@ export default function SessionRow({
             <TreatmentSessionCard
                 session={session}
                 actions={actions}
-                highlighted={highlighted}
+                highlighted={highlighted || hasUnresolvedClinicalTask}
                 compact={compact}
             />
             <EditSessionDialog
@@ -276,8 +299,11 @@ export default function SessionRow({
                     }
                 }}
             />
-            <Form {...TreatmentSessionController.update.form(session.id)}>
-                {({ processing, submit }) => (
+            <Form
+                {...TreatmentSessionController.update.form(session.id)}
+                onSuccess={() => setConfirmation(null)}
+            >
+                {({ processing, submit, errors }) => (
                     <>
                         <input
                             type="hidden"
@@ -311,7 +337,7 @@ export default function SessionRow({
                                     setConfirmation(null);
                                 }
                             }}
-                            onConfirm={submit}
+                            onConfirm={() => submit()}
                             title={`¿Marcar sesión ${session.session_number} como completada?`}
                             description={
                                 completesTreatment
@@ -320,6 +346,17 @@ export default function SessionRow({
                             }
                             confirmLabel="Completar sesión"
                             pending={processing}
+                            content={
+                                <InputError
+                                    message={
+                                        errors.status ??
+                                        errors.price ??
+                                        errors.currency ??
+                                        errors.scheduled_at ??
+                                        errors.notes
+                                    }
+                                />
+                            }
                         />
                         <ConfirmActionDialog
                             open={confirmation === 'cancelled'}
@@ -328,12 +365,23 @@ export default function SessionRow({
                                     setConfirmation(null);
                                 }
                             }}
-                            onConfirm={submit}
+                            onConfirm={() => submit()}
                             title={`¿Cancelar sesión ${session.session_number}?`}
                             description="La sesión permanecerá en el historial. VetZen generará una nueva sesión pendiente si es necesaria para mantener la cantidad de sesiones requeridas."
                             confirmLabel="Cancelar sesión"
                             pending={processing}
                             destructive
+                            content={
+                                <InputError
+                                    message={
+                                        errors.status ??
+                                        errors.price ??
+                                        errors.currency ??
+                                        errors.scheduled_at ??
+                                        errors.notes
+                                    }
+                                />
+                            }
                         />
                     </>
                 )}

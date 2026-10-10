@@ -26,7 +26,11 @@ class DashboardController extends Controller
                 ->get();
             $clinicalTasks = AppointmentClinicalTask::query()
                 ->whereNull('resolved_at')
-                ->with('appointment.pet:id,name')
+                ->with([
+                    'appointment.pet:id,name',
+                    'appointment.service:id,name',
+                    'appointment.treatmentSession.petTreatment:id,pet_id,treatment_name',
+                ])
                 ->latest()
                 ->limit(5)
                 ->get();
@@ -51,7 +55,17 @@ class DashboardController extends Controller
                 ])->all(),
                 'clinicalTasks' => $clinicalTasks->map(fn (AppointmentClinicalTask $task): array => [
                     'appointmentId' => $task->appointment_id,
-                    'petName' => $task->appointment->pet->name,
+                    'pet' => [
+                        'id' => $task->appointment->pet->id,
+                        'name' => $task->appointment->pet->name,
+                    ],
+                    'serviceName' => $task->appointment->service->name,
+                    'treatment' => $task->appointment->treatmentSession === null ? null : [
+                        'id' => $task->appointment->treatmentSession->petTreatment->id,
+                        'name' => $task->appointment->treatmentSession->petTreatment->treatment_name,
+                        'sessionNumber' => $task->appointment->treatmentSession->session_number,
+                        'status' => $task->appointment->treatmentSession->status,
+                    ],
                 ])->all(),
             ]);
         }

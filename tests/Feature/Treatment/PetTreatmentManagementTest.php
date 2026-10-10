@@ -2,6 +2,9 @@
 
 namespace Tests\Feature\Treatment;
 
+use App\Models\Appointment;
+use App\Models\AppointmentClinicalTask;
+use App\Models\AppointmentScheduleDate;
 use App\Models\Client;
 use App\Models\Pet;
 use App\Models\Procedure;
@@ -137,6 +140,76 @@ class PetTreatmentManagementTest extends TestCase
 
         $this->assertSame([1, 2], $assigned->sessions()->orderBy('session_number')->pluck('session_number')->all());
         $this->assertSame('cancelled', $session->fresh()->status);
+    }
+
+    public function test_admin_treatment_detail_exposes_attended_appointment_task_context_for_a_session(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $treatment = $this->catalogTreatment();
+        $assigned = app(TreatmentAssignmentService::class)->assign($pet, $treatment, [
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+        ]);
+        $session = $assigned->sessions()->sole();
+        $scheduleDate = AppointmentScheduleDate::query()->create([
+            'date' => '2026-10-13',
+            'capacity' => 1,
+        ]);
+        $appointment = Appointment::query()->forceCreate([
+            'pet_id' => $pet->id,
+            'service_id' => $treatment->service_id,
+            'treatment_session_id' => $session->id,
+            'appointment_schedule_date_id' => $scheduleDate->id,
+            'requested_by' => $pet->client->user_id,
+            'service_name' => $treatment->service->name,
+            'duration_minutes' => 30,
+            'starts_at' => '2026-10-13 10:00:00',
+            'ends_at' => '2026-10-13 10:30:00',
+            'status' => 'attended',
+        ]);
+        AppointmentClinicalTask::query()->create(['appointment_id' => $appointment->id]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pets.treatments.show', [$pet, $assigned]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/pets/treatments/show')
+                ->where('petTreatment.sessions.0.clinical_task.appointment_id', $appointment->id)
+                ->where('petTreatment.sessions.0.clinical_task.clinical_record_id', null)
+                ->where('petTreatment.sessions.0.clinical_task.resolved_at', null));
+    }
+
+    public function test_session_transition_returns_a_status_error_when_the_treatment_can_no_longer_change(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create();
+        $assigned = app(TreatmentAssignmentService::class)->assign($pet, $this->catalogTreatment(), [
+            'planned_sessions' => 1,
+            'default_session_price' => '5000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-09-01',
+            'status' => 'pending',
+        ]);
+        $session = $assigned->sessions()->sole();
+        $assigned->update(['status' => 'suspended']);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.treatment-sessions.update', $session), [
+                'scheduled_at' => null,
+                'price' => '5000.00',
+                'currency' => 'ARS',
+                'status' => 'completed',
+                'notes' => null,
+            ])
+            ->assertSessionHasErrors([
+                'status' => 'Solo se pueden modificar las sesiones de tratamientos pendientes o en curso.',
+            ]);
+
+        $this->assertSame('pending', $session->fresh()->status);
     }
 
     public function test_client_cannot_mutate_own_treatment_or_session(): void

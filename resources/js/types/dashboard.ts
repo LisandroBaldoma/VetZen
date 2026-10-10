@@ -59,7 +59,17 @@ export type DashboardNextSession = {
 export type AdminDashboardProps = {
     pendingRequestsCount: number;
     requests: DashboardRequest[];
-    clinicalTasks: { appointmentId: number; petName: string }[];
+    clinicalTasks: {
+        appointmentId: number;
+        pet: { id: number; name: string };
+        serviceName: string;
+        treatment: {
+            id: number;
+            name: string;
+            sessionNumber: number;
+            status: 'pending' | 'completed' | 'cancelled';
+        } | null;
+    }[];
 };
 
 export type ClientDashboardProps = {

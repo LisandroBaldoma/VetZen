@@ -18,7 +18,7 @@ class AppointmentLinkService
         return DB::transaction(function () use ($appointment, $user, $serviceRequestId, $treatmentSessionId): Appointment {
             $locked = Appointment::query()->lockForUpdate()->findOrFail($appointment->id);
             $task = AppointmentClinicalTask::query()->where('appointment_id', $locked->id)->lockForUpdate()->first();
-            if ($task?->clinical_record_id !== null) {
+            if ($task?->clinical_record_id !== null || $task?->resolved_at !== null) {
                 throw ValidationException::withMessages(['links' => __('No se pueden cambiar los vínculos de una atención con documentación clínica resuelta.')]);
             }
 
@@ -59,6 +59,11 @@ class AppointmentLinkService
 
     private function hasActiveAppointment(Appointment $appointment, string $column, int $id): bool
     {
-        return Appointment::query()->where($column, $id)->whereKeyNot($appointment->id)->whereIn('status', ['pending', 'approved'])->exists();
+        return Appointment::query()
+            ->where($column, $id)
+            ->whereKeyNot($appointment->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->lockForUpdate()
+            ->exists();
     }
 }

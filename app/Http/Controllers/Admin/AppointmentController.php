@@ -127,8 +127,26 @@ class AppointmentController extends Controller
                 'history' => $appointment->linkHistory->map(fn ($history): array => ['created_at' => $history->created_at->toISOString(), 'changed_by' => $history->changedBy->name, 'old_service_request_id' => $history->old_service_request_id, 'new_service_request_id' => $history->new_service_request_id, 'old_treatment_session_id' => $history->old_treatment_session_id, 'new_treatment_session_id' => $history->new_treatment_session_id]),
             ],
             'linkOptions' => [
-                'serviceRequests' => ServiceRequest::query()->where('pet_id', $appointment->pet_id)->where('service_id', $appointment->service_id)->get(['id', 'status'])->all(),
-                'treatmentSessions' => TreatmentSession::query()->whereHas('petTreatment', fn ($query) => $query->where('pet_id', $appointment->pet_id)->whereHas('treatment', fn ($treatment) => $treatment->where('service_id', $appointment->service_id)))->get(['id', 'session_number', 'status'])->all(),
+                'serviceRequests' => ServiceRequest::query()
+                    ->with('service:id,name')
+                    ->where('pet_id', $appointment->pet_id)
+                    ->where('service_id', $appointment->service_id)
+                    ->get(['id', 'service_id', 'status'])
+                    ->map(fn (ServiceRequest $request): array => [
+                        'id' => $request->id,
+                        'status' => $request->status,
+                        'service_name' => $request->service->name,
+                    ]),
+                'treatmentSessions' => TreatmentSession::query()
+                    ->with('petTreatment:id,treatment_name')
+                    ->whereHas('petTreatment', fn ($query) => $query->where('pet_id', $appointment->pet_id)->whereHas('treatment', fn ($treatment) => $treatment->where('service_id', $appointment->service_id)))
+                    ->get(['id', 'pet_treatment_id', 'session_number', 'status'])
+                    ->map(fn (TreatmentSession $session): array => [
+                        'id' => $session->id,
+                        'session_number' => $session->session_number,
+                        'status' => $session->status,
+                        'treatment_name' => $session->petTreatment->treatment_name,
+                    ]),
             ],
         ]);
     }
