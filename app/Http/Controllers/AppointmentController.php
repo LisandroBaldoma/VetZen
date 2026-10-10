@@ -54,7 +54,7 @@ class AppointmentController extends Controller
             ->where('is_active', true)
             ->whereNotNull('appointment_duration_minutes')
             ->orderBy('name')
-            ->get(['id', 'name', 'appointment_duration_minutes']);
+            ->get(['id', 'name', 'appointment_duration_minutes', 'is_active']);
         $pet = $request->integer('pet') ? $pets->firstWhere('id', $request->integer('pet')) : null;
         $service = $request->integer('service') ? $services->firstWhere('id', $request->integer('service')) : null;
 

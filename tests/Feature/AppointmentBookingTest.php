@@ -253,6 +253,7 @@ class AppointmentBookingTest extends TestCase
         ]);
     }
 
+
     public function test_client_can_cancel_at_the_exact_twenty_four_hour_limit_but_not_after_it(): void
     {
         [$user, $pet] = $this->clientWithPet();

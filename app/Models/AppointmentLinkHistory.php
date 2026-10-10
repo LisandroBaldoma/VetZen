@@ -11,6 +11,11 @@ class AppointmentLinkHistory extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return ['created_at' => 'datetime'];
+    }
+
     public function changedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by');
