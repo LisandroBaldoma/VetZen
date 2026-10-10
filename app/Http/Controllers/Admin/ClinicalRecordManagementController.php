@@ -8,6 +8,8 @@ use App\Http\Requests\ClinicalRecord\UpdateClinicalRecordRequest;
 use App\Models\ClinicalRecord;
 use App\Models\ClinicalRecordAudit;
 use App\Models\Pet;
+use App\Models\TreatmentSession;
+use App\Services\AppointmentClinicalTaskService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -54,21 +56,28 @@ class ClinicalRecordManagementController extends Controller
         Gate::authorize('create', [ClinicalRecord::class, $pet]);
         $pet->load('client.user:id,name');
         $type = $request->string('type')->toString();
+        $sessionId = $request->integer('treatment_session_id');
 
         return Inertia::render('admin/pets/medical-records/create', [
             'pet' => $this->petData($pet),
             'types' => ClinicalRecord::TYPES,
-            'prefill' => ['type' => in_array($type, ClinicalRecord::TYPES, true) ? $type : null],
+            'prefill' => ['type' => in_array($type, ClinicalRecord::TYPES, true) ? $type : null, 'treatment_session_id' => $sessionId ?: null],
         ]);
     }
 
-    public function store(StoreClinicalRecordRequest $request, Pet $pet): RedirectResponse
+    public function store(StoreClinicalRecordRequest $request, Pet $pet, AppointmentClinicalTaskService $tasks): RedirectResponse
     {
         $record = new ClinicalRecord($request->validated());
+        if ($request->filled('treatment_session_id')) {
+            $session = TreatmentSession::query()->with('petTreatment:id,pet_id')->findOrFail($request->integer('treatment_session_id'));
+            abort_unless($session->petTreatment->pet_id === $pet->id, 422);
+            $record->treatmentSession()->associate($session);
+        }
         $record->pet()->associate($pet);
         $record->creator()->associate($request->user());
         $record->updater()->associate($request->user());
         $record->save();
+        $tasks->resolveFrom($record);
         $this->recordAudit($record, $request, 'created', null, $this->auditValues($record));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Registro clínico creado.')]);
@@ -102,13 +111,19 @@ class ClinicalRecordManagementController extends Controller
         ]);
     }
 
-    public function update(UpdateClinicalRecordRequest $request, Pet $pet, ClinicalRecord $clinicalRecord): RedirectResponse
+    public function update(UpdateClinicalRecordRequest $request, Pet $pet, ClinicalRecord $clinicalRecord, AppointmentClinicalTaskService $tasks): RedirectResponse
     {
         $this->ensureRecordBelongsToPet($pet, $clinicalRecord);
         $oldValues = $this->auditValues($clinicalRecord);
         $clinicalRecord->fill($request->validated());
+        if ($request->filled('treatment_session_id')) {
+            $session = TreatmentSession::query()->with('petTreatment:id,pet_id')->findOrFail($request->integer('treatment_session_id'));
+            abort_unless($session->petTreatment->pet_id === $pet->id, 422);
+            $clinicalRecord->treatmentSession()->associate($session);
+        }
         $clinicalRecord->updater()->associate($request->user());
         $clinicalRecord->save();
+        $tasks->resolveFrom($clinicalRecord);
         $this->recordAudit($clinicalRecord, $request, 'updated', $oldValues, $this->auditValues($clinicalRecord));
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Registro clínico actualizado.')]);
 

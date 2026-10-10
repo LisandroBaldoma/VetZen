@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppointmentClinicalTask;
 use App\Models\PetTreatment;
 use App\Models\ServiceRequest;
 use App\Models\TreatmentSession;
@@ -23,6 +24,12 @@ class DashboardController extends Controller
                 ->orderByDesc('id')
                 ->limit(5)
                 ->get();
+            $clinicalTasks = AppointmentClinicalTask::query()
+                ->whereNull('resolved_at')
+                ->with('appointment.pet:id,name')
+                ->latest()
+                ->limit(5)
+                ->get();
 
             return Inertia::render('admin/dashboard', [
                 'pendingRequestsCount' => ServiceRequest::query()
@@ -41,6 +48,10 @@ class DashboardController extends Controller
                         'id' => $serviceRequest->service->id,
                         'name' => $serviceRequest->service->name,
                     ],
+                ])->all(),
+                'clinicalTasks' => $clinicalTasks->map(fn (AppointmentClinicalTask $task): array => [
+                    'appointmentId' => $task->appointment_id,
+                    'petName' => $task->appointment->pet->name,
                 ])->all(),
             ]);
         }

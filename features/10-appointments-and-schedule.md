@@ -71,9 +71,9 @@ rechazar o marcar ausente un turno no modifica la sesión. Marcar atendido tampo
 la completa automáticamente.
 
 Una sesión no puede tener simultáneamente más de un turno `pending` o `approved`.
-Las sesiones completadas no pueden volver a reservarse. El bloqueo ante un turno
-atendido cuya sesión permanezca pendiente se define como decisión pendiente para
-evitar atención clínica duplicada.
+Las sesiones completadas no pueden volver a reservarse. Un turno atendido con una
+sesión vinculada aún pendiente de documentación clínica bloquea una nueva reserva
+para esa sesión; rechazar, cancelar o marcar ausente permite reservar nuevamente.
 
 ## 6. Configuración e historial
 
@@ -115,12 +115,13 @@ tratamiento y registrar sesión cuando no existe tratamiento.
 ## 10. Decisiones pendientes
 
 1. Permiso y reglas para editar duración individual de un turno.
-3. Cardinalidad definitiva ServiceRequest--Appointment y prevención de vínculos
-   activos duplicados.
-4. Regla exacta para una sesión pendiente vinculada a un turno atendido.
-5. Destinatarios administrativos y proveedor de email.
-6. Mecanismo para identificar qué ClinicalRecord resuelve una tarea de registro
-   clínico, ya que F06 no vincula registros clínicos con sesiones o turnos.
+
+Las decisiones de cardinalidad, sesión atendida, destinatarios y resolución de
+tarea se resolvieron para la etapa final: una ServiceRequest conserva historial de
+múltiples turnos, pero solo uno `pending`/`approved`; las sesiones siguen la misma
+regla y una atención pendiente de documentación bloquea una reserva nueva. Los
+administradores vigentes (rol `admin`) reciben eventos administrativos. Una tarea
+se resuelve solo con ClinicalRecord explícitamente asociado a la sesión vinculada,
 
 ## 11. Criterios de aceptación por dominio
 
@@ -195,3 +196,15 @@ Implementada: un administrador puede reprogramar un turno `approved` sin crear
 otro registro. La operación conserva el estado `approved`, bloquea las fechas
 involucradas por ID ascendente, vuelve a validar disponibilidad y persiste el
 intervalo anterior y nuevo junto al actor.
+
+### Etapa 6 — Vínculos clínicos, tareas y notificaciones
+
+Implementada: un administrador vincula manualmente solicitudes y sesiones
+compatibles desde el detalle del turno. La actualización es transaccional, conserva
+historial inmutable y rechaza conflictos activos o cambios que invaliden una tarea
+clínica ya documentada. Un turno atendido genera tarea persistente. Solo se resuelve
+cuando existe una sesión vinculada completada y un ClinicalRecord asociado
+explícitamente a esa sesión. Se generan notificaciones internas para propietario y
+administradores; email es opcional por entorno y sus errores no revierten el flujo.
+El comando de recordatorios registra cada entrega por turno e inicio, por lo que es
+idempotente e invalida implícitamente entregas obsoletas al reprogramar.

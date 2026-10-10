@@ -234,7 +234,7 @@ export default function SessionRow({
                 >
                     <Link
                         href={createClinicalRecord(petId, {
-                            query: { type: 'evolution' },
+                            query: { type: 'evolution', treatment_session_id: session.id },
                         })}
                     >
                         <FilePlus2Icon aria-hidden />

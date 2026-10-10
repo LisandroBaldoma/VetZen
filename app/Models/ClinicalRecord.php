@@ -31,6 +31,11 @@ class ClinicalRecord extends Model
         return $this->belongsTo(Pet::class);
     }
 
+    public function treatmentSession(): BelongsTo
+    {
+        return $this->belongsTo(TreatmentSession::class);
+    }
+
     /**
      * @return BelongsTo<User, $this>
      */

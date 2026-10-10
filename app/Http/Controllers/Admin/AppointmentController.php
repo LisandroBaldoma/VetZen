@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAdminAppointmentRequest;
+use App\Http\Requests\Appointment\UpdateAppointmentLinksRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentStatusRequest;
 use App\Models\Appointment;
 use App\Models\AppointmentScheduleDate;
 use App\Models\AppointmentStatusHistory;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Models\ServiceRequest;
+use App\Models\TreatmentSession;
 use App\Services\AppointmentBookingService;
+use App\Services\AppointmentLinkService;
 use App\Services\AppointmentStatusService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
@@ -100,6 +104,8 @@ class AppointmentController extends Controller
         $appointment->load([
             'pet.client.user:id,name',
             'statusHistory.changedBy:id,name',
+            'clinicalTask.clinicalRecord',
+            'linkHistory.changedBy:id,name',
         ]);
 
         return Inertia::render('admin/appointments/show', [
@@ -114,7 +120,25 @@ class AppointmentController extends Controller
                     'created_at' => $history->created_at->toISOString(),
                     'changed_by' => $history->changedBy->name,
                 ]),
+            'links' => [
+                'service_request_id' => $appointment->service_request_id,
+                'treatment_session_id' => $appointment->treatment_session_id,
+                'locked' => $appointment->clinicalTask?->clinical_record_id !== null,
+                'history' => $appointment->linkHistory->map(fn ($history): array => ['created_at' => $history->created_at->toISOString(), 'changed_by' => $history->changedBy->name, 'old_service_request_id' => $history->old_service_request_id, 'new_service_request_id' => $history->new_service_request_id, 'old_treatment_session_id' => $history->old_treatment_session_id, 'new_treatment_session_id' => $history->new_treatment_session_id]),
+            ],
+            'linkOptions' => [
+                'serviceRequests' => ServiceRequest::query()->where('pet_id', $appointment->pet_id)->where('service_id', $appointment->service_id)->get(['id', 'status'])->all(),
+                'treatmentSessions' => TreatmentSession::query()->whereHas('petTreatment', fn ($query) => $query->where('pet_id', $appointment->pet_id)->whereHas('treatment', fn ($treatment) => $treatment->where('service_id', $appointment->service_id)))->get(['id', 'session_number', 'status'])->all(),
+            ],
         ]);
+    }
+
+    public function updateLinks(UpdateAppointmentLinksRequest $request, Appointment $appointment, AppointmentLinkService $links): RedirectResponse
+    {
+        $links->update($appointment, $request->user(), $request->integer('service_request_id') ?: null, $request->integer('treatment_session_id') ?: null);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Vínculos del turno actualizados.')]);
+
+        return back();
     }
 
     public function updateStatus(UpdateAppointmentStatusRequest $request, Appointment $appointment, AppointmentStatusService $statuses): RedirectResponse

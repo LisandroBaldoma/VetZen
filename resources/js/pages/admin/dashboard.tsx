@@ -24,6 +24,7 @@ import {
 } from '@/routes/admin/service-requests';
 import { index as servicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
+import { show as showAppointment } from '@/routes/admin/appointments';
 import type { AdminDashboardProps } from '@/types';
 
 const dateFormatter = new Intl.DateTimeFormat('es-AR', {
@@ -35,6 +36,7 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
 export default function AdminDashboard({
     pendingRequestsCount,
     requests,
+    clinicalTasks,
 }: AdminDashboardProps) {
     return (
         <>
@@ -65,6 +67,7 @@ export default function AdminDashboard({
                         requestHref: showRequest(request.id),
                     }))}
                 />
+                {clinicalTasks.length > 0 && <section className="rounded-xl border bg-card p-5 shadow-sm"><h2 className="font-semibold">Registros clínicos pendientes</h2><p className="mt-1 text-sm text-muted-foreground">Atenciones que requieren documentación clínica.</p><div className="mt-4 grid gap-2">{clinicalTasks.map((task) => <Button asChild key={task.appointmentId} variant="outline" className="justify-start"><Link href={showAppointment(task.appointmentId)}>Registrar atención de {task.petName}</Link></Button>)}</div></section>}
                 <QuickAccessGrid
                     items={[
                         {

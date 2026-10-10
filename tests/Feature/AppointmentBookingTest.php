@@ -7,6 +7,7 @@ use App\Models\AppointmentScheduleDate;
 use App\Models\Client;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Models\ServiceRequest;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -169,6 +170,37 @@ class AppointmentBookingTest extends TestCase
 
         $this->assertDatabaseCount('appointment_status_histories', 0);
         $this->assertSame('pending', $appointment->refresh()->status);
+    }
+
+    public function test_attending_an_approved_appointment_creates_a_persistent_clinical_task(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 1);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'approved');
+
+        $this->actingAs($admin)->patch(route('admin.appointments.status.update', $appointment), ['status' => 'attended'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('appointment_clinical_tasks', ['appointment_id' => $appointment->id, 'clinical_record_id' => null, 'resolved_at' => null]);
+    }
+
+    public function test_admin_cannot_link_an_incompatible_service_request(): void
+    {
+        $admin = User::factory()->admin()->create();
+        [, $pet] = $this->clientWithPet();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+        $scheduleDate = $this->scheduleDate($service, 1);
+        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'pending');
+        $request = ServiceRequest::factory()->for($pet)->for(Service::factory())->create();
+
+        $this->actingAs($admin)->patch(route('admin.appointments.links.update', $appointment), [
+            'service_request_id' => $request->id,
+        ])->assertSessionHasErrors('service_request_id');
+
+        $this->assertNull($appointment->refresh()->service_request_id);
+        $this->assertDatabaseCount('appointment_link_histories', 0);
     }
 
     public function test_admin_pending_queue_excludes_already_processed_appointments(): void

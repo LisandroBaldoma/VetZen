@@ -584,9 +584,13 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
   cálculo de capacidad por intervalos.
 * Valores iniciales: reserva cliente 2 horas; cancelación y reprogramación cliente
   24 horas; recordatorio 24 horas.
-* Pendiente: matriz completa de transiciones, cardinalidad
-  ServiceRequest--Appointment, permisos para editar duración individual y el
-  mecanismo que identifica el ClinicalRecord que resuelve una tarea clínica.
+* Resuelto para Feature 10: ServiceRequest y TreatmentSession pueden conservar
+  historial de turnos, pero cada una admite como máximo un turno `pending` o
+  `approved`; una atención de sesión pendiente de documentación bloquea una nueva
+  reserva. La tarea clínica se resuelve con un ClinicalRecord asociado
+  explícitamente a la sesión vinculada, con sesión completada y turno atendido.
+* Pendiente: matriz completa de transiciones y permisos para editar duración
+  individual.
 
 ## **Notificaciones**
 

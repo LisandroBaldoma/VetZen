@@ -100,6 +100,7 @@ class AppointmentBookingService
             $booking->scheduleDate()->associate($scheduleDate);
             $booking->requestedBy()->associate($user);
             $booking->save();
+            DB::afterCommit(fn () => app(AppointmentNotificationService::class)->send($booking, $status === 'pending' ? 'solicitud' : 'confirmación', $status === 'pending'));
 
             return $booking;
         });
@@ -144,6 +145,7 @@ class AppointmentBookingService
             $locked->status = $status;
             $locked->save();
             $history->save();
+            DB::afterCommit(fn () => app(AppointmentNotificationService::class)->send($locked, 'reprogramación', true));
 
             return $locked;
         });

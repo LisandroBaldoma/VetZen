@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Appointment;
+use App\Models\AppointmentClinicalTask;
 use App\Models\AppointmentStatusHistory;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,12 @@ class AppointmentStatusService
 
             $locked->update(['status' => $status]);
             $history->save();
+
+            if ($status === 'attended') {
+                AppointmentClinicalTask::query()->firstOrCreate(['appointment_id' => $locked->id]);
+            }
+
+            DB::afterCommit(fn () => app(AppointmentNotificationService::class)->send($locked, $status, true));
 
             return $locked;
         });

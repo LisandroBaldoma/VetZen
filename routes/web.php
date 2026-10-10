@@ -92,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'reschedule'])->name('appointments.reschedule');
         Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
         Route::patch('appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status.update');
+        Route::patch('appointments/{appointment}/links', [AdminAppointmentController::class, 'updateLinks'])->name('appointments.links.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');
         Route::get('service-requests/{serviceRequest}', [AdminServiceRequestController::class, 'show'])->name('service-requests.show');
         Route::post('service-requests/{serviceRequest}/resolution', [AdminServiceRequestController::class, 'resolve'])->name('service-requests.resolve');
