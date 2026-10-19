@@ -17,7 +17,6 @@ use App\Models\TreatmentSession;
 use App\Services\AppointmentBookingService;
 use App\Services\AppointmentLinkService;
 use App\Services\AppointmentStatusService;
-use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -44,44 +43,14 @@ class AppointmentController extends Controller
         ]);
     }
 
-    public function schedule(Request $request): Response
+    public function schedule(Request $request): RedirectResponse
     {
-        Gate::authorize('viewAny', Appointment::class);
+        Gate::authorize('viewAny', AppointmentScheduleDate::class);
 
-        $date = $request->string('date')->toString();
-        abort_unless($date === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) === 1, 422);
-        $weekStart = ($date === ''
-            ? now(config('appointments.timezone'))->toImmutable()
-            : CarbonImmutable::createFromFormat('Y-m-d', $date, config('appointments.timezone')))
-            ->startOfWeek();
-        $weekEnd = $weekStart->addDays(6);
-
-        $scheduleDates = AppointmentScheduleDate::query()
-            ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-            ->with(['appointments' => fn ($query) => $query->with('pet:id,name')->orderBy('starts_at')])
-            ->get()
-            ->keyBy(fn ($scheduleDate) => $scheduleDate->date->toDateString());
-
-        return Inertia::render('admin/appointments/schedule', [
-            'weekStart' => $weekStart->toDateString(),
-            'week' => collect(range(0, 6))->map(function (int $offset) use ($weekStart, $scheduleDates): array {
-                $date = $weekStart->addDays($offset);
-                $scheduleDate = $scheduleDates->get($date->toDateString());
-
-                return [
-                    'date' => $date->toDateString(),
-                    'capacity' => $scheduleDate?->capacity,
-                    'appointments' => $scheduleDate?->appointments->map(fn (Appointment $appointment): array => [
-                        'id' => $appointment->id,
-                        'pet_name' => $appointment->pet->name,
-                        'service_name' => $appointment->service_name,
-                        'status' => $appointment->status,
-                        'starts_at' => $appointment->starts_at->setTimezone(config('appointments.timezone'))->toIso8601String(),
-                        'ends_at' => $appointment->ends_at->setTimezone(config('appointments.timezone'))->toIso8601String(),
-                    ])->values() ?? [],
-                ];
-            }),
-        ]);
+        return to_route('admin.schedule-dates.index', array_filter([
+            'view' => 'week',
+            'date' => $request->query('date'),
+        ], fn ($value): bool => $value !== null && $value !== ''));
     }
 
     public function index(Request $request): Response

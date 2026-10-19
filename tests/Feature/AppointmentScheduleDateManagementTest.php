@@ -2,10 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\Appointment;
 use App\Models\AppointmentScheduleDate;
 use App\Models\AppointmentScheduleTemplate;
+use App\Models\Client;
+use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -88,6 +92,81 @@ class AppointmentScheduleDateManagementTest extends TestCase
                 ->component('admin/schedule-dates/create')
                 ->where('templates.0.id', $template->id)
                 ->where('templates.0.name', 'Mañana'));
+    }
+
+    public function test_operational_calendar_defaults_to_month_and_returns_week_and_day_periods(): void
+    {
+        $this->withoutVite();
+        CarbonImmutable::setTestNow('2026-10-09 12:00:00 UTC');
+
+        try {
+            $admin = User::factory()->admin()->create();
+            $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+            $scheduleDate = $this->scheduleDate($service, '2026-10-13', 2);
+            $appointment = $this->appointment($scheduleDate, $service, '2026-10-13 13:00:00', 'approved');
+
+            $this->actingAs($admin)->get(route('admin.schedule-dates.index'))
+                ->assertInertia(fn ($page) => $page
+                    ->component('admin/schedule-dates/index')
+                    ->where('period.view', 'month')
+                    ->where('period.date', '2026-10-09')
+                    ->where('period.starts_on', '2026-10-01')
+                    ->where('period.ends_on', '2026-10-31')
+                    ->has('days', 31));
+
+            $this->actingAs($admin)->get(route('admin.schedule-dates.index', ['view' => 'week', 'date' => '2026-10-13']))
+                ->assertInertia(fn ($page) => $page
+                    ->where('period.starts_on', '2026-10-12')
+                    ->where('period.ends_on', '2026-10-18')
+                    ->has('days', 7)
+                    ->where('days.1.published', true)
+                    ->where('days.1.appointments.0.id', $appointment->id)
+                    ->where('days.1.appointments.0.pet.name', $appointment->pet->name)
+                    ->where('days.1.appointments.0.duration_minutes', 30));
+
+            $this->actingAs($admin)->get(route('admin.schedule-dates.index', ['view' => 'day', 'date' => '2026-10-13']))
+                ->assertInertia(fn ($page) => $page
+                    ->where('period.view', 'day')
+                    ->where('period.starts_on', '2026-10-13')
+                    ->has('days', 1));
+        } finally {
+            CarbonImmutable::setTestNow();
+        }
+    }
+
+    public function test_operational_calendar_normalizes_invalid_view_and_date_and_summarizes_statuses_and_peak_load(): void
+    {
+        $this->withoutVite();
+        CarbonImmutable::setTestNow('2026-10-09 12:00:00 UTC');
+
+        try {
+            $admin = User::factory()->admin()->create();
+            $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
+            $scheduleDate = $this->scheduleDate($service, '2026-10-13', 2);
+            $this->appointment($scheduleDate, $service, '2026-10-13 13:00:00', 'pending', 60);
+            $this->appointment($scheduleDate, $service, '2026-10-13 13:30:00', 'approved', 60);
+            $this->appointment($scheduleDate, $service, '2026-10-13 15:00:00', 'attended');
+            $this->appointment($scheduleDate, $service, '2026-10-13 15:30:00', 'absent');
+            $this->appointment($scheduleDate, $service, '2026-10-13 16:00:00', 'cancelled');
+            $this->appointment($scheduleDate, $service, '2026-10-13 16:30:00', 'rejected');
+
+            $this->actingAs($admin)->get(route('admin.schedule-dates.index', ['view' => 'invalid', 'date' => '2026-02-30']))
+                ->assertInertia(fn ($page) => $page
+                    ->where('period.view', 'month')
+                    ->where('period.date', '2026-10-09')
+                    ->where('summary.published_dates', 1)
+                    ->where('summary.active_appointments', 2)
+                    ->where('summary.pending', 1)
+                    ->where('summary.approved', 1)
+                    ->where('summary.attended', 1)
+                    ->where('summary.absent', 1)
+                    ->where('summary.cancelled', 1)
+                    ->where('summary.rejected', 1)
+                    ->where('summary.maximum_active_occupancy', 2)
+                    ->where('summary.load_percent', 100));
+        } finally {
+            CarbonImmutable::setTestNow();
+        }
     }
 
     public function test_admin_can_publish_multiple_dates_with_the_same_configuration(): void
@@ -204,5 +283,33 @@ class AppointmentScheduleDateManagementTest extends TestCase
             'date' => $date,
             'starts' => ['10:00', '11:00', '16:00'],
         ];
+    }
+
+    private function scheduleDate(Service $service, string $date, int $capacity): AppointmentScheduleDate
+    {
+        $scheduleDate = AppointmentScheduleDate::query()->create(['date' => $date, 'capacity' => $capacity]);
+        $scheduleDate->blocks()->create(['starts_at' => '10:00', 'ends_at' => '18:00']);
+        $scheduleDate->starts()->create(['starts_at' => '10:00']);
+        $scheduleDate->services()->attach($service);
+
+        return $scheduleDate;
+    }
+
+    private function appointment(AppointmentScheduleDate $scheduleDate, Service $service, string $startsAt, string $status, int $duration = 30): Appointment
+    {
+        $user = User::factory()->create();
+        $pet = Pet::factory()->for(Client::factory()->for($user))->create();
+
+        return Appointment::query()->forceCreate([
+            'pet_id' => $pet->id,
+            'service_id' => $service->id,
+            'appointment_schedule_date_id' => $scheduleDate->id,
+            'requested_by' => $user->id,
+            'service_name' => $service->name,
+            'duration_minutes' => $duration,
+            'starts_at' => $startsAt,
+            'ends_at' => CarbonImmutable::parse($startsAt)->addMinutes($duration),
+            'status' => $status,
+        ]);
     }
 }

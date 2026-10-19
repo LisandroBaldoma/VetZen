@@ -314,20 +314,12 @@ class AppointmentBookingTest extends TestCase
                 ->where('appointments.data.0.id', $pending->id));
     }
 
-    public function test_admin_can_view_appointments_in_their_published_weekly_schedule(): void
+    public function test_legacy_admin_weekly_schedule_redirects_to_the_operational_calendar(): void
     {
-        $this->withoutVite();
         $admin = User::factory()->admin()->create();
-        [, $pet] = $this->clientWithPet();
-        $service = Service::factory()->create(['appointment_duration_minutes' => 30]);
-        $scheduleDate = $this->scheduleDate($service, 2);
-        $appointment = $this->appointment($pet, $service, $scheduleDate, '2026-10-13 13:00:00', 'approved');
 
         $this->actingAs($admin)->get(route('admin.appointments.schedule', ['date' => '2026-10-13']))
-            ->assertInertia(fn ($page) => $page
-                ->component('admin/appointments/schedule')
-                ->where('weekStart', '2026-10-12')
-                ->where('week.1.appointments.0.id', $appointment->id));
+            ->assertRedirect(route('admin.schedule-dates.index', ['view' => 'week', 'date' => '2026-10-13']));
     }
 
     public function test_admin_can_create_an_approved_appointment_without_client_lead_time(): void

@@ -1,7 +1,8 @@
 # Feature 10 — Turnos y agenda
 
-> Estado: implementación por etapas. Las plantillas de agenda fueron aprobadas e
-> implementadas para publicación administrativa.
+> Estado: implementación por etapas. La agenda operacional administrativa está
+> aprobada; su contrato backend de calendario está implementado y la migración de
+> interfaz queda pendiente.
 
 ## 1. Objetivo
 
@@ -20,6 +21,9 @@ compartida.
 - Estados: `pending`, `approved`, `rejected`, `cancelled`, `attended`, `absent`.
 - Solicitud cliente, creación administrativa, aprobación, rechazo, cancelación,
   reprogramación, agenda diaria/semanal e historial.
+- Agenda operacional administrativa sobre fechas publicadas, con vistas mensual,
+  semanal y diaria de solo lectura, navegación temporal y acceso al detalle o a
+  la edición explícita de la fecha. No incluye arrastrar y soltar.
 - Vínculos opcionales con ServiceRequest y TreatmentSession compatibles.
 - Tareas administrativas para registrar atención clínica pendiente.
 
@@ -186,11 +190,16 @@ cambio bloquea el turno y conserva un historial inmutable con actor, estados y
 motivo. La agenda diaria/semanal y la creación administrativa de turnos quedan
 para una etapa posterior.
 
-### Etapa 4b — Agenda administrativa semanal
+### Etapa 4b — Agenda administrativa operacional
 
-Implementada: el administrador consulta una semana de agenda con sus fechas
-publicadas, capacidad y todos los turnos por día. Cada tarjeta abre el detalle
-administrativo. La vista no crea, reprograma ni altera reservas.
+Implementado en backend: `admin.schedule-dates.index` es la fuente única de la
+agenda operacional y acepta `view=month|week|day` y `date=YYYY-MM-DD`, con mes
+como vista predeterminada y normalización segura de parámetros. Devuelve período,
+días publicados o no publicados, bloques, inicios explícitos, turnos ordenados y
+resumen de estados/carga máxima concurrente. La ruta semanal anterior redirige a
+esta vista preservando la fecha solicitada. La interfaz React del calendario aún
+debe consumir este contrato; hasta entonces se conserva el listado de configuración
+existente. La vista no crea, reprograma ni altera reservas, y no incluye drag/drop.
 
 ### Etapa 4c — Creación administrativa
 
