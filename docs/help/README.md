@@ -22,7 +22,6 @@ activa o en la documentación de producto correspondiente.
 Las guías actuales cubren solo los roles `client` y `admin`, y los módulos ya
 implementados. No documentar como disponible:
 
-* turnos, agenda, reprogramación o disponibilidad;
 * notificaciones;
 * profesionales adicionales, gestión de permisos o roles nuevos;
 * acciones de IA, diagnósticos, tratamientos veterinarios o medicamentos;

@@ -117,21 +117,41 @@ class SimonMessageTest extends TestCase
             ->assertJsonPath('message', 'Simón no está disponible en este momento. Intentá nuevamente más tarde.');
     }
 
-    public function test_known_unavailable_feature_uses_grounded_evidence(): void
+    public function test_admin_receives_grounded_guidance_for_managing_appointments(): void
     {
         $generator = $this->mock(AssistantResponseGenerator::class);
         $generator->shouldReceive('generate')
             ->once()
-            ->withArgs(fn (string $instructions, string $prompt): bool => str_contains($instructions, 'UNAVAILABLE')
-                && str_contains($prompt, 'Estado: unavailable')
-                && str_contains($prompt, 'Turnos y agenda no disponibles actualmente'))
-            ->andReturn('VetZen actualmente no dispone de una función de turnos o agenda.');
+            ->withArgs(fn (string $instructions, string $prompt): bool => str_contains($instructions, 'Sos Simón')
+                && str_contains($prompt, 'Estado: available')
+                && str_contains($prompt, 'Gestionar turnos'))
+            ->andReturn('Abrí Turnos, seleccioná Crear turno y elegí paciente, servicio y horario publicado.');
         $admin = User::factory()->admin()->create();
 
         $this->actingAs($admin)->postJson(route('simon.messages.store'), [
             'question' => '¿Cómo creo un turno para que un cliente venga mañana a las 10?',
+            'module' => 'appointments',
         ])->assertOk()
-            ->assertJsonPath('sources.0.id', 'concepts.turnos-no-disponibles');
+            ->assertJsonPath('sources.0.id', 'admin.gestionar-turnos');
+    }
+
+    public function test_client_receives_appointment_guidance_without_admin_evidence_or_dynamic_data(): void
+    {
+        $client = Client::factory()->create();
+        $generator = $this->mock(AssistantResponseGenerator::class);
+
+        $generator->shouldReceive('generate')
+            ->once()
+            ->withArgs(fn (string $instructions, string $prompt): bool => str_contains($prompt, 'Gestionar mis turnos')
+                && str_contains($prompt, 'Simón no puede consultar tus turnos reales')
+                && ! str_contains($prompt, 'Gestionar turnos\n'))
+            ->andReturn('Podés abrir Turnos, elegir Solicitar turno y seleccionar una mascota, servicio y horario.');
+
+        $this->actingAs($client->user)->postJson(route('simon.messages.store'), [
+            'question' => '¿Cómo solicito un turno?',
+            'module' => 'appointments',
+        ])->assertOk()
+            ->assertJsonPath('sources.0.id', 'client.gestionar-turnos');
     }
 
     public function test_client_treatment_assignment_prompt_preserves_the_read_only_boundary(): void

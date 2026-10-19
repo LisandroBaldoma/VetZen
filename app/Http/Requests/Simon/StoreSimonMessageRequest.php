@@ -18,6 +18,7 @@ class StoreSimonMessageRequest extends FormRequest
             'question' => ['required', 'string', 'max:1000'],
             'module' => ['nullable', 'string', Rule::in([
                 'account',
+                'appointments',
                 'clients',
                 'medical-records',
                 'pets',

@@ -48,8 +48,8 @@ aislamiento por rol, terminología, uso de contexto, tokens y latencia de Simón
   interfaz implementada.
 * `en curso` es un estado de tratamiento, no de solicitud de atención. Las
   solicitudes solo pueden estar pendientes, resueltas o canceladas.
-* Turnos y agenda son una funcionalidad conocida como no disponible en la
-  versión actual; no deben confundirse con ausencia de evidencia.
+* Turnos y Agenda son funcionalidades documentadas de uso; Simón no consulta su
+  disponibilidad ni datos dinámicos.
 
 ## Fuera de alcance
 
@@ -60,13 +60,15 @@ notificaciones ni rediseño de UI.
 
 ## Criterios de aceptación
 
-* [ ] Las diez preguntas tienen expectativas estructuradas y versionadas.
+* [ ] Las preguntas de evaluación incluyen guía disponible de Turnos y Agenda y
+  mantienen fuera de alcance las consultas de datos dinámicos.
 * [ ] C2 y A4 recuperan primero evidencia procedimental relevante sin depender
   de un módulo enviado por la UI.
 * [ ] C5 recupera `NOT_ALLOWED_FOR_ROLE`, explica que un cliente no puede asignar
   tratamientos y lo orienta a consultarlos en modo lectura.
 * [ ] A1 no presenta `en curso` como estado de una solicitud de atención.
-* [ ] A5 recupera evidencia `unavailable` y no inventa turnos o agenda.
+* [ ] A5 recupera evidencia procedimental de Turnos y Agenda sin inventar datos
+  dinámicos.
 * [ ] Las trazas registran chunks, documentos únicos, caracteres, palabras,
   latencia y usage del proveedor cuando está disponible.
 * [ ] La suite usa mocks/fakes del contrato o `Http::fake()`; nunca Groq real.

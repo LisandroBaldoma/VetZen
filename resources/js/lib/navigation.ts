@@ -107,6 +107,7 @@ export function getSimonModule(
 ): SimonModule | undefined {
     switch (section) {
         case 'clients':
+        case 'appointments':
         case 'medical-records':
         case 'pets':
         case 'procedures':
@@ -114,6 +115,8 @@ export function getSimonModule(
         case 'services':
         case 'treatments':
             return section;
+        case 'schedule-dates':
+            return 'appointments';
         default:
             return undefined;
     }

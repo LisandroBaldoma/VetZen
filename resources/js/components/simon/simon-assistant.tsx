@@ -16,12 +16,14 @@ import { SimonChat } from './simon-chat';
 import type { SimonModule } from './simon-chat';
 
 const sectionLabels: Partial<Record<NavigationSection, string>> = {
+    appointments: 'Turnos',
     clients: 'Clientes',
     'medical-records': 'Historia clínica',
     pets: 'Pacientes',
     procedures: 'Procedimientos',
     'service-requests': 'Solicitudes',
     services: 'Servicios',
+    'schedule-dates': 'Agenda',
     treatments: 'Tratamientos',
 };
 

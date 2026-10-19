@@ -24,7 +24,8 @@ implementados:
 * solicitudes de atención;
 * historia clínica;
 * catálogo clínico;
-* tratamientos y sesiones.
+* tratamientos y sesiones;
+* turnos y agenda.
 
 Cada guía debe describir solo acciones que estén disponibles en rutas,
 controladores, Policies, pantallas y pruebas existentes. Las guías reflejan el
@@ -43,8 +44,8 @@ SIMON-01 no implementa:
 * acceso del asistente a clientes, mascotas, tratamientos, sesiones o historia
   clínica;
 * tool calling, acciones, navegación ejecutable, memoria o analytics;
-* turnos, agenda, disponibilidad, reprogramación, notificaciones, profesionales
-  adicionales, roles adicionales o permisos administrativos.
+* disponibilidad dinámica, notificaciones, profesionales adicionales, roles
+  adicionales o permisos administrativos.
 
 ## 4. Roles y alcance funcional real
 
@@ -68,7 +69,8 @@ ruta administrativa para crear clientes ni para crear solicitudes de atención.
 
 1. El código implementado prevalece cuando contradice documentación histórica o
    de planificación.
-2. La KB no describe turnos, diagnósticos, medicamentos, reprogramaciones,
+2. La KB describe solo los turnos, la Agenda y las reprogramaciones implementadas;
+   no describe disponibilidad dinámica, diagnósticos, medicamentos,
    notificaciones ni acciones inexistentes.
 3. Una guía no puede presentar una acción administrativa como disponible para
    `client`.
@@ -148,8 +150,8 @@ Las siguientes etapas deben respetar estas reglas:
   `admin`.
 * [x] Existen conceptos que distinguen servicio, solicitud, plantilla,
   tratamiento asignado y sesión.
-* [x] Ninguna guía afirma que VetZen tiene turnos, agenda, reprogramación,
-  notificaciones, roles profesionales o capacidades clínicas de IA.
+* [x] Las guías de Turnos y Agenda reflejan rutas, roles y acciones implementadas,
+  sin incorporar disponibilidad dinámica ni acciones de IA.
 * [x] Las guías contienen rutas, fuentes y terminología verificadas.
 * [x] La documentación global registra una arquitectura LLM agnóstica y el roadmap
   SIMON-01 a SIMON-04.

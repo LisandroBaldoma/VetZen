@@ -12,6 +12,7 @@ import { store as storeMessage } from '@/routes/simon/messages';
 
 export type SimonModule =
     | 'account'
+    | 'appointments'
     | 'clients'
     | 'medical-records'
     | 'pets'
