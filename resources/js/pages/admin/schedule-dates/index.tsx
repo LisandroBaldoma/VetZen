@@ -1,9 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
-import { CalendarPlus, Pencil } from 'lucide-react';
+import { CalendarPlus, CopyPlus, Pencil } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
 import { create, edit, index } from '@/routes/admin/schedule-dates';
+import { index as templatesIndex } from '@/routes/admin/schedule-templates';
 
 type ScheduleDate = {
     id: number;
@@ -31,16 +32,27 @@ export default function ScheduleDatesIndex({
                     title="Agenda"
                     description="Publicá fechas concretas, horarios disponibles y servicios para reservar."
                     actions={
-                        <Button asChild>
-                            <Link href={create()}>
-                                <CalendarPlus aria-hidden /> Publicar fecha
-                            </Link>
-                        </Button>
+                        <>
+                            <Button variant="outline" asChild>
+                                <Link href={templatesIndex()}>
+                                    <CopyPlus aria-hidden /> Plantillas
+                                </Link>
+                            </Button>
+                            <Button asChild>
+                                <Link href={create()}>
+                                    <CalendarPlus aria-hidden /> Publicar fecha
+                                </Link>
+                            </Button>
+                        </>
                     }
                 />
                 {scheduleDates.length === 0 ? (
                     <section className="rounded-xl border border-dashed bg-card p-6 text-sm text-muted-foreground">
-                        <p>Todavía no publicaste fechas para la agenda.</p>
+                        <p>
+                            Todavía no publicaste fechas para la agenda. Podés
+                            configurar una publicación puntual o reutilizar una
+                            plantilla.
+                        </p>
                         <Button className="mt-4" asChild>
                             <Link href={create()}>
                                 Publicar la primera fecha

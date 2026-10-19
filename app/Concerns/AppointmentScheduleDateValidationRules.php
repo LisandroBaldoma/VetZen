@@ -10,16 +10,21 @@ use Illuminate\Validation\Validator;
 trait AppointmentScheduleDateValidationRules
 {
     /** @return array<string, array<mixed>> */
-    protected function scheduleConfigurationRules(): array
+    protected function scheduleConfigurationRules(bool $required = true, bool $requireInterval = false): array
     {
+        $presence = $required ? ['required'] : ['nullable'];
+
         return [
-            'capacity' => ['required', 'integer', 'between:1,5'],
-            'blocks' => ['required', 'array', 'min:1', 'max:12'],
+            'capacity' => [...$presence, 'integer', 'between:1,5'],
+            'interval_minutes' => $requireInterval
+                ? ['required', 'integer', Rule::in([15, 30, 45, 60])]
+                : ['nullable', 'integer', Rule::in([15, 30, 45, 60])],
+            'blocks' => [...$presence, 'array', 'min:1', 'max:12'],
             'blocks.*.starts_at' => ['required', 'date_format:H:i'],
             'blocks.*.ends_at' => ['required', 'date_format:H:i'],
-            'starts' => ['required', 'array', 'min:1', 'max:48'],
+            'starts' => ['nullable', 'array', 'min:1', 'max:48'],
             'starts.*' => ['required', 'date_format:H:i', 'distinct'],
-            'service_ids' => ['required', 'array', 'min:1'],
+            'service_ids' => [...$presence, 'array', 'min:1'],
             'service_ids.*' => ['required', 'integer', 'distinct', Rule::exists(Service::class, 'id')->where('is_active', true)],
         ];
     }

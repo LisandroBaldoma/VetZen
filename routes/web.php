@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
+use App\Http\Controllers\Admin\AppointmentScheduleTemplateController as AdminAppointmentScheduleTemplateController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -84,6 +85,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('schedule-dates', [AdminAppointmentScheduleDateController::class, 'store'])->name('schedule-dates.store');
         Route::get('schedule-dates/{scheduleDate}/edit', [AdminAppointmentScheduleDateController::class, 'edit'])->name('schedule-dates.edit');
         Route::patch('schedule-dates/{scheduleDate}', [AdminAppointmentScheduleDateController::class, 'update'])->name('schedule-dates.update');
+        Route::get('schedule-templates', [AdminAppointmentScheduleTemplateController::class, 'index'])->name('schedule-templates.index');
+        Route::get('schedule-templates/create', [AdminAppointmentScheduleTemplateController::class, 'create'])->name('schedule-templates.create');
+        Route::post('schedule-templates', [AdminAppointmentScheduleTemplateController::class, 'store'])->name('schedule-templates.store');
+        Route::get('schedule-templates/{scheduleTemplate}/edit', [AdminAppointmentScheduleTemplateController::class, 'edit'])->name('schedule-templates.edit');
+        Route::patch('schedule-templates/{scheduleTemplate}', [AdminAppointmentScheduleTemplateController::class, 'update'])->name('schedule-templates.update');
+        Route::delete('schedule-templates/{scheduleTemplate}', [AdminAppointmentScheduleTemplateController::class, 'destroy'])->name('schedule-templates.destroy');
         Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
         Route::get('appointments/schedule', [AdminAppointmentController::class, 'schedule'])->name('appointments.schedule');
         Route::get('appointments/create', [AdminAppointmentController::class, 'create'])->name('appointments.create');

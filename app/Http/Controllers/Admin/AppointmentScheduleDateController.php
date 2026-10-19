@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentScheduleDate\StoreAppointmentScheduleDateRequest;
 use App\Http\Requests\AppointmentScheduleDate\UpdateAppointmentScheduleDateRequest;
 use App\Models\AppointmentScheduleDate;
+use App\Models\AppointmentScheduleTemplate;
 use App\Models\Service;
+use App\Services\AppointmentScheduleStartGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -39,18 +41,27 @@ class AppointmentScheduleDateController extends Controller
 
         return Inertia::render('admin/schedule-dates/create', [
             'services' => $this->availableServices(),
+            'templates' => AppointmentScheduleTemplate::query()
+                ->with([
+                    'blocks' => fn ($query) => $query->orderBy('starts_at'),
+                    'services:id,name,appointment_duration_minutes',
+                ])
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 
     public function store(StoreAppointmentScheduleDateRequest $request): RedirectResponse
     {
         DB::transaction(function () use ($request): void {
-            foreach ($request->validated('dates') as $date) {
+            $configuration = $this->publicationConfiguration($request);
+
+            foreach ($request->publicationDates() as $date) {
                 $scheduleDate = AppointmentScheduleDate::query()->create([
                     'date' => $date,
-                    'capacity' => $request->validated('capacity'),
+                    'capacity' => $configuration['capacity'],
                 ]);
-                $this->replaceConfiguration($scheduleDate, $request->validated());
+                $this->replaceConfiguration($scheduleDate, $configuration);
             }
         });
 
@@ -106,5 +117,32 @@ class AppointmentScheduleDateController extends Controller
             fn (string $start): array => ['starts_at' => $start],
         )->all());
         $scheduleDate->services()->sync($data['service_ids']);
+    }
+
+    /** @return array{capacity: int, blocks: array<int, array{starts_at: string, ends_at: string}>, starts: array<int, string>, service_ids: array<int, int>} */
+    private function publicationConfiguration(StoreAppointmentScheduleDateRequest $request): array
+    {
+        $template = $request->validated('template_id')
+            ? AppointmentScheduleTemplate::query()->with(['blocks', 'services'])->findOrFail($request->validated('template_id'))
+            : null;
+        $blocks = $template
+            ? $template->blocks->map(fn ($block): array => [
+                'starts_at' => substr($block->starts_at, 0, 5),
+                'ends_at' => substr($block->ends_at, 0, 5),
+            ])->all()
+            : $request->validated('blocks');
+        $interval = $template?->interval_minutes ?? $request->validated('interval_minutes');
+        $serviceIds = $template
+            ? $template->services->modelKeys()
+            : $request->validated('service_ids');
+
+        return [
+            'capacity' => $template?->capacity ?? $request->validated('capacity'),
+            'blocks' => $blocks,
+            'starts' => $template
+                ? app(AppointmentScheduleStartGenerator::class)->generate($blocks, $interval)
+                : ($request->validated('starts') ?? app(AppointmentScheduleStartGenerator::class)->generate($blocks, $interval)),
+            'service_ids' => $serviceIds,
+        ];
     }
 }

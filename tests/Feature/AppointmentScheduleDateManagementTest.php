@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AppointmentScheduleDate;
+use App\Models\AppointmentScheduleTemplate;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +28,7 @@ class AppointmentScheduleDateManagementTest extends TestCase
         $scheduleDate = AppointmentScheduleDate::query()->sole();
         $this->assertSame(3, $scheduleDate->capacity);
         $this->assertSame(['10:00', '16:00'], $scheduleDate->blocks()->orderBy('starts_at')->pluck('starts_at')->all());
-        $this->assertSame(['10:00', '11:00', '16:00'], $scheduleDate->starts()->orderBy('starts_at')->pluck('starts_at')->all());
+        $this->assertSame(['10:00', '11:00', '12:00', '16:00', '17:00', '18:00'], $scheduleDate->starts()->orderBy('starts_at')->pluck('starts_at')->all());
         $this->assertTrue($scheduleDate->services()->sole()->is($service));
 
         $payload = $this->updatePayload($service, $scheduleDate->date->toDateString());
@@ -70,6 +71,25 @@ class AppointmentScheduleDateManagementTest extends TestCase
                 ->where('services.0.appointment_duration_minutes', 30));
     }
 
+    public function test_schedule_date_create_receives_available_templates(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+        $template = AppointmentScheduleTemplate::query()->create([
+            'name' => 'Mañana',
+            'capacity' => 1,
+            'interval_minutes' => 30,
+        ]);
+        $template->blocks()->create(['starts_at' => '10:00', 'ends_at' => '13:00']);
+
+        $this->actingAs($admin)->get(route('admin.schedule-dates.create'))
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/schedule-dates/create')
+                ->where('templates.0.id', $template->id)
+                ->where('templates.0.name', 'Mañana'));
+    }
+
     public function test_admin_can_publish_multiple_dates_with_the_same_configuration(): void
     {
         $admin = User::factory()->admin()->create();
@@ -84,8 +104,28 @@ class AppointmentScheduleDateManagementTest extends TestCase
 
         $this->assertDatabaseCount('appointment_schedule_dates', 2);
         $this->assertDatabaseCount('appointment_schedule_blocks', 4);
-        $this->assertDatabaseCount('appointment_schedule_starts', 6);
+        $this->assertDatabaseCount('appointment_schedule_starts', 12);
         $this->assertDatabaseCount('appointment_schedule_date_service', 2);
+    }
+
+    public function test_admin_can_adjust_generated_starts_before_publishing(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $service = Service::factory()->create(['appointment_duration_minutes' => 45]);
+
+        $payload = $this->storePayload($service, [now()->addDay()->toDateString()]);
+        $payload['interval_minutes'] = 30;
+        $payload['starts'] = ['10:00', '12:30', '16:30'];
+
+        $this->actingAs($admin)
+            ->post(route('admin.schedule-dates.store'), $payload)
+            ->assertRedirect(route('admin.schedule-dates.index'));
+
+        $scheduleDate = AppointmentScheduleDate::query()->sole();
+        $this->assertSame(
+            ['10:00', '12:30', '16:30'],
+            $scheduleDate->starts()->orderBy('starts_at')->pluck('starts_at')->all(),
+        );
     }
 
     public function test_schedule_date_rejects_invalid_blocks_starts_services_and_capacity(): void
@@ -100,10 +140,10 @@ class AppointmentScheduleDateManagementTest extends TestCase
                 ['starts_at' => '13:00', 'ends_at' => '10:00'],
                 ['starts_at' => '12:00', 'ends_at' => '14:00'],
             ],
-            'starts' => ['09:00', '09:00'],
+            'interval_minutes' => 20,
             'service_ids' => [$missingDuration->id],
         ])->assertSessionHasErrors([
-            'dates.0', 'capacity', 'blocks.0.ends_at', 'starts.0', 'service_ids',
+            'dates.0', 'capacity', 'interval_minutes', 'blocks.0.ends_at', 'service_ids',
         ]);
 
         $this->assertDatabaseCount('appointment_schedule_dates', 0);
@@ -121,7 +161,7 @@ class AppointmentScheduleDateManagementTest extends TestCase
                 ['starts_at' => '10:00', 'ends_at' => '12:00'],
                 ['starts_at' => '11:00', 'ends_at' => '13:00'],
             ],
-            'starts' => ['10:00'],
+            'interval_minutes' => 30,
             'service_ids' => [$inactive->id],
         ])->assertSessionHasErrors(['blocks', 'service_ids.0']);
     }
@@ -151,7 +191,7 @@ class AppointmentScheduleDateManagementTest extends TestCase
                 ['starts_at' => '10:00', 'ends_at' => '13:00'],
                 ['starts_at' => '16:00', 'ends_at' => '19:00'],
             ],
-            'starts' => ['10:00', '11:00', '16:00'],
+            'interval_minutes' => 60,
             'service_ids' => [$service->id],
         ];
     }
@@ -162,6 +202,7 @@ class AppointmentScheduleDateManagementTest extends TestCase
         return [
             ...$this->storePayload($service, [$date]),
             'date' => $date,
+            'starts' => ['10:00', '11:00', '16:00'],
         ];
     }
 }

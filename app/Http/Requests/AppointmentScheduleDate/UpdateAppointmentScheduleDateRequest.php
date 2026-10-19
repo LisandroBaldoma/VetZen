@@ -21,7 +21,10 @@ class UpdateAppointmentScheduleDateRequest extends FormRequest
 
     public function rules(): array
     {
-        return $this->scheduleDateRules($this->route('scheduleDate'));
+        return [
+            ...$this->scheduleDateRules($this->route('scheduleDate')),
+            'starts' => ['required', 'array', 'min:1', 'max:48'],
+        ];
     }
 
     public function withValidator(Validator $validator): void

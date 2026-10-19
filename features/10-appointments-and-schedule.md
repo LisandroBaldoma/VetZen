@@ -1,7 +1,7 @@
 # Feature 10 — Turnos y agenda
 
-> Estado: especificada para implementación por etapas. La implementación no debe
-> comenzar en una parte afectada por una decisión marcada como pendiente.
+> Estado: implementación por etapas. Las plantillas de agenda fueron aprobadas e
+> implementadas para publicación administrativa.
 
 ## 1. Objetivo
 
@@ -13,7 +13,8 @@ compartida.
 
 - Agenda única, sin profesionales asignados ni agendas individuales.
 - Fechas concretas publicadas con bloques de trabajo, inicios reservables y
-  servicios habilitados por fecha.
+  servicios habilitados por fecha; las plantillas administrativas reutilizan esa
+  configuración sin vincular ni modificar fechas ya publicadas.
 - Capacidad compartida de uno a cinco pacientes durante todo el intervalo.
 - Duración predeterminada de turno por Service, snapshot histórico por turno.
 - Estados: `pending`, `approved`, `rejected`, `cancelled`, `attended`, `absent`.
@@ -22,7 +23,8 @@ compartida.
 - Vínculos opcionales con ServiceRequest y TreatmentSession compatibles.
 - Tareas administrativas para registrar atención clínica pendiente.
 
-No incluye agendas por profesional, recurrencias, slots automáticos, equipos,
+No incluye agendas por profesional, recurrencias, slots automáticos fuera de la
+generación explícita al publicar, equipos,
 estaciones, rotación de procedimientos, pagos, facturación, Push Notifications o
 acciones de Simón sobre datos dinámicos.
 
@@ -116,6 +118,11 @@ tratamiento y registrar sesión cuando no existe tratamiento.
 
 1. Permiso y reglas para editar duración individual de un turno.
 
+Decisión confirmada: las plantillas son globales y administradas solo por `admin`;
+contienen nombre, capacidad, intervalo, bloques y servicios habilitados. Publicar
+una fecha copia su configuración y sus inicios generados, por lo que editar o
+eliminar una plantilla nunca modifica fechas publicadas.
+
 Las decisiones de cardinalidad, sesión atendida, destinatarios y resolución de
 tarea se resolvieron para la etapa final: una ServiceRequest conserva historial de
 múltiples turnos, pero solo uno `pending`/`approved`; las sesiones siguen la misma
@@ -142,6 +149,14 @@ individual, bloques de trabajo no superpuestos, inicios reservables explícitos,
 servicios activos habilitados por fecha y capacidad de uno a cinco pacientes.
 También se incorporó la duración predeterminada de turno de Service. Los servicios
 existentes sin duración deben configurarla antes de poder habilitarse en agenda.
+
+Complemento implementado: los administradores gestionan plantillas globales con
+nombre, capacidad, intervalo de 15, 30, 45 o 60 minutos, bloques y servicios
+activos con duración configurada. Una publicación nueva usa una plantilla o una
+configuración personalizada, genera y persiste los inicios explícitos de cada
+bloque con el intervalo seleccionado, y puede seleccionar fechas explícitas o un
+rango con días de semana (máximo 31 fechas). Editar o eliminar una plantilla no
+altera fechas ya publicadas; las fechas conservan su propia configuración.
 
 ### Etapa 2 — Disponibilidad y solicitud de cliente
 
