@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAccountLinkController;
 use App\Http\Controllers\Client\ClientProfileController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
@@ -26,6 +27,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/security', [SecurityController::class, 'edit'])
         ->middleware(RequirePassword::class)
         ->name('security.edit');
+
+    Route::middleware(RequirePassword::class)->prefix('settings/security/google')->name('google.link.')->group(function () {
+        Route::get('redirect', [GoogleAccountLinkController::class, 'redirect'])->name('redirect');
+        Route::get('callback', [GoogleAccountLinkController::class, 'callback'])->name('callback');
+    });
 
     Route::put('settings/password', [SecurityController::class, 'update'])
         ->middleware('throttle:6,1')

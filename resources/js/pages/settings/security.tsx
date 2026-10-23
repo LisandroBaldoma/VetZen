@@ -1,6 +1,7 @@
 import { Form, Head, setLayoutProps, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import GoogleAuthButton from '@/components/google-auth-button';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
@@ -11,11 +12,13 @@ import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { dashboard } from '@/routes';
+import { redirect as googleLinkRedirect } from '@/routes/google/link';
 import { edit } from '@/routes/security';
 import type { Auth } from '@/types';
 
 type Props = {
     passwordRules: string;
+    googleLinked: boolean;
 } & ManagePasskeysProps &
     ManageTwoFactorProps;
 
@@ -135,6 +138,25 @@ export default function Security(props: Props) {
                         </>
                     )}
                 </Form>
+            </div>
+
+            <div className="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Cuenta de Google"
+                    description="Usá Google como método adicional para iniciar sesión en VetZen."
+                />
+
+                {props.googleLinked ? (
+                    <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
+                        Tu cuenta de Google está vinculada.
+                    </div>
+                ) : (
+                    <GoogleAuthButton
+                        href={googleLinkRedirect.url()}
+                        label="Vincular cuenta de Google"
+                    />
+                )}
             </div>
 
             <ManageTwoFactor

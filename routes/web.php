@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\TreatmentController as AdminTreatmentController;
 use App\Http\Controllers\Admin\TreatmentSessionController as AdminTreatmentSessionController;
 use App\Http\Controllers\Admin\TreatmentStatusController as AdminTreatmentStatusController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
@@ -31,6 +32,13 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
 Route::inertia('/', 'welcome')->name('home');
+
+Route::middleware(['guest', 'throttle:10,1'])->prefix('auth/google')->name('google.')->group(function () {
+    Route::get('redirect', [GoogleAuthenticationController::class, 'redirect'])->name('redirect');
+    Route::get('callback', [GoogleAuthenticationController::class, 'callback'])->name('callback');
+    Route::get('complete', [GoogleAuthenticationController::class, 'create'])->name('registration.create');
+    Route::post('complete', [GoogleAuthenticationController::class, 'store'])->name('registration.store');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

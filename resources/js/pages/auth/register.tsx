@@ -1,4 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
+import AuthSeparator from '@/components/auth-separator';
+import GoogleAuthButton from '@/components/google-auth-button';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -7,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
+import { redirect as googleRedirect } from '@/routes/google';
 import { store } from '@/routes/register';
 
 type Props = {
@@ -17,6 +20,13 @@ export default function Register({ passwordRules }: Props) {
     return (
         <>
             <Head title="Registrate" />
+
+            <GoogleAuthButton
+                href={googleRedirect.url()}
+                label="Registrarme con Google"
+            />
+            <AuthSeparator />
+
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}

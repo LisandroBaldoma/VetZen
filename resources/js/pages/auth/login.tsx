@@ -1,5 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import { ArrowRight, LockKeyhole, Mail } from 'lucide-react';
+import AuthSeparator from '@/components/auth-separator';
+import GoogleAuthButton from '@/components/google-auth-button';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
@@ -10,20 +12,31 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
+import { redirect as googleRedirect } from '@/routes/google';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
 type Props = {
     status?: string;
+    googleError?: string;
     canResetPassword: boolean;
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+export default function Login({
+    status,
+    googleError,
+    canResetPassword,
+}: Props) {
     return (
         <>
             <Head title="Iniciar sesión" />
 
-            <PasskeyVerify />
+            <div className="grid gap-2">
+                <GoogleAuthButton href={googleRedirect.url()} />
+                <PasskeyVerify showSeparator={false} />
+            </div>
+
+            <AuthSeparator />
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
@@ -119,6 +132,12 @@ export default function Login({ status, canResetPassword }: Props) {
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
+                </div>
+            )}
+
+            {googleError && (
+                <div className="mb-4 text-center text-sm font-medium text-destructive">
+                    {googleError}
                 </div>
             )}
         </>

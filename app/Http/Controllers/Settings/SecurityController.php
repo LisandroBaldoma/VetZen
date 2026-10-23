@@ -38,6 +38,7 @@ class SecurityController extends Controller
                     ->all()
                 : [],
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'googleLinked' => $request->user()->google_id !== null,
         ];
 
         if (Features::canManageTwoFactorAuthentication()) {
