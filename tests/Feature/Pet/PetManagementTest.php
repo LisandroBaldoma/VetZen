@@ -138,7 +138,7 @@ class PetManagementTest extends TestCase
 
         $this->actingAs($client->user)->post(route('pets.store'), [])
             ->assertSessionHasErrors([
-                'name' => 'El campo name es obligatorio.',
+                'name' => 'El campo nombre es obligatorio.',
                 'species' => 'El campo species es obligatorio.',
                 'sex' => 'El campo sex es obligatorio.',
             ]);
