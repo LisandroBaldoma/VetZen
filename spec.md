@@ -310,7 +310,7 @@ En particular, no se define todavía:
 * Sistema de pagos.  
 * Facturación.  
 * Integración con WhatsApp.  
-* Integraciones externas.  
+* Integraciones externas, excepto Google OAuth para registro e inicio de sesión.  
 * Gestión de múltiples sucursales.  
 * Reportes avanzados.  
 * Aplicación móvil.  

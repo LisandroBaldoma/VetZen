@@ -58,7 +58,9 @@ Actualmente se contempla:
 
 ### **Autenticación**
 
-* Sistema de autenticación compatible con Laravel.
+* Laravel Fortify para autenticación local mediante sesión.
+* Laravel Socialite con Google OAuth como método adicional de registro e inicio de sesión.
+* La identidad externa se almacenará mediante el identificador estable de Google, sin persistir tokens OAuth mientras no se consuman APIs de Google.
 
 ### **Autorización**
 
@@ -466,6 +468,7 @@ VetZen podrá depender de servicios externos para:
 * Almacenamiento vectorial.  
 * Email.  
 * Push Notifications.
+* Google OAuth para autenticación.
 
 Los proveedores concretos deberán definirse antes de implementar cada integración.
 
@@ -551,11 +554,14 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Autenticación**
 
-* ¿Qué mecanismo de autenticación se utilizará?  
+* Laravel Fortify continuará gestionando correo, contraseña, passkeys y segundo factor.
+* Laravel Socialite gestionará Google OAuth mediante el flujo web stateful y validación de estado; no se utilizará `stateless()`.
+* Google coexistirá con el registro local. Los usuarios nuevos completarán teléfono y contraseña, y las cuentas existentes requerirán vinculación autenticada explícita.
+* Las cuentas con segundo factor activo deberán completar el desafío de Fortify después de autenticarse con Google.
 * La verificación de email no será obligatoria en la etapa actual. Su
   infraestructura permanece inactiva hasta disponer de correo saliente y una
   decisión explícita de reactivación.
-* ¿Se utilizará autenticación de dos factores?
+* La autenticación de dos factores está disponible y se aplica también a Google cuando el usuario la tiene activa.
 
 ## **Roles y permisos**
 

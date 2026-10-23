@@ -45,6 +45,7 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 
 * Registro de clientes.  
 * Inicio de sesión.  
+* Registro e inicio de sesión mediante cuentas de Google.  
 * Recuperación de contraseña.  
 * Infraestructura de verificación de identidad, activable cuando exista un
   proveedor de correo configurado.
@@ -56,6 +57,15 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 ## **Reglas principales**
 
 * Los usuarios deberán autenticarse para acceder a las funcionalidades protegidas.  
+* El registro tradicional con correo y contraseña continuará disponible junto con Google.
+* El registro público mediante Google deberá completar el teléfono y definir una contraseña antes de crear el usuario y su perfil de cliente.
+* Todo registro público mediante Google recibirá exclusivamente el rol `client`, asignado en backend.
+* Google admitirá cuentas personales y de Google Workspace.
+* Una identidad de Google se asociará mediante su identificador estable y no únicamente por coincidencia de correo.
+* Una cuenta existente deberá iniciar sesión y vincular Google explícitamente; no se vinculará automáticamente por correo, incluso para administradores.
+* Los administradores podrán vincular Google sin que esto altere su rol o permisos.
+* El inicio de sesión con Google no omitirá el segundo factor de VetZen cuando esté activo.
+* La autenticación mediante Google no marcará `email_verified_at`; la verificación de correo seguirá inactiva en esta etapa.
 * La verificación de correo no condiciona el acceso en la versión actual.
 * Los permisos determinarán qué acciones puede realizar cada usuario.  
 * Los profesionales podrán tener diferentes niveles de acceso.  
