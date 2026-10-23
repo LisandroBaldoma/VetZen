@@ -3,8 +3,8 @@ id: admin.asignar-y-gestionar-tratamientos
 title: Asignar y gestionar tratamientos de un paciente
 roles: [admin]
 module: treatments
-route_names: [admin.pets.treatments.index, admin.pets.treatments.create, admin.pets.treatments.store, admin.pets.treatments.show, admin.pets.treatments.update, admin.pets.treatments.status.update]
-keywords: [asignar tratamiento, iniciar tratamiento, tratamiento paciente, condiciones]
+route_names: [admin.pet-treatments.index, admin.pets.treatments.index, admin.pets.treatments.create, admin.pets.treatments.store, admin.pets.treatments.show, admin.pets.treatments.update, admin.pets.treatments.status.update]
+keywords: [tratamientos de pacientes, asignar tratamiento, iniciar tratamiento, tratamiento paciente, condiciones]
 status: available
 feature_ids: [08, UX-08]
 source_refs: [routes/web.php, resources/js/pages/admin/pets/treatments/create.tsx, features/08-treatments-and-sessions.md]
@@ -20,13 +20,18 @@ uno que ya fue asignado.
 
 ## Cómo hacerlo
 
-1. Abrí **Pacientes** y seleccioná el paciente.
-2. Entrá en **Tratamientos**.
-3. Elegí **Iniciar tratamiento**.
-4. Seleccioná una plantilla disponible.
-5. Definí sesiones planificadas, precio por sesión, fecha de inicio y notas.
-6. Confirmá el inicio del tratamiento.
-7. Desde el detalle del tratamiento, revisá condiciones, procedimientos,
+1. Para consultar todos los tratamientos asignados, abrí **Tratamientos de
+   pacientes** desde el menú de Atención.
+2. Podés buscar por tratamiento, paciente o responsable, y filtrar por servicio
+   o estado.
+3. Abrí un tratamiento para revisar su detalle y progreso.
+4. Para iniciar uno nuevo, abrí **Pacientes**, seleccioná el paciente y entrá en
+   **Tratamientos**.
+5. Elegí **Iniciar tratamiento**.
+6. Seleccioná una plantilla disponible.
+7. Definí sesiones planificadas, precio por sesión, fecha de inicio y notas.
+8. Confirmá el inicio del tratamiento.
+9. Desde el detalle del tratamiento, revisá condiciones, procedimientos,
    progreso y sesiones.
 
 ## Qué sucede después

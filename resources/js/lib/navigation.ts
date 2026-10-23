@@ -12,6 +12,7 @@ import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
 import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
 import { index as clientsIndex } from '@/routes/admin/clients';
+import { index as adminPetTreatmentsIndex } from '@/routes/admin/pet-treatments';
 import { index as petsIndex } from '@/routes/admin/pets';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
 import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
@@ -19,6 +20,7 @@ import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
 import { index as clientAppointmentsIndex } from '@/routes/appointments';
+import { index as myTreatmentsIndex } from '@/routes/my-treatments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
 import type { NavGroup } from '@/types';
@@ -33,7 +35,8 @@ export type NavigationSection =
     | 'schedule-dates'
     | 'services'
     | 'procedures'
-    | 'treatments';
+    | 'treatments'
+    | 'treatment-catalog';
 
 const matches = (path: string, route: RegExp): boolean => route.test(path);
 
@@ -58,6 +61,10 @@ export function getNavigationSection(
             return 'pets';
         }
 
+        if (matches(path, /(?:^|\/)admin\/pet-treatments(?:\/|$)/)) {
+            return 'treatments';
+        }
+
         if (matches(path, /(?:^|\/)admin\/service-requests(?:\/|$)/)) {
             return 'service-requests';
         }
@@ -77,7 +84,7 @@ export function getNavigationSection(
             matches(path, /(?:^|\/)admin\/treatments(?:\/|$)/) ||
             matches(path, /(?:^|\/)admin\/services\/[^/]+\/treatments(?:\/|$)/)
         ) {
-            return 'treatments';
+            return 'treatment-catalog';
         }
 
         if (matches(path, /(?:^|\/)admin\/services(?:\/|$)/)) {
@@ -88,6 +95,10 @@ export function getNavigationSection(
     if (role === 'client') {
         if (matches(path, /(?:^|\/)appointments(?:\/|$)/)) {
             return 'appointments';
+        }
+
+        if (matches(path, /(?:^|\/)my-treatments(?:\/|$)/)) {
+            return 'treatments';
         }
 
         if (matches(path, /(?:^|\/)pets(?:\/|$)/)) {
@@ -115,6 +126,8 @@ export function getSimonModule(
         case 'services':
         case 'treatments':
             return section;
+        case 'treatment-catalog':
+            return 'treatments';
         case 'schedule-dates':
             return 'appointments';
         default:
@@ -165,21 +178,28 @@ export function getNavigationGroups(
                       ],
                   },
                   {
-                       title: 'Atención',
-                       items: [
-                            {
-                                title: 'Turnos',
-                                href: adminAppointmentsIndex(),
-                                icon: CalendarDays,
-                                isActive: activeSection === 'appointments',
-                                mobileTitle: 'Turnos',
-                            },
-                            {
+                      title: 'Atención',
+                      items: [
+                          {
+                              title: 'Turnos',
+                              href: adminAppointmentsIndex(),
+                              icon: CalendarDays,
+                              isActive: activeSection === 'appointments',
+                              mobileTitle: 'Turnos',
+                          },
+                          {
                               title: 'Solicitudes',
                               href: serviceRequestsIndex(),
                               icon: ClipboardPlus,
                               isActive: activeSection === 'service-requests',
                               mobileTitle: 'Solicitudes',
+                          },
+                          {
+                              title: 'Tratamientos de pacientes',
+                              href: adminPetTreatmentsIndex(),
+                              icon: Syringe,
+                              isActive: activeSection === 'treatments',
+                              mobileTitle: 'Tratamientos',
                           },
                           {
                               title: 'Agenda',
@@ -206,10 +226,10 @@ export function getNavigationGroups(
                               isActive: activeSection === 'procedures',
                           },
                           {
-                              title: 'Tratamientos',
+                              title: 'Plantillas de tratamientos',
                               href: treatmentsIndex(),
                               icon: Syringe,
-                              isActive: activeSection === 'treatments',
+                              isActive: activeSection === 'treatment-catalog',
                           },
                       ],
                   },
@@ -244,6 +264,13 @@ export function getNavigationGroups(
                                 icon: Stethoscope,
                                 isActive: activeSection === 'services',
                                 mobileTitle: 'Servicios',
+                            },
+                            {
+                                title: 'Mis tratamientos',
+                                href: myTreatmentsIndex(),
+                                icon: Syringe,
+                                isActive: activeSection === 'treatments',
+                                mobileTitle: 'Tratamientos',
                             },
                         ],
                     },

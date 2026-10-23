@@ -24,6 +24,8 @@ PetTreatment y manteniendo las sesiones legibles y seguras para ambos roles.
 - Edición de condiciones y cambios de estado permitidos.
 - Edición de fecha, precio, estado y notas de sesión.
 - Consulta cliente de tratamientos y sesiones propias en modo lectura.
+- Índices directos de tratamientos asignados para admin y client, incluyendo
+  tratamientos actuales e historial.
 - Acceso contextual al alta de una evolución clínica, sin asociación persistente.
 
 No incluye protocolos, procedimiento por sesión, turnos, pagos, facturación ni
@@ -46,6 +48,9 @@ creación automática de ClinicalRecord.
 ## 5. Experiencia
 
 - `PetContextHeader` conserva paciente o mascota y navegación relacionada.
+- Admin accede a **Tratamientos de pacientes** para consultar todas las
+  asignaciones; client accede a **Mis tratamientos** y solo ve las asignaciones
+  de sus propias mascotas.
 - Listados muestran estado, fecha de inicio y progreso sin exponer tokens técnicos.
 - El detalle separa resumen, condiciones, procedimientos y sesiones.
 - Las sesiones usan tabla en escritorio y tarjetas editables o de lectura en móvil.
@@ -67,6 +72,8 @@ creación automática de ClinicalRecord.
 - [x] Las sesiones respetan precio histórico, reemplazos y estados finales.
 - [x] El progreso se deriva de sesiones completadas.
 - [x] Cliente consulta tratamientos y sesiones exclusivamente propios.
+- [x] Ambos roles disponen de un acceso directo a sus tratamientos asignados,
+  con el alcance de datos correspondiente.
 - [x] La continuidad clínica es un enlace explícito, no una escritura automática.
 - [x] Vistas admin y cliente se adaptan a móvil.
 - [x] Pruebas HTTP cubren reglas, autorización y ownership horizontal.

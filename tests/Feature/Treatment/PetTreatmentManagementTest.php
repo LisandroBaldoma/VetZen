@@ -59,6 +59,36 @@ class PetTreatmentManagementTest extends TestCase
         $this->actingAs($admin)->get(route('admin.pets.treatments.show', [$pet, $petTreatment]))->assertOk();
     }
 
+    public function test_admin_can_view_all_assigned_treatments_from_the_direct_index(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+        $firstPet = Pet::factory()->create(['name' => 'Mora']);
+        $secondPet = Pet::factory()->create(['name' => 'Simón']);
+        $firstTreatment = app(TreatmentAssignmentService::class)->assign($firstPet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+        $secondTreatment = app(TreatmentAssignmentService::class)->assign($secondPet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-02', 'status' => 'completed',
+        ]);
+
+        $this->actingAs($admin)->get(route('admin.pet-treatments.index', ['status' => 'pending']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('treatments/index')
+                ->where('isAdmin', true)
+                ->has('treatments.data', 1)
+                ->where('treatments.data.0.id', $firstTreatment->id)
+                ->where('treatments.data.0.pet.name', 'Mora')
+                ->where('filters.status', 'pending')
+                ->missing('treatments.data.0.pet.client_id'));
+
+        $this->assertDatabaseHas('pet_treatments', ['id' => $secondTreatment->id]);
+    }
+
     public function test_client_cannot_view_treatments_through_administrative_routes(): void
     {
         $client = Client::factory()->create();
@@ -94,6 +124,35 @@ class PetTreatmentManagementTest extends TestCase
 
         $this->actingAs($client->user)->get(route('pets.treatments.index', $pet))->assertOk();
         $this->actingAs($client->user)->get(route('pets.treatments.show', [$pet, $petTreatment]))->assertOk();
+    }
+
+    public function test_client_direct_index_shows_only_treatments_for_own_pets(): void
+    {
+        $this->withoutVite();
+
+        $client = Client::factory()->create();
+        $ownPet = Pet::factory()->for($client)->create(['name' => 'Luna']);
+        $otherPet = Pet::factory()->create(['name' => 'Nala']);
+        $ownTreatment = app(TreatmentAssignmentService::class)->assign($ownPet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+        app(TreatmentAssignmentService::class)->assign($otherPet, $this->catalogTreatment(), [
+            'planned_sessions' => 1, 'default_session_price' => 0,
+            'currency' => 'ARS', 'starts_on' => '2026-09-01', 'status' => 'pending',
+        ]);
+
+        $this->actingAs($client->user)->get(route('my-treatments.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('treatments/index')
+                ->where('isAdmin', false)
+                ->has('treatments.data', 1)
+                ->where('treatments.data.0.id', $ownTreatment->id)
+                ->where('treatments.data.0.pet.name', 'Luna')
+                ->missing('treatments.data.0.pet.client_name'));
+
+        $this->actingAs($client->user)->get(route('admin.pet-treatments.index'))->assertForbidden();
     }
 
     public function test_nested_treatment_route_rejects_treatment_from_another_pet(): void

@@ -4,7 +4,7 @@ title: Gestionar sesiones de un tratamiento
 roles: [admin]
 module: treatments
 route_names: [admin.pets.treatments.show, admin.treatment-sessions.update]
-keywords: [sesión, registrar sesión, completo una sesión, completar sesión, programar sesión, cancelar sesión]
+keywords: [sesión, registro de sesión, registrar sesión, completo una sesión, completar sesión, completar tratamiento, programar sesión, cancelar sesión]
 status: available
 feature_ids: [08, UX-08]
 source_refs: [routes/web.php, resources/js/pages/admin/pets/treatments/components/session-row.tsx, features/08-treatments-and-sessions.md]

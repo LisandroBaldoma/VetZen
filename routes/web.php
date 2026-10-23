@@ -25,6 +25,7 @@ use App\Http\Controllers\PetTreatmentController;
 use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\SimonMessageController;
+use App\Http\Controllers\TreatmentOverviewController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -39,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('services', [ServiceController::class, 'index'])->name('services.index');
     Route::get('services/{service}', [ServiceController::class, 'show'])->name('services.show');
+    Route::get('my-treatments', [TreatmentOverviewController::class, 'mine'])->name('my-treatments.index');
 
     Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
@@ -80,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('services.status.update');
         Route::get('procedures', AdminProcedureCatalogController::class)->name('procedures.index');
         Route::get('treatments', AdminTreatmentCatalogController::class)->name('treatments.index');
+        Route::get('pet-treatments', [TreatmentOverviewController::class, 'index'])->name('pet-treatments.index');
         Route::get('schedule-dates', [AdminAppointmentScheduleDateController::class, 'index'])->name('schedule-dates.index');
         Route::get('schedule-dates/create', [AdminAppointmentScheduleDateController::class, 'create'])->name('schedule-dates.create');
         Route::post('schedule-dates', [AdminAppointmentScheduleDateController::class, 'store'])->name('schedule-dates.store');
