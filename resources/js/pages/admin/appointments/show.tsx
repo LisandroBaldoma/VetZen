@@ -232,7 +232,8 @@ export default function AdminAppointmentShow({
                                                         key={option.id}
                                                         value={option.id}
                                                     >
-                                                        {option.service_name} · Solicitud #{option.id} ·{' '}
+                                                        {option.service_name} ·
+                                                        Solicitud #{option.id} ·{' '}
                                                         {labels[option.status]}
                                                     </option>
                                                 ),
@@ -263,8 +264,10 @@ export default function AdminAppointmentShow({
                                                         key={option.id}
                                                         value={option.id}
                                                     >
-                                                        {option.treatment_name} · Sesión{' '}
-                                                        {option.session_number} ·{' '}
+                                                        {option.treatment_name}{' '}
+                                                        · Sesión{' '}
+                                                        {option.session_number}{' '}
+                                                        ·{' '}
                                                         {labels[option.status]}
                                                     </option>
                                                 ),

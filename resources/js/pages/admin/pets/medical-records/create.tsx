@@ -56,13 +56,20 @@ export default function AdminMedicalRecordCreate({
                     className="space-y-6 rounded-xl border bg-card p-5 shadow-sm sm:p-6"
                 >
                     {({ processing, errors }) => (
-                        <><input name="treatment_session_id" type="hidden" value={prefill.treatment_session_id ?? ''} /><ClinicalRecordFormFields
-                            types={types}
-                            errors={errors}
-                            processing={processing}
-                            submitLabel="Crear registro"
-                            defaultType={prefill.type}
-                        /></>
+                        <>
+                            <input
+                                name="treatment_session_id"
+                                type="hidden"
+                                value={prefill.treatment_session_id ?? ''}
+                            />
+                            <ClinicalRecordFormFields
+                                types={types}
+                                errors={errors}
+                                processing={processing}
+                                submitLabel="Crear registro"
+                                defaultType={prefill.type}
+                            />
+                        </>
                     )}
                 </Form>
             </div>
