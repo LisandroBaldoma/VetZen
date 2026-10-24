@@ -65,7 +65,14 @@ class PetTreatmentController extends Controller
         $pet->load('client.user:id,name');
         $petTreatment->load([
             'procedureSnapshots:id,pet_treatment_id,procedure_name,procedure_description',
-            'sessions' => fn ($query) => $query->orderBy('session_number')->select(['id', 'pet_treatment_id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes']),
+            'sessions' => fn ($query) => $query
+                ->orderBy('session_number')
+                ->select(['id', 'pet_treatment_id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes'])
+                ->with([
+                    'appointments' => fn ($appointments) => $appointments
+                        ->where('status', 'attended')
+                        ->with('clinicalTask:id,appointment_id,clinical_record_id,resolved_at'),
+                ]),
         ]);
 
         return Inertia::render('admin/pets/treatments/show', [
@@ -122,7 +129,18 @@ class PetTreatmentController extends Controller
             'status' => $petTreatment->status,
             'notes' => $petTreatment->notes,
             'procedure_snapshots' => $petTreatment->procedureSnapshots->map->only(['id', 'procedure_name', 'procedure_description']),
-            'sessions' => $petTreatment->sessions->map->only(['id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes']),
+            'sessions' => $petTreatment->sessions->map(function ($session): array {
+                $appointment = $session->appointments->first();
+
+                return [
+                    ...$session->only(['id', 'session_number', 'scheduled_at', 'price', 'currency', 'status', 'notes']),
+                    'clinical_task' => $appointment?->clinicalTask === null ? null : [
+                        'appointment_id' => $appointment->id,
+                        'clinical_record_id' => $appointment->clinicalTask->clinical_record_id,
+                        'resolved_at' => $appointment->clinicalTask->resolved_at?->toISOString(),
+                    ],
+                ];
+            }),
         ];
     }
 }

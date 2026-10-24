@@ -79,15 +79,18 @@ class ServiceManagementTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Acupuncture',
             'description' => 'General commercial description.',
+            'appointment_duration_minutes' => 45,
         ]);
 
         $service = Service::query()->where('name', 'Acupuncture')->firstOrFail();
         $response->assertRedirect(route('admin.services.index'));
         $this->assertTrue($service->is_active);
+        $this->assertSame(45, $service->appointment_duration_minutes);
 
         $this->actingAs($admin)->patch(route('admin.services.update', $service), [
             'name' => 'Updated acupuncture',
             'description' => 'Updated description.',
+            'appointment_duration_minutes' => 30,
             'is_active' => false,
             'client_id' => 999,
             'role' => 'client',
@@ -96,6 +99,7 @@ class ServiceManagementTest extends TestCase
         $service->refresh();
         $this->assertSame('Updated acupuncture', $service->name);
         $this->assertFalse($service->is_active);
+        $this->assertSame(30, $service->appointment_duration_minutes);
         $this->assertNull($service->getAttribute('client_id'));
         $this->assertNull($service->getAttribute('role'));
         $this->actingAs($admin)->get(route('admin.services.show', $inactive))->assertOk();
@@ -136,6 +140,7 @@ class ServiceManagementTest extends TestCase
         $payload = [
             'name' => 'Forbidden update',
             'description' => $service->description,
+            'appointment_duration_minutes' => 30,
         ];
 
         $this->actingAs($client)->get(route('admin.services.index'))->assertForbidden();
@@ -156,9 +161,10 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($admin)->post(route('admin.services.store'), [
             'name' => 'Existing service',
             'description' => '',
+            'appointment_duration_minutes' => 0,
             'is_active' => 'not-boolean',
         ])->assertSessionHasErrors([
-            'name', 'description', 'is_active',
+            'name', 'description', 'appointment_duration_minutes', 'is_active',
         ]);
 
         $this->assertSame(1, Service::query()->count());
@@ -172,6 +178,7 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($admin)->patch(route('admin.services.update', $service), [
             'name' => 'Same name',
             'description' => 'Still valid.',
+            'appointment_duration_minutes' => 30,
             'is_active' => true,
         ])->assertSessionHasNoErrors();
     }

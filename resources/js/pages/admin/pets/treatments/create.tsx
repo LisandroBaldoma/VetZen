@@ -66,12 +66,13 @@ export default function AssignTreatment({
                     Esta es una asignación directa realizada por el profesional.
                     No requiere una solicitud previa. Al confirmar se congelan
                     el nombre, la descripción y los procedimientos de la
-                    plantilla, y se crean las sesiones pendientes.
+                    tratamiento del catálogo, y se crean las sesiones
+                    pendientes.
                 </div>
                 {treatments.length === 0 ? (
                     <div className="space-y-3 rounded-xl border border-dashed bg-card p-6 shadow-sm">
                         <p className="font-medium">
-                            No hay plantillas disponibles.
+                            No hay tratamientos disponibles.
                         </p>
                         <p className="text-sm text-muted-foreground">
                             Solo se muestran tratamientos activos, de servicios
@@ -113,7 +114,7 @@ export default function AssignTreatment({
                                     </select>
                                     <InputError message={errors.treatment_id} />
                                     <p className="text-sm text-muted-foreground">
-                                        Solo aparecen plantillas activas de
+                                        Solo aparecen tratamientos activos de
                                         servicios activos.
                                     </p>
                                 </div>
@@ -189,7 +190,7 @@ export default function AssignTreatment({
                                     </Button>
                                     <Button disabled={processing}>
                                         {processing
-                                            ? 'Iniciando...'
+                                            ? 'Iniciando…'
                                             : 'Iniciar tratamiento'}
                                     </Button>
                                 </div>

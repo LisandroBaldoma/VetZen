@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
+use App\Http\Controllers\Admin\AppointmentScheduleTemplateController as AdminAppointmentScheduleTemplateController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -14,23 +17,46 @@ use App\Http\Controllers\Admin\TreatmentCatalogController as AdminTreatmentCatal
 use App\Http\Controllers\Admin\TreatmentController as AdminTreatmentController;
 use App\Http\Controllers\Admin\TreatmentSessionController as AdminTreatmentSessionController;
 use App\Http\Controllers\Admin\TreatmentStatusController as AdminTreatmentStatusController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\PetTreatmentController;
 use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\SimonMessageController;
+use App\Http\Controllers\TreatmentOverviewController;
 use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
 Route::inertia('/', 'welcome')->name('home');
 
+Route::middleware(['guest', 'throttle:10,1'])->prefix('auth/google')->name('google.')->group(function () {
+    Route::get('redirect', [GoogleAuthenticationController::class, 'redirect'])->name('redirect');
+    Route::get('callback', [GoogleAuthenticationController::class, 'callback'])->name('callback');
+    Route::get('complete', [GoogleAuthenticationController::class, 'create'])->name('registration.create');
+    Route::post('complete', [GoogleAuthenticationController::class, 'store'])->name('registration.store');
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::post('simon/messages', [SimonMessageController::class, 'store'])
+        ->middleware('throttle:simon')
+        ->name('simon.messages.store');
 
     Route::get('services', [ServiceController::class, 'index'])->name('services.index');
     Route::get('services/{service}', [ServiceController::class, 'show'])->name('services.show');
+    Route::get('my-treatments', [TreatmentOverviewController::class, 'mine'])->name('my-treatments.index');
+
+    Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
+    Route::patch('appointments/{appointment}/cancellation', [AppointmentController::class, 'cancel'])->name('appointments.cancellation');
+    Route::get('appointments/{appointment}/reschedule', [AppointmentController::class, 'editReschedule'])->name('appointments.reschedule.edit');
+    Route::patch('appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
 
     Route::get('pets', [PetController::class, 'index'])->name('pets.index');
     Route::get('pets/create', [PetController::class, 'create'])->name('pets.create');
@@ -64,6 +90,27 @@ Route::middleware(['auth'])->group(function () {
             ->name('services.status.update');
         Route::get('procedures', AdminProcedureCatalogController::class)->name('procedures.index');
         Route::get('treatments', AdminTreatmentCatalogController::class)->name('treatments.index');
+        Route::get('pet-treatments', [TreatmentOverviewController::class, 'index'])->name('pet-treatments.index');
+        Route::get('schedule-dates', [AdminAppointmentScheduleDateController::class, 'index'])->name('schedule-dates.index');
+        Route::get('schedule-dates/create', [AdminAppointmentScheduleDateController::class, 'create'])->name('schedule-dates.create');
+        Route::post('schedule-dates', [AdminAppointmentScheduleDateController::class, 'store'])->name('schedule-dates.store');
+        Route::get('schedule-dates/{scheduleDate}/edit', [AdminAppointmentScheduleDateController::class, 'edit'])->name('schedule-dates.edit');
+        Route::patch('schedule-dates/{scheduleDate}', [AdminAppointmentScheduleDateController::class, 'update'])->name('schedule-dates.update');
+        Route::get('schedule-templates', [AdminAppointmentScheduleTemplateController::class, 'index'])->name('schedule-templates.index');
+        Route::get('schedule-templates/create', [AdminAppointmentScheduleTemplateController::class, 'create'])->name('schedule-templates.create');
+        Route::post('schedule-templates', [AdminAppointmentScheduleTemplateController::class, 'store'])->name('schedule-templates.store');
+        Route::get('schedule-templates/{scheduleTemplate}/edit', [AdminAppointmentScheduleTemplateController::class, 'edit'])->name('schedule-templates.edit');
+        Route::patch('schedule-templates/{scheduleTemplate}', [AdminAppointmentScheduleTemplateController::class, 'update'])->name('schedule-templates.update');
+        Route::delete('schedule-templates/{scheduleTemplate}', [AdminAppointmentScheduleTemplateController::class, 'destroy'])->name('schedule-templates.destroy');
+        Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('appointments/schedule', [AdminAppointmentController::class, 'schedule'])->name('appointments.schedule');
+        Route::get('appointments/create', [AdminAppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('appointments', [AdminAppointmentController::class, 'store'])->name('appointments.store');
+        Route::get('appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'editReschedule'])->name('appointments.reschedule.edit');
+        Route::patch('appointments/{appointment}/reschedule', [AdminAppointmentController::class, 'reschedule'])->name('appointments.reschedule');
+        Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+        Route::patch('appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.status.update');
+        Route::patch('appointments/{appointment}/links', [AdminAppointmentController::class, 'updateLinks'])->name('appointments.links.update');
         Route::get('service-requests', [AdminServiceRequestController::class, 'index'])->name('service-requests.index');
         Route::get('service-requests/{serviceRequest}', [AdminServiceRequestController::class, 'show'])->name('service-requests.show');
         Route::post('service-requests/{serviceRequest}/resolution', [AdminServiceRequestController::class, 'resolve'])->name('service-requests.resolve');

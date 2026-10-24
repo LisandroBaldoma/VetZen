@@ -25,25 +25,25 @@ export default function TreatmentCreate({
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Plantillas', href: templatesIndex() },
+            { title: 'Tratamientos', href: templatesIndex() },
             { title: service.name, href: serviceTemplatesIndex(service.id) },
-            { title: 'Crear plantilla', href: create(service.id) },
+            { title: 'Crear tratamiento', href: create(service.id) },
         ],
     });
 
     return (
         <>
-            <Head title="Crear plantilla" />
+            <Head title="Crear tratamiento" />
             <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6">
                 <Heading
-                    title="Crear plantilla"
+                    title="Crear tratamiento"
                     description={`Servicio: ${service.name}. Definí sus procedimientos y sesiones estimadas.`}
                 />
                 {procedures.length === 0 ? (
                     <div className="space-y-4 rounded-xl border border-dashed bg-card p-5 shadow-sm sm:p-6">
                         <p className="text-sm text-muted-foreground">
                             Este servicio no tiene procedimientos activos. Creá
-                            o activá uno antes de crear una plantilla.
+                            o activá uno antes de crear un tratamiento.
                         </p>
                         <Button asChild>
                             <Link href={proceduresIndex(service.id)}>
@@ -118,7 +118,7 @@ export default function TreatmentCreate({
                                 />
                                 <div className="flex justify-end border-t pt-5">
                                     <Button disabled={processing}>
-                                        Guardar plantilla
+                                        Guardar tratamiento
                                     </Button>
                                 </div>
                             </>

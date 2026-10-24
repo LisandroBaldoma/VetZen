@@ -53,6 +53,7 @@ class ClientManagementTest extends TestCase
                 'permissions' => ['clients.viewAny'],
             ])
             ->assertSessionHasNoErrors()
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Cliente actualizado.'])
             ->assertRedirect(route('admin.clients.edit', $client));
 
         $this->assertSame('updated-phone', $client->fresh()->phone);

@@ -63,7 +63,7 @@ export default function AdminServicesIndex({
             <Head title="Servicios" />
             <div className="workspace-operational">
                 <PageHeader
-                    title="Servicios clínicos"
+                    title="Servicios"
                     description="Administrá las terapias y sus procedimientos disponibles."
                     actions={
                         <Button asChild>
@@ -297,6 +297,6 @@ export default function AdminServicesIndex({
 AdminServicesIndex.layout = {
     breadcrumbs: [
         { title: 'Inicio', href: dashboard() },
-        { title: 'Servicios clínicos', href: index() },
+        { title: 'Servicios', href: index() },
     ],
 };

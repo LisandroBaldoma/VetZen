@@ -11,7 +11,7 @@ type Props = {
 export default function AdminClientEdit({ client }: Props) {
     return (
         <>
-            <Head title={`Client: ${client.user.name}`} />
+            <Head title={`Cliente: ${client.user.name}`} />
             <div className="mx-auto w-full max-w-2xl space-y-6 p-4">
                 <Heading
                     title={client.user.name}
@@ -27,7 +27,7 @@ export default function AdminClientEdit({ client }: Props) {
                             client={client}
                             errors={errors}
                             processing={processing}
-                            submitLabel="Save client details"
+                            submitLabel="Guardar datos del cliente"
                         />
                     )}
                 </Form>

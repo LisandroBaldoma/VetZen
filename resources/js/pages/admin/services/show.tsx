@@ -41,7 +41,7 @@ export default function AdminServiceShow({ service }: { service: Service }) {
                         </Button>
                         <Button variant="outline" asChild>
                             <Link href={treatmentsIndex(service.id)}>
-                                Plantillas
+                                Tratamientos
                             </Link>
                         </Button>
                         <Button asChild>

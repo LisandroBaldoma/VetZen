@@ -19,6 +19,7 @@ import {
 import { dashboard } from '@/routes';
 import { index } from '@/routes/admin/procedures';
 import {
+    create,
     edit,
     index as serviceProceduresIndex,
 } from '@/routes/admin/services/procedures';
@@ -51,6 +52,9 @@ export default function AdminProcedureCatalog({
     const hasFilters = Boolean(
         filters.search || filters.service || filters.status,
     );
+    const selectedService = services.find(
+        (service) => service.id === Number(filters.service),
+    );
 
     const visit = (next: Filters) => {
         const query = Object.fromEntries(
@@ -67,11 +71,22 @@ export default function AdminProcedureCatalog({
 
     return (
         <>
-            <Head title="Procedimientos clínicos" />
+            <Head title="Procedimientos" />
             <div className="workspace-operational">
                 <PageHeader
-                    title="Procedimientos clínicos"
-                    description="Consultá y administrá todos los procedimientos del catálogo."
+                    title="Procedimientos"
+                    description="Consultá y administrá todos los procedimientos del catálogo. Seleccioná un servicio para crear uno nuevo."
+                    actions={
+                        selectedService ? (
+                            <Button asChild>
+                                <Link href={create(selectedService.id)}>
+                                    Crear procedimiento
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button disabled>Crear procedimiento</Button>
+                        )
+                    }
                 />
 
                 <div className="grid gap-3 border-y border-border py-4 md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
@@ -350,6 +365,6 @@ export default function AdminProcedureCatalog({
 AdminProcedureCatalog.layout = {
     breadcrumbs: [
         { title: 'Inicio', href: dashboard() },
-        { title: 'Procedimientos clínicos', href: index() },
+        { title: 'Procedimientos', href: index() },
     ],
 };

@@ -3,6 +3,7 @@ import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppTopbar } from '@/components/app-topbar';
+import { SimonAssistant } from '@/components/simon/simon-assistant';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -19,6 +20,7 @@ export default function AppSidebarLayout({
                 <AppTopbar breadcrumbs={breadcrumbs} />
                 {children}
             </AppContent>
+            <SimonAssistant />
             <AppBottomNav />
         </AppShell>
     );

@@ -24,6 +24,6 @@ class UpdateClinicalRecordRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->clinicalRecordRules();
+        return [...$this->clinicalRecordRules(), 'treatment_session_id' => ['nullable', 'integer', 'exists:treatment_sessions,id']];
     }
 }

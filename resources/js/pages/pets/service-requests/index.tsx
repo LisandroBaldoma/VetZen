@@ -58,7 +58,7 @@ export default function RequestsIndex({
             { title: 'Inicio', href: dashboard() },
             { title: 'Mis mascotas', href: petsIndex() },
             { title: pet.name, href: petShow(pet.id) },
-            { title: 'Solicitudes de atención', href: index(pet.id) },
+            { title: 'Solicitudes', href: index(pet.id) },
         ],
     });
 
@@ -73,7 +73,7 @@ export default function RequestsIndex({
                     editHref={edit.url(pet.id)}
                 />
                 <PageHeader
-                    title="Solicitudes de atención"
+                    title="Solicitudes"
                     description="Consultá las evaluaciones solicitadas para esta mascota."
                     actions={
                         <Button asChild className="min-h-11 w-full sm:w-auto">

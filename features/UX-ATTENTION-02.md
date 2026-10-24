@@ -127,6 +127,10 @@ crear persistencia temporal, ruta nueva ni un paso de negocio adicional.
 
 ### 3.3. Crear solicitud
 
+> Actualización UX-CONTENT-01: en la interfaz actual, `Service` se denomina
+> Servicio. "Tipo de atención" puede utilizarse solo como texto explicativo y
+> no como rótulo principal de la entidad.
+
 **Objetivo:** enviar una solicitud de atención simple y comprensible.
 
 **Orden visual:**

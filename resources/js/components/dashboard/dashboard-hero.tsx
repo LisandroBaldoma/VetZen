@@ -1,4 +1,4 @@
-import { Activity, CalendarCheck2, Stethoscope } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import PageHeader from '@/components/page-header';
@@ -13,26 +13,6 @@ export type DashboardMetric = {
     icon: LucideIcon;
     tone: MetricTone;
 };
-
-const supportingMetrics: DashboardMetric[] = [
-    {
-        label: 'Terapias hoy',
-        value: '12',
-        status: 'En cronograma',
-        description: '8 completadas y 4 programadas para el turno tarde.',
-        icon: CalendarCheck2,
-        tone: 'clinical',
-    },
-    {
-        label: 'Adherencia médica',
-        value: '98.4%',
-        status: 'Óptima',
-        description:
-            'Cumplimiento activo de protocolos terapéuticos semanales.',
-        icon: Stethoscope,
-        tone: 'primary',
-    },
-];
 
 const toneClasses: Record<MetricTone, { icon: string; status: string }> = {
     operational: {
@@ -53,9 +33,9 @@ export function DashboardHero({
     pendingRequestsCount,
     action,
     metrics,
-    description = 'Mesa de trabajo clínica para revisar la atención que requiere definición.',
-    overviewTitle = 'Resumen clínico diario',
-    overviewBadge = 'Panel operativo clínico',
+    description = 'Lo importante para continuar la atención.',
+    overviewTitle = 'Resumen de solicitudes',
+    overviewBadge = 'Panel operativo',
     showSummary = true,
 }: {
     pendingRequestsCount?: number;
@@ -71,12 +51,10 @@ export function DashboardHero({
             label: 'Solicitudes pendientes',
             value: (pendingRequestsCount ?? 0).toString(),
             status: 'Requieren revisión',
-            description:
-                'Pacientes esperando confirmación de triage y evaluación inicial.',
+            description: 'Solicitudes pendientes de revisión profesional.',
             icon: Activity,
             tone: 'operational',
         },
-        ...supportingMetrics,
     ];
 
     return (

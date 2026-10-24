@@ -58,7 +58,9 @@ Actualmente se contempla:
 
 ### **Autenticación**
 
-* Sistema de autenticación compatible con Laravel.
+* Laravel Fortify para autenticación local mediante sesión.
+* Laravel Socialite con Google OAuth como método adicional de registro e inicio de sesión.
+* La identidad externa se almacenará mediante el identificador estable de Google, sin persistir tokens OAuth mientras no se consuman APIs de Google.
 
 ### **Autorización**
 
@@ -71,17 +73,27 @@ Actualmente se contempla:
 ### **Notificaciones**
 
 * Email.  
-* Notificaciones Push.
+* Notificaciones internas.
 
 ### **Inteligencia artificial**
 
-* Modelo de lenguaje.  
+* Arquitectura agnóstica de proveedor de modelo de lenguaje.
+* Groq como proveedor inicial para desarrollo y pruebas con
+  `openai/gpt-oss-20b` como baseline de SIMON-04.
+* OpenAI como alternativa futura compatible.
 * Embeddings.  
 * Búsqueda semántica.  
 * Arquitectura RAG.  
 * Herramientas controladas para acceder a información dinámica del sistema.
 
-La elección concreta de proveedores y servicios deberá definirse antes de implementar las funcionalidades correspondientes.
+La integración LLM se realiza mediante una capa de aplicación del asistente, sin
+acoplar la lógica de dominio, autorización o acceso a datos a Groq, OpenAI u
+otro proveedor. Groq es el proveedor inicial para desarrollo y pruebas. El
+proveedor de producción se decidirá posteriormente según calidad, costo,
+latencia, límites, privacidad y necesidades reales de VetZen. La API key, el
+modelo, los parámetros, los límites y los timeouts son valores configurables por
+entorno. `openai/gpt-oss-20b` es el baseline de desarrollo/pruebas de
+SIMON-04. El modelo de producción permanece pendiente de decisión.
 
 ---
 
@@ -192,15 +204,25 @@ El hecho de que una información exista en la base de datos no implica que el us
 
 # **10\. Gestión de turnos**
 
-El sistema deberá contemplar una agenda basada en disponibilidad y servicios.
+La agenda única se implementará con fechas publicadas, bloques de trabajo,
+inicios explícitamente habilitados, servicios habilitados por fecha y capacidad
+compartida configurable de uno a cinco pacientes.
 
-Los turnos solicitados por clientes requerirán aprobación profesional antes de quedar confirmados.
+La fuente de verdad de disponibilidad será el backend. Las reservas y cambios de
+agenda usarán transacciones y bloqueos de filas sobre la fecha de agenda afectada.
+La ocupación incluye estados `pending` y `approved`, y se calcula sobre todo el
+intervalo `[starts_at, ends_at)`, no mediante un conteo simple de turnos
+solapados. Las operaciones entre dos fechas bloquean las fechas en orden estable
+para evitar interbloqueos.
 
-Los clientes podrán modificar y cancelar sus propios turnos, respetando los límites establecidos por la veterinaria.
+Los instantes se persistirán en UTC y se validarán y presentarán en la zona
+horaria explícita de la veterinaria, `America/Argentina/Buenos_Aires`. El motor
+objetivo es MySQL. Las pruebas de concurrencia deberán ejecutarse contra MySQL;
+SQLite no valida semánticas de bloqueo equivalentes.
 
-Los límites de anticipación y cancelación deberán ser configurables.
-
-La implementación deberá garantizar que no se produzcan inconsistencias en la disponibilidad ante solicitudes concurrentes.
+La reprogramación debe ser atómica: reserva el intervalo destino y libera el
+origen en la misma transacción, o conserva el turno original. Las modificaciones
+de agenda no pueden invalidar turnos pendientes o aprobados existentes.
 
 ---
 
@@ -261,7 +283,7 @@ diferentes por número de sesión.
 VetZen utilizará inicialmente:
 
 * Email.  
-* Notificaciones Push.
+* Notificaciones internas.
 
 Las notificaciones deberán poder procesarse de forma asíncrona cuando corresponda.
 
@@ -269,7 +291,9 @@ Los recordatorios estarán habilitados para los eventos definidos por el product
 
 La implementación deberá contemplar mecanismos adecuados para evitar notificaciones duplicadas cuando un mismo evento sea procesado más de una vez.
 
-El proveedor concreto de Push Notifications queda pendiente de definición.
+Push Notifications queda fuera de la primera versión de turnos. La implementación
+de recordatorios deberá registrar entregas idempotentes, invalidar entregas
+obsoletas y no bloquear una reserva si falla el email.
 
 ---
 
@@ -292,15 +316,34 @@ La estrategia concreta de auditoría queda pendiente de definición.
 
 # **14\. Inteligencia artificial**
 
-El asistente virtual será un componente controlado de VetZen y no deberá tener acceso directo e irrestricto a la base de datos.
+El asistente virtual Simón será un componente controlado de VetZen y no deberá
+
+La implementación evoluciona en este orden:
+
+1. SIMON-01: Knowledge Base curada de uso del producto.
+2. SIMON-02: chunking, almacenamiento y búsqueda textual.
+3. SIMON-03: generación grounded con un proveedor LLM y contexto recuperado.
+4. SIMON-04: evaluación, grounding y observabilidad del MVP.
+5. Embeddings y búsqueda semántica/híbrida si la evaluación los justifica.
+
+SIMON-01 no implementa integración de IA ni persistencia de conocimiento fuera
+de los documentos versionados.
 
 Se utilizarán dos fuentes principales de información.
 
 ## **14.1 Base de conocimiento**
 
-Contendrá información autorizada por la veterinaria.
+Contendrá información autorizada y curada sobre el uso del producto. Su contenido
+se mantiene separado de especificaciones técnicas, documentos de planificación y
 
-Esta información podrá utilizar una arquitectura RAG para recuperar contenido relevante antes de generar una respuesta.
+Esta información podrá utilizar una arquitectura RAG para recuperar contenido
+relevante antes de generar una respuesta. El retrieval deberá filtrar el
+contenido por rol antes de enviarlo al proveedor.
+
+El grounding de cada documento distingue entre `allowed`, `unavailable` y
+`not_allowed_for_role`. Esta última clasificación representa una funcionalidad
+existente cuya acción no está permitida para el rol que puede recuperar la guía;
+la respuesta debe rechazar la acción y orientar hacia una alternativa permitida.
 
 El sistema deberá contemplar:
 
@@ -312,7 +355,8 @@ El sistema deberá contemplar:
 
 ## **14.2 Información dinámica**
 
-Los datos actualizados de VetZen, como turnos, tratamientos y pacientes, deberán obtenerse mediante mecanismos controlados.
+Los datos actualizados de VetZen, como turnos, tratamientos y pacientes, podrán
+obtenerse mediante mecanismos controlados en una feature posterior.
 
 El modelo no deberá consultar directamente la base de datos.
 
@@ -336,14 +380,16 @@ El sistema deberá evitar que una instrucción proporcionada por el usuario perm
 
 # **16\. Capacidades del asistente**
 
-El asistente podrá:
+El asistente podrá, según el alcance de cada feature:
 
 * Responder consultas sobre información autorizada de la veterinaria.  
-* Consultar información seleccionada de las mascotas del cliente.  
-* Consultar información actualizada de tratamientos.  
-* Consultar información de turnos.  
-* Ayudar a identificar opciones de turnos.  
-* Ayudar durante el proceso de solicitud de un turno.
+* Explicar el uso de funcionalidades implementadas a partir de la Knowledge Base.
+* Consultar información seleccionada de las mascotas del cliente cuando se
+  habilite explícitamente.
+* Consultar información actualizada de tratamientos cuando se habilite
+  explícitamente.
+* Consultar información de turnos o ayudar a solicitarlos cuando el módulo exista
+  y se habilite explícitamente.
 
 El asistente no deberá:
 
@@ -352,6 +398,7 @@ El asistente no deberá:
 * Acceder a información no autorizada.  
 * Modificar información clínica sin autorización.  
 * Inventar información cuando no exista contexto suficiente.
+* Proporcionar diagnósticos, recomendaciones veterinarias o prescripciones.
 
 Las reglas concretas de derivación a profesionales deberán definirse posteriormente en función del contenido y contexto autorizado para el asistente.
 
@@ -421,6 +468,7 @@ VetZen podrá depender de servicios externos para:
 * Almacenamiento vectorial.  
 * Email.  
 * Push Notifications.
+* Google OAuth para autenticación.
 
 Los proveedores concretos deberán definirse antes de implementar cada integración.
 
@@ -491,7 +539,7 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Arquitectura**
 
-* ¿Se utilizará Laravel con Inertia \+ Vue como arquitectura principal?  
+* Laravel con Inertia \+ React es la arquitectura actual.
 * ¿La aplicación será monolítica o se separará frontend y backend?  
 * ¿Se utilizará API además de Inertia?  
 * ¿Se requiere una API pública o solamente una API interna?
@@ -506,11 +554,14 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Autenticación**
 
-* ¿Qué mecanismo de autenticación se utilizará?  
+* Laravel Fortify continuará gestionando correo, contraseña, passkeys y segundo factor.
+* Laravel Socialite gestionará Google OAuth mediante el flujo web stateful y validación de estado; no se utilizará `stateless()`.
+* Google coexistirá con el registro local. Los usuarios nuevos completarán teléfono y contraseña, y las cuentas existentes requerirán vinculación autenticada explícita.
+* Las cuentas con segundo factor activo deberán completar el desafío de Fortify después de autenticarse con Google.
 * La verificación de email no será obligatoria en la etapa actual. Su
   infraestructura permanece inactiva hasta disponer de correo saliente y una
   decisión explícita de reactivación.
-* ¿Se utilizará autenticación de dos factores?
+* La autenticación de dos factores está disponible y se aplica también a Google cuando el usuario la tiene activa.
 
 ## **Roles y permisos**
 
@@ -521,7 +572,7 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Frontend**
 
-* ¿Se utilizará Vue 3 \+ Inertia?  
+* React \+ Inertia es el frontend actual.
 * ¿Qué sistema de estilos se utilizará?  
 * ¿Se utilizará una librería de componentes?  
 * ¿Se requiere una estrategia mobile-first?  
@@ -529,23 +580,35 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
 
 ## **Turnos**
 
-* ¿Cómo se configurarán los horarios de disponibilidad?  
-* ¿La duración será definida únicamente por servicio?  
-* ¿Se permitirán excepciones de disponibilidad?  
-* ¿Cómo se evitarán conflictos de turnos?  
-* ¿Qué límites de anticipación y cancelación se utilizarán inicialmente?
+* La agenda usa fechas concretas, bloques, inicios explícitos, servicios por fecha
+  y capacidad compartida; no hay disponibilidad implícita.
+* La duración predeterminada del turno pertenece a Service y se snapshottea al
+  reservar; no se deriva de procedimientos ni tratamientos.
+* Las excepciones se representan publicando o editando fechas concretas; no se
+  agrega un sistema separado de recurrencias.
+* Los conflictos se evitan con transacciones, bloqueo de la fecha de agenda y
+  cálculo de capacidad por intervalos.
+* Valores iniciales: reserva cliente 2 horas; cancelación y reprogramación cliente
+  24 horas; recordatorio 24 horas.
+* Resuelto para Feature 10: ServiceRequest y TreatmentSession pueden conservar
+  historial de turnos, pero cada una admite como máximo un turno `pending` o
+  `approved`; una atención de sesión pendiente de documentación bloquea una nueva
+  reserva. La tarea clínica se resuelve con un ClinicalRecord asociado
+  explícitamente a la sesión vinculada, con sesión completada y turno atendido.
+* Pendiente: matriz completa de transiciones y permisos para editar duración
+  individual.
 
 ## **Notificaciones**
 
-* ¿Se utilizará Firebase Cloud Messaging para Push Notifications?  
 * ¿Qué proveedor de email se utilizará?  
-* ¿Qué eventos generarán notificaciones?  
 * ¿El usuario podrá configurar preferencias de notificación?
 
 ## **Inteligencia artificial**
 
-* ¿Qué proveedor de modelo de lenguaje se utilizará?  
-* ¿Qué modelo se utilizará inicialmente?  
+* Proveedor de modelo de lenguaje inicial para desarrollo y pruebas: Groq, con
+  `openai/gpt-oss-20b` como baseline de SIMON-04. OpenAI permanece como
+  alternativa futura. El proveedor de producción, límites, región, retención y
+  parámetros siguen pendientes de definición.
 * ¿Qué proveedor de embeddings se utilizará?  
 * ¿Qué solución de almacenamiento vectorial se utilizará?  
 * ¿La búsqueda vectorial estará dentro de la misma base de datos o será independiente?  

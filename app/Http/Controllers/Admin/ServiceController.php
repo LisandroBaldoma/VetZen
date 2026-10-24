@@ -51,7 +51,7 @@ class ServiceController extends Controller
     {
         $this->authorizeAdmin();
         $service = Service::query()->create($request->safe()->only([
-            'name', 'description', 'is_active',
+            'name', 'description', 'appointment_duration_minutes', 'is_active',
         ]));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Servicio creado.')]);
@@ -79,7 +79,7 @@ class ServiceController extends Controller
     {
         $this->authorizeAdmin();
         $service->update($request->safe()->only([
-            'name', 'description', 'is_active',
+            'name', 'description', 'appointment_duration_minutes', 'is_active',
         ]));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Servicio actualizado.')]);

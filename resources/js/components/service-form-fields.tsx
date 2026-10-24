@@ -39,6 +39,25 @@ export default function ServiceFormFields({
                 />
                 <InputError message={errors.description} />
             </div>
+            <div className="grid gap-2">
+                <Label htmlFor="appointment_duration_minutes">
+                    Duración predeterminada del turno
+                </Label>
+                <Input
+                    id="appointment_duration_minutes"
+                    name="appointment_duration_minutes"
+                    type="number"
+                    min="1"
+                    max="1440"
+                    required
+                    defaultValue={service?.appointment_duration_minutes ?? ''}
+                />
+                <p className="text-sm text-muted-foreground">
+                    En minutos. Se usa al reservar turnos y no modifica la
+                    duración clínica de procedimientos o tratamientos.
+                </p>
+                <InputError message={errors.appointment_duration_minutes} />
+            </div>
             <div className="flex items-center gap-2 border-t pt-5">
                 <input type="hidden" name="is_active" value="0" />
                 <Checkbox

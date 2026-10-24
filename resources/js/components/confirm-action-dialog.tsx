@@ -33,7 +33,7 @@ export default function ConfirmActionDialog({
     content,
     cancelLabel = 'Cancelar',
     confirmLabel,
-    pendingLabel = 'Procesando...',
+    pendingLabel = 'Procesando…',
     pending = false,
     destructive = false,
 }: Props) {

@@ -9,6 +9,7 @@ type Service = {
     id: number;
     name: string;
     description: string;
+    appointment_duration_minutes: number | null;
     is_active: boolean;
 };
 
@@ -16,7 +17,7 @@ export default function AdminServiceEdit({ service }: { service: Service }) {
     setLayoutProps({
         breadcrumbs: [
             { title: 'Inicio', href: dashboard() },
-            { title: 'Servicios clínicos', href: index() },
+            { title: 'Servicios', href: index() },
             { title: service.name, href: edit(service.id) },
         ],
     });

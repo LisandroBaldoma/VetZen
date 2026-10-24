@@ -12,11 +12,13 @@ import { PriorityRequests } from '@/components/dashboard/priority-requests';
 import { QuickAccessGrid } from '@/components/dashboard/quick-access-grid';
 import { Button } from '@/components/ui/button';
 import { dashboard } from '@/routes';
+import { show as showAppointment } from '@/routes/admin/appointments';
 import {
     create as createPatient,
     index as patientsIndex,
     show as showPatient,
 } from '@/routes/admin/pets';
+import { show as showPetTreatment } from '@/routes/admin/pets/treatments';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
 import {
     index as requestsIndex,
@@ -35,6 +37,7 @@ const dateFormatter = new Intl.DateTimeFormat('es-AR', {
 export default function AdminDashboard({
     pendingRequestsCount,
     requests,
+    clinicalTasks,
 }: AdminDashboardProps) {
     return (
         <>
@@ -60,41 +63,108 @@ export default function AdminDashboard({
                         petDetails:
                             request.pet.species ?? 'Especie no informada',
                         service: request.service.name,
-                        notes: request.notes ?? null,
                         receivedAt: `Recibida el ${dateFormatter.format(new Date(request.createdAt))}`,
                         petHref: showPatient(request.pet.id),
                         requestHref: showRequest(request.id),
                     }))}
                 />
+                {clinicalTasks.length > 0 && (
+                    <section className="rounded-xl border bg-card p-5 shadow-sm">
+                        <h2 className="font-semibold">
+                            Registros clínicos pendientes
+                        </h2>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            Atenciones que requieren documentación clínica.
+                        </p>
+                        <div className="mt-4 grid gap-3">
+                            {clinicalTasks.map((task) => (
+                                <article
+                                    className="rounded-lg border border-border-subtle bg-surface-subtle p-4"
+                                    key={task.appointmentId}
+                                >
+                                    <p className="font-semibold">
+                                        {task.pet.name} · {task.serviceName}
+                                    </p>
+                                    {task.treatment ? (
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            {task.treatment.name} · Sesión{' '}
+                                            {task.treatment.sessionNumber} ·{' '}
+                                            {task.treatment.status === 'pending'
+                                                ? 'Pendiente'
+                                                : task.treatment.status ===
+                                                    'completed'
+                                                  ? 'Completada'
+                                                  : 'Cancelada'}
+                                        </p>
+                                    ) : (
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            Sin sesión de tratamiento vinculada.
+                                        </p>
+                                    )}
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        <Button asChild size="sm">
+                                            <Link
+                                                href={showAppointment(
+                                                    task.appointmentId,
+                                                )}
+                                            >
+                                                Ver turno
+                                            </Link>
+                                        </Button>
+                                        {task.treatment && (
+                                            <Button
+                                                asChild
+                                                size="sm"
+                                                variant="outline"
+                                            >
+                                                <Link
+                                                    href={showPetTreatment([
+                                                        task.pet.id,
+                                                        task.treatment.id,
+                                                    ])}
+                                                >
+                                                    Ver tratamiento y sesión
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
                 <QuickAccessGrid
                     items={[
                         {
                             title: 'Pacientes',
-                            description: 'Expedientes activos',
+                            description: 'Consultá y gestioná pacientes.',
                             icon: PawPrint,
                             href: patientsIndex(),
                         },
                         {
-                            title: 'Admisiones',
-                            description: 'Solicitudes de triage',
+                            title: 'Solicitudes',
+                            description: 'Revisá solicitudes pendientes.',
                             icon: ClipboardList,
                             href: requestsIndex(),
                         },
                         {
                             title: 'Servicios',
-                            description: 'Terapias y medicina',
+                            description:
+                                'Administrá los servicios disponibles.',
                             icon: Stethoscope,
                             href: servicesIndex(),
                         },
                         {
                             title: 'Procedimientos',
-                            description: 'Maniobras y pautas',
+                            description:
+                                'Administrá los procedimientos disponibles.',
                             icon: Workflow,
                             href: proceduresIndex(),
                         },
                         {
-                            title: 'Plantillas',
-                            description: 'Planes terapéuticos',
+                            title: 'Tratamientos',
+                            description:
+                                'Administrá tratamientos del catálogo.',
                             icon: FileText,
                             href: treatmentsIndex(),
                         },

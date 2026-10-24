@@ -71,15 +71,15 @@ export default function TreatmentCatalog({
 
     return (
         <>
-            <Head title="Plantillas" />
+            <Head title="Tratamientos" />
             <div className="workspace-operational">
                 <PageHeader
-                    title="Plantillas"
+                    title="Tratamientos"
                     description="Configuraciones reutilizables de procedimientos y sesiones estimadas."
                 />
 
                 <section className="border-l-2 border-clinical-foreground/50 bg-clinical/25 px-5 py-5">
-                    <h2 className="font-semibold">Crear plantilla</h2>
+                    <h2 className="font-semibold">Crear tratamiento</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                         Elegí un servicio activo que tenga procedimientos
                         activos.
@@ -95,7 +95,7 @@ export default function TreatmentCatalog({
                         {creationServices.length === 0 && (
                             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                                 <span>
-                                    Para crear una plantilla necesitás un
+                                    Para crear un tratamiento necesitás un
                                     servicio activo con al menos un
                                     procedimiento activo.
                                 </span>
@@ -124,18 +124,18 @@ export default function TreatmentCatalog({
                 <div className="grid gap-3 border-y border-border py-4 md:grid-cols-[minmax(14rem,1fr)_minmax(12rem,auto)_minmax(10rem,auto)_auto] md:items-end">
                     <form onSubmit={submitSearch} className="flex gap-2">
                         <Label htmlFor="template-search" className="sr-only">
-                            Buscar plantilla
+                            Buscar tratamiento
                         </Label>
                         <Input
                             id="template-search"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Buscar plantilla..."
+                            placeholder="Buscar tratamiento..."
                         />
                         <Button
                             type="submit"
                             size="icon"
-                            aria-label="Buscar plantillas"
+                            aria-label="Buscar tratamientos"
                         >
                             <Search aria-hidden="true" />
                         </Button>
@@ -218,8 +218,8 @@ export default function TreatmentCatalog({
                 {treatments.total === 0 ? (
                     <p className="border-y border-dashed py-8 text-sm text-muted-foreground">
                         {hasFilters
-                            ? 'No se encontraron plantillas con los filtros seleccionados.'
-                            : 'Todavía no hay plantillas. Elegí un servicio para crear la primera.'}
+                            ? 'No se encontraron tratamientos con los filtros seleccionados.'
+                            : 'Todavía no hay tratamientos. Elegí un servicio para crear el primero.'}
                     </p>
                 ) : (
                     <>
@@ -247,7 +247,7 @@ export default function TreatmentCatalog({
                                                 ],
                                             )}
                                             isActive={treatment.is_active}
-                                            subject={`la plantilla ${treatment.name}`}
+                                            subject={`el tratamiento ${treatment.name}`}
                                         />
                                     </div>
                                     <dl className="grid grid-cols-3 gap-3 text-sm">
@@ -280,7 +280,7 @@ export default function TreatmentCatalog({
                                                 treatment.service_id,
                                                 treatment.id,
                                             ])}
-                                            label={`Editar plantilla ${treatment.name}`}
+                                            label={`Editar tratamiento ${treatment.name}`}
                                             icon={Pencil}
                                         />
                                     </div>
@@ -291,7 +291,7 @@ export default function TreatmentCatalog({
                             <table className="w-full min-w-3xl text-left text-sm">
                                 <thead className="bg-muted/60 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                     <tr>
-                                        <th className="p-3">Plantilla</th>
+                                        <th className="p-3">Tratamiento</th>
                                         <th className="p-3">Servicio</th>
                                         <th className="p-3">Sesiones</th>
                                         <th className="p-3">Procedimientos</th>
@@ -338,7 +338,7 @@ export default function TreatmentCatalog({
                                                     isActive={
                                                         treatment.is_active
                                                     }
-                                                    subject={`la plantilla ${treatment.name}`}
+                                                    subject={`el tratamiento ${treatment.name}`}
                                                 />
                                             </td>
                                             <td className="p-3 text-right">
@@ -347,7 +347,7 @@ export default function TreatmentCatalog({
                                                         treatment.service_id,
                                                         treatment.id,
                                                     ])}
-                                                    label={`Editar plantilla ${treatment.name}`}
+                                                    label={`Editar tratamiento ${treatment.name}`}
                                                     icon={Pencil}
                                                 />
                                             </td>
@@ -359,7 +359,7 @@ export default function TreatmentCatalog({
                         {treatments.last_page > 1 && (
                             <nav
                                 className="flex flex-wrap justify-center gap-1"
-                                aria-label="Paginación de plantillas"
+                                aria-label="Paginación de tratamientos"
                             >
                                 {treatments.links.map((link, position) => (
                                     <Button
@@ -403,6 +403,6 @@ export default function TreatmentCatalog({
 TreatmentCatalog.layout = {
     breadcrumbs: [
         { title: 'Inicio', href: dashboard() },
-        { title: 'Plantillas', href: index() },
+        { title: 'Tratamientos', href: index() },
     ],
 };

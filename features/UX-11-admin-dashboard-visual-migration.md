@@ -1,7 +1,8 @@
 # UX-11 - Migración visual del dashboard administrativo
 
-> Estado: implementada y verificada automáticamente. Las métricas sin definición
-> de negocio permanecen temporales.
+> Estado: implementada y verificada automáticamente. UX-CONTENT-01 retira de la
+> Release Candidate las métricas sin definición de negocio para no presentar
+> fixtures como datos reales.
 
 ## Objetivo
 

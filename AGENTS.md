@@ -534,6 +534,10 @@ Confirm that:
 * mass assignment is safe;
 * relevant tests pass;
 * formatting and required quality tools pass;
+* user-facing help and the Simón Knowledge Base are updated when a feature adds
+  or changes a user-visible task;
+* Knowledge Base references are verified against implemented routes, roles and
+  UI terminology before reindexing is requested by a future Simón feature;
 * no unrelated future functionality was introduced;
 * no unresolved decision was silently implemented.
 

@@ -49,7 +49,9 @@ class PetManagementTest extends TestCase
                 ->missing('pet.created_at'));
         $this->actingAs($client->user)->patch(route('pets.update', $pet), [
             'name' => 'Updated name', 'species' => $pet->species, 'sex' => $pet->sex,
-        ])->assertSessionHasNoErrors();
+        ])
+            ->assertSessionHasNoErrors()
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Mascota actualizada.']);
 
         $this->actingAs($client->user)->get(route('pets.show', $otherPet))->assertForbidden();
         $this->actingAs($client->user)->patch(route('pets.update', $otherPet), [
@@ -106,7 +108,9 @@ class PetManagementTest extends TestCase
                 ->missing('pet.client.user'));
         $this->actingAs($admin)->post(route('admin.pets.store'), [
             'name' => 'Nina', 'species' => 'Cat', 'sex' => 'Female', 'client_id' => $client->id,
-        ])->assertRedirect(route('admin.pets.show', Pet::query()->where('name', 'Nina')->firstOrFail()));
+        ])
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Mascota creada.'])
+            ->assertRedirect(route('admin.pets.show', Pet::query()->where('name', 'Nina')->firstOrFail()));
     }
 
     public function test_pet_lists_return_empty_collections_when_there_are_no_pets(): void
@@ -130,7 +134,14 @@ class PetManagementTest extends TestCase
         Storage::fake('local');
         $client = Client::factory()->create();
 
-        $this->actingAs($client->user)->post(route('pets.store'), [])->assertSessionHasErrors(['name', 'species', 'sex']);
+        $this->app->setLocale('es');
+
+        $this->actingAs($client->user)->post(route('pets.store'), [])
+            ->assertSessionHasErrors([
+                'name' => 'El campo nombre es obligatorio.',
+                'species' => 'El campo species es obligatorio.',
+                'sex' => 'El campo sex es obligatorio.',
+            ]);
 
         $pet = Pet::factory()->for($client)->create();
         $firstPhoto = UploadedFile::fake()->image('first.jpg');

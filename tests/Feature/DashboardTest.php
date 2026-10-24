@@ -2,11 +2,17 @@
 
 namespace Tests\Feature;
 
+use App\Models\Appointment;
+use App\Models\AppointmentClinicalTask;
+use App\Models\AppointmentScheduleDate;
 use App\Models\Client;
 use App\Models\Pet;
 use App\Models\PetTreatment;
+use App\Models\Procedure;
 use App\Models\Service;
 use App\Models\ServiceRequest;
+use App\Models\Treatment;
+use App\Models\TreatmentSession;
 use App\Models\User;
 use App\Services\TreatmentAssignmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -125,7 +131,8 @@ class DashboardTest extends TestCase
                 ->where('requests.0.pet.name', 'Mora')
                 ->where('requests.0.pet.species', 'Canino')
                 ->where('requests.0.service.name', 'Fisioterapia')
-                ->where('requests.1.notes', 'Private note')
+                ->missing('requests.0.notes')
+                ->missing('requests.1.notes')
                 ->missing('client')
                 ->missing('pets')
                 ->missing('pendingRequests')
@@ -143,6 +150,46 @@ class DashboardTest extends TestCase
                 ->component('admin/dashboard')
                 ->where('pendingRequestsCount', 0)
                 ->where('requests', []));
+    }
+
+    public function test_admin_dashboard_includes_actionable_clinical_task_context(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $pet = Pet::factory()->create(['name' => 'Mora']);
+        $service = Service::factory()->create(['name' => 'Fisioterapia']);
+        $session = $this->sessionFor($pet, $service);
+        $scheduleDate = AppointmentScheduleDate::query()->create([
+            'date' => '2026-10-13',
+            'capacity' => 1,
+        ]);
+        $appointment = Appointment::query()->forceCreate([
+            'pet_id' => $pet->id,
+            'service_id' => $service->id,
+            'treatment_session_id' => $session->id,
+            'appointment_schedule_date_id' => $scheduleDate->id,
+            'requested_by' => $pet->client->user_id,
+            'service_name' => $service->name,
+            'duration_minutes' => 30,
+            'starts_at' => '2026-10-13 10:00:00',
+            'ends_at' => '2026-10-13 10:30:00',
+            'status' => 'attended',
+        ]);
+        AppointmentClinicalTask::query()->create(['appointment_id' => $appointment->id]);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('admin/dashboard')
+                ->has('clinicalTasks', 1)
+                ->where('clinicalTasks.0.appointmentId', $appointment->id)
+                ->where('clinicalTasks.0.pet.id', $pet->id)
+                ->where('clinicalTasks.0.pet.name', 'Mora')
+                ->where('clinicalTasks.0.serviceName', 'Fisioterapia')
+                ->where('clinicalTasks.0.treatment.id', $session->petTreatment->id)
+                ->where('clinicalTasks.0.treatment.name', $session->petTreatment->treatment_name)
+                ->where('clinicalTasks.0.treatment.sessionNumber', 1)
+                ->where('clinicalTasks.0.treatment.status', 'pending'));
     }
 
     public function test_client_dashboard_only_contains_owned_pending_and_active_resources(): void
@@ -348,5 +395,20 @@ class DashboardTest extends TestCase
             'status' => $status,
             'notes' => null,
         ]);
+    }
+
+    private function sessionFor(Pet $pet, Service $service): TreatmentSession
+    {
+        $procedure = Procedure::factory()->for($service)->create();
+        $treatment = Treatment::factory()->for($service)->create();
+        $treatment->procedures()->attach($procedure);
+
+        return app(TreatmentAssignmentService::class)->assign($pet, $treatment, [
+            'planned_sessions' => 1,
+            'default_session_price' => '18000.00',
+            'currency' => 'ARS',
+            'starts_on' => '2026-10-01',
+            'status' => 'pending',
+        ])->sessions->sole();
     }
 }

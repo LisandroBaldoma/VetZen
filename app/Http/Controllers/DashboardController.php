@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppointmentClinicalTask;
 use App\Models\PetTreatment;
 use App\Models\ServiceRequest;
 use App\Models\TreatmentSession;
@@ -16,11 +17,21 @@ class DashboardController extends Controller
     {
         if ($request->user()->hasRole('admin')) {
             $requests = ServiceRequest::query()
-                ->select(['id', 'pet_id', 'service_id', 'status', 'notes', 'created_at'])
+                ->select(['id', 'pet_id', 'service_id', 'status', 'created_at'])
                 ->where('status', 'pending')
                 ->with(['pet:id,name,species', 'service:id,name'])
                 ->orderByDesc('created_at')
                 ->orderByDesc('id')
+                ->limit(5)
+                ->get();
+            $clinicalTasks = AppointmentClinicalTask::query()
+                ->whereNull('resolved_at')
+                ->with([
+                    'appointment.pet:id,name',
+                    'appointment.service:id,name',
+                    'appointment.treatmentSession.petTreatment:id,pet_id,treatment_name',
+                ])
+                ->latest()
                 ->limit(5)
                 ->get();
 
@@ -31,7 +42,6 @@ class DashboardController extends Controller
                 'requests' => $requests->map(fn (ServiceRequest $serviceRequest): array => [
                     'id' => $serviceRequest->id,
                     'status' => $serviceRequest->status,
-                    'notes' => $serviceRequest->notes,
                     'createdAt' => $serviceRequest->created_at->toIso8601String(),
                     'pet' => [
                         'id' => $serviceRequest->pet->id,
@@ -41,6 +51,20 @@ class DashboardController extends Controller
                     'service' => [
                         'id' => $serviceRequest->service->id,
                         'name' => $serviceRequest->service->name,
+                    ],
+                ])->all(),
+                'clinicalTasks' => $clinicalTasks->map(fn (AppointmentClinicalTask $task): array => [
+                    'appointmentId' => $task->appointment_id,
+                    'pet' => [
+                        'id' => $task->appointment->pet->id,
+                        'name' => $task->appointment->pet->name,
+                    ],
+                    'serviceName' => $task->appointment->service->name,
+                    'treatment' => $task->appointment->treatmentSession === null ? null : [
+                        'id' => $task->appointment->treatmentSession->petTreatment->id,
+                        'name' => $task->appointment->treatmentSession->petTreatment->treatment_name,
+                        'sessionNumber' => $task->appointment->treatmentSession->session_number,
+                        'status' => $task->appointment->treatmentSession->status,
                     ],
                 ])->all(),
             ]);

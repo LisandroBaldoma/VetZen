@@ -11,11 +11,31 @@ class ProcedureSeeder extends Seeder
     {
         $catalog = [
             'Fisioterapia Veterinaria' => [
-                ['name' => 'Lámpara infrarroja', 'duration_minutes' => 15],
-                ['name' => 'Magnetoterapia', 'duration_minutes' => 30],
-                ['name' => 'Electroterapia', 'duration_minutes' => 15],
-                ['name' => 'Masoterapia', 'duration_minutes' => 15],
-                ['name' => 'Ejercicios terapéuticos', 'duration_minutes' => 20],
+                [
+                    'name' => 'Lámpara infrarroja',
+                    'description' => 'Aplicación de calor mediante luz infrarroja como parte de la preparación muscular para la sesión de fisioterapia.',
+                    'duration_minutes' => 15,
+                ],
+                [
+                    'name' => 'Magnetoterapia',
+                    'description' => 'Aplicación de campos magnéticos con parámetros adaptados a la evaluación y al plan de rehabilitación de cada mascota.',
+                    'duration_minutes' => 30,
+                ],
+                [
+                    'name' => 'Electroterapia',
+                    'description' => 'Aplicación de estímulos eléctricos controlados para trabajar el manejo del dolor o la activación muscular, según indicación profesional.',
+                    'duration_minutes' => 15,
+                ],
+                [
+                    'name' => 'Masoterapia',
+                    'description' => 'Masajes terapéuticos y maniobras manuales adaptadas para trabajar la tensión muscular y favorecer la relajación.',
+                    'duration_minutes' => 15,
+                ],
+                [
+                    'name' => 'Ejercicios terapéuticos',
+                    'description' => 'Ejercicios adaptados para trabajar la movilidad, la fuerza, el equilibrio y la coordinación durante la rehabilitación.',
+                    'duration_minutes' => 20,
+                ],
             ],
             'Acupuntura Veterinaria' => [
                 ['name' => 'Acupuntura corporal'],

@@ -45,6 +45,7 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 
 * Registro de clientes.  
 * Inicio de sesión.  
+* Registro e inicio de sesión mediante cuentas de Google.  
 * Recuperación de contraseña.  
 * Infraestructura de verificación de identidad, activable cuando exista un
   proveedor de correo configurado.
@@ -56,6 +57,15 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 ## **Reglas principales**
 
 * Los usuarios deberán autenticarse para acceder a las funcionalidades protegidas.  
+* El registro tradicional con correo y contraseña continuará disponible junto con Google.
+* El registro público mediante Google deberá completar el teléfono y definir una contraseña antes de crear el usuario y su perfil de cliente.
+* Todo registro público mediante Google recibirá exclusivamente el rol `client`, asignado en backend.
+* Google admitirá cuentas personales y de Google Workspace.
+* Una identidad de Google se asociará mediante su identificador estable y no únicamente por coincidencia de correo.
+* Una cuenta existente deberá iniciar sesión y vincular Google explícitamente; no se vinculará automáticamente por correo, incluso para administradores.
+* Los administradores podrán vincular Google sin que esto altere su rol o permisos.
+* El inicio de sesión con Google no omitirá el segundo factor de VetZen cuando esté activo.
+* La autenticación mediante Google no marcará `email_verified_at`; la verificación de correo seguirá inactiva en esta etapa.
 * La verificación de correo no condiciona el acceso en la versión actual.
 * Los permisos determinarán qué acciones puede realizar cada usuario.  
 * Los profesionales podrán tener diferentes niveles de acceso.  
@@ -149,7 +159,8 @@ Permitir administrar el catálogo terapéutico y su estructura general.
 
 ## **Reglas principales**
 
-* Service representa un área terapéutica y no tiene precio ni duración.
+* Service representa un área terapéutica y no tiene precio. Su duración
+  predeterminada de turno pertenece exclusivamente a Feature 10.
 * Procedure pertenece a Service, puede tener duración orientativa y no tiene
   precio.
 * La baja comercial se realiza mediante estado, sin eliminar referencias
@@ -226,25 +237,24 @@ Permitir administrar la disponibilidad de la veterinaria y gestionar los turnos 
 
 ## **Alcance**
 
-* Configuración de horarios.  
-* Configuración de disponibilidad.  
-* Definición de duración según servicio.  
-* Solicitud de turnos.  
-* Aprobación de turnos.  
-* Modificación de turnos.  
-* Cancelación de turnos.  
-* Administración profesional de la agenda.  
-* Estados de turno.
+* Agenda única con fechas, bloques, inicios explícitos y capacidad compartida.
+* Duración predeterminada por servicio y snapshot histórico por turno.
+* Solicitud, aprobación, rechazo, cancelación y reprogramación de turnos.
+* Creación administrativa sin bypass de disponibilidad.
+* Visualización diaria y semanal de agenda.
+* Vínculos opcionales con ServiceRequest y TreatmentSession.
+* Tareas de registro clínico posteriores a una atención.
 
 ## **Reglas principales**
 
-* El cliente podrá solicitar un turno.  
-* La solicitud deberá ser aprobada por un profesional.  
-* El turno no estará confirmado hasta su aprobación.  
-* El cliente podrá modificar sus propios turnos.  
-* El cliente podrá cancelar sus propios turnos.  
-* Las modificaciones y cancelaciones estarán sujetas a límites configurables.  
-* El sistema deberá evitar conflictos de disponibilidad.
+* Solo fechas, servicios e inicios publicados pueden reservarse.
+* Pendientes y aprobados consumen capacidad durante todo su intervalo.
+* El cliente solicita para mascotas propias y el admin administra la agenda.
+* La aprobación no consume capacidad adicional; rechazo y cancelación la liberan.
+* Las modificaciones y cancelaciones cliente respetan límites configurables.
+* El sistema evita conflictos con validación backend, transacciones y bloqueos.
+* F10 no incorpora profesionales asignados, agendas por profesional, recurrencias,
+  planificación de equipos, pagos ni Push Notifications.
 
 ---
 
@@ -257,7 +267,7 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 ## **Alcance**
 
 * Notificaciones por email.  
-* Notificaciones Push.  
+* Notificaciones internas.
 * Confirmaciones.  
 * Solicitudes.  
 * Cancelaciones.  
@@ -270,6 +280,7 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 * Las notificaciones deberán generarse a partir de eventos relevantes.  
 * Las operaciones que puedan ejecutarse de forma asíncrona deberán procesarse sin bloquear las operaciones principales.  
 * El sistema deberá evitar notificaciones duplicadas.
+* Push Notifications queda fuera de la primera versión de turnos.
 
 ---
 
@@ -277,19 +288,23 @@ Informar a clientes y profesionales sobre eventos relevantes de la plataforma.
 
 ## **Objetivo**
 
-Proporcionar un asistente virtual capaz de ayudar al cliente utilizando información autorizada de VetZen y datos correspondientes a sus mascotas.
+Proporcionar un asistente virtual llamado Simón. La primera etapa ayuda a
+clientes y administradores a utilizar funcionalidades implementadas de VetZen
+mediante documentación curada y filtrada por rol.
 
 ## **Alcance**
 
-El asistente podrá:
+En la evolución completa, el asistente podrá:
 
-* Responder consultas sobre la veterinaria.  
-* Consultar información autorizada.  
-* Consultar información seleccionada de las mascotas.  
-* Consultar tratamientos.  
-* Consultar turnos.  
-* Ayudar a identificar opciones de turno.  
-* Ayudar a solicitar un turno.
+* Responder consultas sobre el uso de VetZen.
+* Consultar información autorizada cuando una feature posterior lo habilite.
+* Consultar información seleccionada de las mascotas cuando una feature posterior lo habilite.
+* Consultar tratamientos cuando una feature posterior lo habilite.
+* Consultar turnos, identificar opciones o asistir en su solicitud cuando el
+  módulo de agenda exista y una feature posterior lo habilite.
+
+La primera versión no consulta datos dinámicos, no ejecuta acciones y no cubre
+turnos, ya que ese módulo no está implementado.
 
 ## **Fuentes de información**
 
@@ -324,11 +339,27 @@ Esta información deberá obtenerse respetando los permisos del usuario.
 * No podrá acceder indiscriminadamente a información clínica.  
 * Solo podrá consultar información correspondiente a mascotas autorizadas.  
 * No deberá inventar información.  
-* No deberá realizar diagnósticos autónomos.  
+* No deberá realizar diagnósticos autónomos ni orientación veterinaria.
 * No deberá reemplazar la evaluación profesional.  
 * No podrá modificar información clínica sin autorización.  
 * Podrá ayudar a iniciar procesos permitidos, como la solicitud de turnos.  
 * Las acciones realizadas por el asistente deberán respetar las mismas reglas de negocio que las realizadas directamente por el usuario.
+
+## Roadmap de Simón
+
+* **SIMON-01:** base de conocimiento de uso del producto, curada y filtrable por
+  rol. No incluye código de IA.
+* **SIMON-02:** chunking, almacenamiento y búsqueda textual de la base de
+  conocimiento.
+* **SIMON-03:** generación grounded mediante un proveedor LLM a partir de
+  contenido recuperado. Groq se usa inicialmente para desarrollo y pruebas;
+  OpenAI permanece como alternativa futura y producción sigue pendiente.
+* **Interfaz de evaluación de Simón:** acceso autenticado y conversación
+  temporal para evaluar SIMON-01 a SIMON-03, sin memoria ni datos dinámicos.
+* **SIMON-04:** evaluación, grounding y observabilidad del MVP antes de
+  incorporar nuevas capacidades.
+* **Evolución posterior:** embeddings y recuperación semántica/híbrida solo si
+  la evaluación demuestra que son necesarios.
 
 ---
 
@@ -409,7 +440,7 @@ Las funcionalidades deberán implementarse progresivamente.
 ## **Fase 4 — Comunicación**
 
 * Email.  
-* Push Notifications.
+* Notificaciones internas y email de turnos.
 
 ## **Fase 5 — Asistente virtual**
 

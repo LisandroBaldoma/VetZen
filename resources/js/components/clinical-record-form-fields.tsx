@@ -126,7 +126,7 @@ export default function ClinicalRecordFormFields({
 
             <div className="flex justify-end border-t pt-5">
                 <Button disabled={processing}>
-                    {processing ? 'Guardando...' : submitLabel}
+                    {processing ? 'Guardando…' : submitLabel}
                 </Button>
             </div>
         </>

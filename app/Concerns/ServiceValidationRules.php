@@ -13,6 +13,7 @@ trait ServiceValidationRules
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique(Service::class, 'name')->ignore($service)],
             'description' => ['required', 'string', 'max:10000'],
+            'appointment_duration_minutes' => ['required', 'integer', 'min:1', 'max:1440'],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

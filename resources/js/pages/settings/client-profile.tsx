@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import ClientProfileController from '@/actions/App/Http/Controllers/Client/ClientProfileController';
 import ClientProfileFields from '@/components/client-profile-fields';
 import Heading from '@/components/heading';
@@ -11,6 +11,14 @@ type Props = {
 };
 
 export default function ClientProfile({ client }: Props) {
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            { title: 'Mis datos', href: editProfile() },
+            { title: 'Datos personales' },
+        ],
+    });
+
     return (
         <>
             <Head title="Datos personales" />
@@ -39,10 +47,3 @@ export default function ClientProfile({ client }: Props) {
         </>
     );
 }
-
-ClientProfile.layout = {
-    breadcrumbs: [
-        { title: 'Inicio', href: dashboard() },
-        { title: 'Cuenta', href: editProfile() },
-    ],
-};

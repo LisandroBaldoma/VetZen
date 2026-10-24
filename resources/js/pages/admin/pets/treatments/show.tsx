@@ -267,7 +267,7 @@ function EditTreatmentConditionsDialog({
                                 </Button>
                                 <Button disabled={processing}>
                                     {processing
-                                        ? 'Guardando...'
+                                        ? 'Guardando…'
                                         : 'Guardar cambios'}
                                 </Button>
                             </DialogFooter>
@@ -562,7 +562,7 @@ export default function TreatmentShow({
                                     {...PetTreatmentController.updateStatus.form(
                                         [pet.id, petTreatment.id],
                                     )}
-                                    onError={() => setSuspendDialogOpen(false)}
+                                    onError={() => setSuspendDialogOpen(true)}
                                 >
                                     {({ processing, submit }) => (
                                         <>
@@ -586,7 +586,7 @@ export default function TreatmentShow({
                                                 onOpenChange={
                                                     setSuspendDialogOpen
                                                 }
-                                                onConfirm={submit}
+                                                onConfirm={() => submit()}
                                                 title="¿Suspender tratamiento?"
                                                 description="Mientras esté suspendido no podrán gestionarse sus sesiones."
                                                 confirmLabel="Suspender tratamiento"
@@ -601,7 +601,7 @@ export default function TreatmentShow({
                                     pet.id,
                                     petTreatment.id,
                                 ])}
-                                onError={() => setCancelTreatmentOpen(false)}
+                                onError={() => setCancelTreatmentOpen(true)}
                             >
                                 {({ processing, submit }) => (
                                     <>
@@ -626,7 +626,7 @@ export default function TreatmentShow({
                                             onOpenChange={
                                                 setCancelTreatmentOpen
                                             }
-                                            onConfirm={submit}
+                                            onConfirm={() => submit()}
                                             title="¿Cancelar tratamiento?"
                                             description="El tratamiento no podrá reabrirse. Sus sesiones permanecerán disponibles como historial."
                                             confirmLabel="Cancelar tratamiento"

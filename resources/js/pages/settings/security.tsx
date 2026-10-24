@@ -1,6 +1,7 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, setLayoutProps, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import GoogleAuthButton from '@/components/google-auth-button';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
@@ -11,16 +12,31 @@ import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { dashboard } from '@/routes';
+import { redirect as googleLinkRedirect } from '@/routes/google/link';
 import { edit } from '@/routes/security';
+import type { Auth } from '@/types';
 
 type Props = {
     passwordRules: string;
+    googleLinked: boolean;
 } & ManagePasskeysProps &
     ManageTwoFactorProps;
 
 export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Inicio', href: dashboard() },
+            {
+                title: auth.roles.includes('client') ? 'Mis datos' : 'Cuenta',
+                href: edit(),
+            },
+            { title: 'Seguridad' },
+        ],
+    });
 
     return (
         <>
@@ -59,7 +75,7 @@ export default function Security(props: Props) {
                         <>
                             <div className="grid gap-2">
                                 <Label htmlFor="current_password">
-                                    Current password
+                                    Contraseña actual
                                 </Label>
 
                                 <PasswordInput
@@ -68,14 +84,16 @@ export default function Security(props: Props) {
                                     name="current_password"
                                     className="mt-1 block w-full"
                                     autoComplete="current-password"
-                                    placeholder="Current password"
+                                    placeholder="Contraseña actual"
                                 />
 
                                 <InputError message={errors.current_password} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
+                                <Label htmlFor="password">
+                                    Nueva contraseña
+                                </Label>
 
                                 <PasswordInput
                                     id="password"
@@ -83,7 +101,7 @@ export default function Security(props: Props) {
                                     name="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="New password"
+                                    placeholder="Nueva contraseña"
                                     passwordrules={props.passwordRules}
                                 />
 
@@ -92,7 +110,7 @@ export default function Security(props: Props) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    Confirmar contraseña
                                 </Label>
 
                                 <PasswordInput
@@ -100,7 +118,7 @@ export default function Security(props: Props) {
                                     name="password_confirmation"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="Confirm password"
+                                    placeholder="Confirmar contraseña"
                                     passwordrules={props.passwordRules}
                                 />
 
@@ -114,12 +132,31 @@ export default function Security(props: Props) {
                                     disabled={processing}
                                     data-test="update-password-button"
                                 >
-                                    Save
+                                    Guardar cambios
                                 </Button>
                             </div>
                         </>
                     )}
                 </Form>
+            </div>
+
+            <div className="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Cuenta de Google"
+                    description="Usá Google como método adicional para iniciar sesión en VetZen."
+                />
+
+                {props.googleLinked ? (
+                    <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
+                        Tu cuenta de Google está vinculada.
+                    </div>
+                ) : (
+                    <GoogleAuthButton
+                        href={googleLinkRedirect.url()}
+                        label="Vincular cuenta de Google"
+                    />
+                )}
             </div>
 
             <ManageTwoFactor
@@ -135,13 +172,3 @@ export default function Security(props: Props) {
         </>
     );
 }
-
-Security.layout = {
-    breadcrumbs: [
-        { title: 'Inicio', href: dashboard() },
-        {
-            title: 'Cuenta',
-            href: edit(),
-        },
-    ],
-};

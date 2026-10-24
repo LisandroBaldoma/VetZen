@@ -45,7 +45,7 @@ export default function TreatmentProgress({
         return (
             <section
                 className={cn('rounded-lg bg-surface-subtle p-3', className)}
-                aria-label="Progreso terapeutico"
+                aria-label="Progreso terapéutico"
             >
                 <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-foreground tabular-nums">
@@ -67,12 +67,12 @@ export default function TreatmentProgress({
                 'rounded-xl border border-border-subtle bg-surface-base p-4 shadow-sm',
                 className,
             )}
-            aria-label="Progreso terapeutico"
+            aria-label="Progreso terapéutico"
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
                     <p className="text-meta font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-                        Progreso terapeutico
+                        Progreso terapéutico
                     </p>
                     <p className="text-section-title font-semibold text-foreground tabular-nums">
                         {completedSessions} de {plannedSessions} sesiones
@@ -87,7 +87,8 @@ export default function TreatmentProgress({
             {showRemaining && remainingSessions > 0 && (
                 <div className="mt-2.5 flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                     <TimerIcon aria-hidden className="size-4 text-primary" />
-                    {remainingSessions} sesiones requeridas por completar
+                    Faltan {remainingSessions} sesiones para completar el
+                    tratamiento
                 </div>
             )}
         </section>

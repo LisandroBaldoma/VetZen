@@ -38,6 +38,7 @@ class SecurityController extends Controller
                     ->all()
                 : [],
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'googleLinked' => $request->user()->google_id !== null,
         ];
 
         if (Features::canManageTwoFactorAuthentication()) {
@@ -59,7 +60,7 @@ class SecurityController extends Controller
             'password' => $request->password,
         ]);
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Contraseña actualizada.')]);
 
         return back();
     }

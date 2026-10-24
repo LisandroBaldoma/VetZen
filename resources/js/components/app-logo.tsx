@@ -14,7 +14,7 @@ export default function AppLogo({
     return (
         <div className={cn('flex min-w-0 items-center gap-2', className)}>
             <img
-                alt={`${name} logo`}
+                alt={`Logo de ${name}`}
                 className="h-8 w-auto shrink-0 object-contain"
                 src={logoUrl}
             />

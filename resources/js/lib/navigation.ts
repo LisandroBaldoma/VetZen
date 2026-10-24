@@ -1,4 +1,5 @@
 import {
+    CalendarDays,
     ClipboardList,
     ClipboardPlus,
     LayoutGrid,
@@ -7,13 +8,19 @@ import {
     Syringe,
     Users,
 } from 'lucide-react';
+import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
+import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
 import { index as clientsIndex } from '@/routes/admin/clients';
+import { index as adminPetTreatmentsIndex } from '@/routes/admin/pet-treatments';
 import { index as petsIndex } from '@/routes/admin/pets';
 import { index as proceduresIndex } from '@/routes/admin/procedures';
+import { index as scheduleDatesIndex } from '@/routes/admin/schedule-dates';
 import { index as serviceRequestsIndex } from '@/routes/admin/service-requests';
 import { index as adminServicesIndex } from '@/routes/admin/services';
 import { index as treatmentsIndex } from '@/routes/admin/treatments';
+import { index as clientAppointmentsIndex } from '@/routes/appointments';
+import { index as myTreatmentsIndex } from '@/routes/my-treatments';
 import { index as myPetsIndex } from '@/routes/pets';
 import { index as servicesIndex } from '@/routes/services';
 import type { NavGroup } from '@/types';
@@ -21,11 +28,15 @@ import type { NavGroup } from '@/types';
 export type NavigationSection =
     | 'dashboard'
     | 'clients'
+    | 'appointments'
+    | 'medical-records'
     | 'pets'
     | 'service-requests'
+    | 'schedule-dates'
     | 'services'
     | 'procedures'
-    | 'treatments';
+    | 'treatments'
+    | 'treatment-catalog';
 
 const matches = (path: string, route: RegExp): boolean => route.test(path);
 
@@ -42,12 +53,24 @@ export function getNavigationSection(
             return 'clients';
         }
 
+        if (matches(path, /(?:^|\/)admin\/appointments(?:\/|$)/)) {
+            return 'appointments';
+        }
+
         if (matches(path, /(?:^|\/)admin\/pets(?:\/|$)/)) {
             return 'pets';
         }
 
+        if (matches(path, /(?:^|\/)admin\/pet-treatments(?:\/|$)/)) {
+            return 'treatments';
+        }
+
         if (matches(path, /(?:^|\/)admin\/service-requests(?:\/|$)/)) {
             return 'service-requests';
+        }
+
+        if (matches(path, /(?:^|\/)admin\/schedule-dates(?:\/|$)/)) {
+            return 'schedule-dates';
         }
 
         if (
@@ -61,7 +84,7 @@ export function getNavigationSection(
             matches(path, /(?:^|\/)admin\/treatments(?:\/|$)/) ||
             matches(path, /(?:^|\/)admin\/services\/[^/]+\/treatments(?:\/|$)/)
         ) {
-            return 'treatments';
+            return 'treatment-catalog';
         }
 
         if (matches(path, /(?:^|\/)admin\/services(?:\/|$)/)) {
@@ -70,6 +93,14 @@ export function getNavigationSection(
     }
 
     if (role === 'client') {
+        if (matches(path, /(?:^|\/)appointments(?:\/|$)/)) {
+            return 'appointments';
+        }
+
+        if (matches(path, /(?:^|\/)my-treatments(?:\/|$)/)) {
+            return 'treatments';
+        }
+
         if (matches(path, /(?:^|\/)pets(?:\/|$)/)) {
             return 'pets';
         }
@@ -80,6 +111,28 @@ export function getNavigationSection(
     }
 
     return null;
+}
+
+export function getSimonModule(
+    section: NavigationSection | null,
+): SimonModule | undefined {
+    switch (section) {
+        case 'clients':
+        case 'appointments':
+        case 'medical-records':
+        case 'pets':
+        case 'procedures':
+        case 'service-requests':
+        case 'services':
+        case 'treatments':
+            return section;
+        case 'treatment-catalog':
+            return 'treatments';
+        case 'schedule-dates':
+            return 'appointments';
+        default:
+            return undefined;
+    }
 }
 
 export function getNavigationGroups(
@@ -128,34 +181,55 @@ export function getNavigationGroups(
                       title: 'Atención',
                       items: [
                           {
-                              title: 'Solicitudes de atención',
+                              title: 'Turnos',
+                              href: adminAppointmentsIndex(),
+                              icon: CalendarDays,
+                              isActive: activeSection === 'appointments',
+                              mobileTitle: 'Turnos',
+                          },
+                          {
+                              title: 'Solicitudes',
                               href: serviceRequestsIndex(),
                               icon: ClipboardPlus,
                               isActive: activeSection === 'service-requests',
                               mobileTitle: 'Solicitudes',
                           },
+                          {
+                              title: 'Tratamientos de pacientes',
+                              href: adminPetTreatmentsIndex(),
+                              icon: Syringe,
+                              isActive: activeSection === 'treatments',
+                              mobileTitle: 'Tratamientos',
+                          },
+                          {
+                              title: 'Agenda',
+                              href: scheduleDatesIndex(),
+                              icon: CalendarDays,
+                              isActive: activeSection === 'schedule-dates',
+                              mobileTitle: 'Agenda',
+                          },
                       ],
                   },
                   {
-                      title: 'Catálogo clínico',
+                      title: 'Catálogo',
                       items: [
                           {
-                              title: 'Servicios clínicos',
+                              title: 'Servicios',
                               href: adminServicesIndex(),
                               icon: Stethoscope,
                               isActive: activeSection === 'services',
                           },
                           {
-                              title: 'Procedimientos clínicos',
+                              title: 'Procedimientos',
                               href: proceduresIndex(),
                               icon: ClipboardList,
                               isActive: activeSection === 'procedures',
                           },
                           {
-                              title: 'Plantillas de tratamiento',
+                              title: 'Plantillas de tratamientos',
                               href: treatmentsIndex(),
                               icon: Syringe,
-                              isActive: activeSection === 'treatments',
+                              isActive: activeSection === 'treatment-catalog',
                           },
                       ],
                   },
@@ -178,11 +252,25 @@ export function getNavigationGroups(
                         title: 'Atención',
                         items: [
                             {
+                                title: 'Turnos',
+                                href: clientAppointmentsIndex(),
+                                icon: CalendarDays,
+                                isActive: activeSection === 'appointments',
+                                mobileTitle: 'Turnos',
+                            },
+                            {
                                 title: 'Servicios disponibles',
                                 href: servicesIndex(),
                                 icon: Stethoscope,
                                 isActive: activeSection === 'services',
                                 mobileTitle: 'Servicios',
+                            },
+                            {
+                                title: 'Mis tratamientos',
+                                href: myTreatmentsIndex(),
+                                icon: Syringe,
+                                isActive: activeSection === 'treatments',
+                                mobileTitle: 'Tratamientos',
                             },
                         ],
                     },

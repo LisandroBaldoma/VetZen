@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'logoUrl' => asset('logo.png'),
+            'simonLogoUrl' => asset('simon_logo.png'),
             'auth' => [
                 'user' => $user?->loadMissing('client'),
                 'roles' => $user?->getRoleNames()->values()->all() ?? [],

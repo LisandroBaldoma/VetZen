@@ -3,6 +3,11 @@
 > Estado: implementada y verificada automáticamente. Permanece pendiente la
 > revisión visual manual responsive y de teclado.
 
+> Actualización UX-CONTENT-01: el nombre visible del módulo es Catálogo. Sus
+> recursos se denominan Servicios, Procedimientos y Tratamientos. La distinción
+> técnica entre `Treatment` de catálogo y `PetTreatment` asignado se resuelve por
+> el contexto de pantalla, sin exponer "plantilla" como nombre principal.
+
 ## 1. Objetivo
 
 Unificar la administración de servicios, procedimientos y plantillas de

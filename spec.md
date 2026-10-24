@@ -115,7 +115,9 @@ La información clínica deberá considerarse información protegida y su acceso
 La veterinaria podrá administrar los servicios que ofrece a sus clientes.
 
 Cada servicio representa un área terapéutica general, con nombre, descripción
-y estado activo o inactivo. Un servicio no tiene precio ni duración.
+y estado activo o inactivo. Un servicio no tiene precio, pero tiene una duración
+predeterminada de turno. Esa duración no define tiempo clínico, duración de
+tratamiento ni rotación de procedimientos.
 
 Los servicios contienen procedimientos. Cada procedimiento representa una
 técnica perteneciente a un servicio, puede tener una duración orientativa
@@ -159,19 +161,48 @@ completa cuando las sesiones completadas alcanzan la cantidad prevista.
 
 # **10\. Gestión de turnos**
 
-VetZen permitirá administrar la agenda de la veterinaria y gestionar solicitudes de turnos.
+VetZen tendrá una única agenda para toda la veterinaria. En esta versión no se
+asignan turnos a profesionales ni se crean agendas individuales. El rol `admin`
+administra la agenda y el rol `client` solicita y consulta turnos propios.
 
-Deberá contemplar:
+La veterinaria publica fechas concretas. Para cada fecha puede definir bloques
+de trabajo, inicios reservables explícitos, servicios habilitados y una capacidad
+compartida de entre uno y cinco pacientes simultáneos. No existe disponibilidad
+implícita ni se generan inicios automáticamente.
 
-* Configuración de horarios y disponibilidad.  
-* Definición de duración según el servicio.  
-* Solicitud de turnos por parte de los clientes.  
-* Confirmación de turnos.  
-* Modificación de turnos.  
-* Cancelación de turnos.  
-* Administración de turnos por parte de los profesionales.  
-* Diferentes estados para los turnos.  
-* Visualización de la agenda.
+Un turno pertenece a una mascota y un servicio, y conserva inicio, fin y duración
+reservada. La duración predeterminada proviene del servicio al reservarse y los
+cambios posteriores no modifican turnos históricos. Las duraciones orientativas
+de procedimientos no se suman ni amplían el turno automáticamente.
+
+Los turnos `pending` y `approved` ocupan capacidad durante todo su intervalo.
+La capacidad se valida en backend para cada instante relevante del intervalo; un
+turno que termina a una hora permite otro que empieza exactamente a esa hora.
+Una mascota no puede tener turnos pendientes o aprobados superpuestos, incluso
+para servicios distintos.
+
+El cliente solo puede solicitar un turno para una mascota propia, un servicio
+activo habilitado en la fecha y un inicio publicado disponible. La solicitud queda
+pendiente de aprobación y no vence automáticamente. El administrador puede crear
+turnos aprobados para mascotas de clientes existentes, sin exceder capacidad.
+
+Los estados aprobados son `pending`, `approved`, `rejected`, `cancelled`,
+`attended` y `absent`. La aprobación mantiene la reserva existente; rechazar o
+cancelar libera capacidad. El administrador marca manualmente atendido o ausente;
+la hora de inicio no cambia estados automáticamente.
+
+Los clientes pueden cancelar o reprogramar turnos propios hasta los límites
+configurables de la veterinaria. Los valores iniciales son dos horas de
+anticipación mínima para reservar y veinticuatro horas para cancelar o
+reprogramar. El administrador no tiene ese límite de anticipación, pero no puede
+reescribir atenciones históricas. La reprogramación reserva el nuevo intervalo y
+libera el anterior atómicamente, conservando historial.
+
+Un turno puede vincularse opcionalmente con una solicitud de atención y con una
+sesión de tratamiento compatible. No reemplaza ninguno de esos recursos: cancelar
+o marcar ausente un turno no cancela una sesión, y marcar atendido no completa una
+sesión automáticamente. Un turno atendido sin registro clínico correspondiente
+genera una tarea persistente para el administrador.
 
 ---
 
@@ -193,9 +224,16 @@ El procesamiento de determinadas notificaciones podrá realizarse mediante tarea
 
 # **12\. Asistente virtual**
 
-VetZen incorporará un asistente virtual capaz de responder consultas utilizando información contextualizada de la veterinaria.
+VetZen incorporará un asistente virtual llamado **Simón**. Su primera versión
+será un asistente de uso del producto: responderá cómo utilizar funcionalidades
+implementadas de VetZen con información autorizada y documentación curada.
 
-El asistente tendrá acceso controlado a dos fuentes principales de información.
+Simón no realizará diagnósticos, recomendaciones veterinarias, interpretación de
+síntomas ni prescripciones. Tampoco deberá presentar como disponibles funciones
+que aún no estén implementadas, como turnos, agenda o notificaciones.
+
+La evolución del asistente contempla dos fuentes principales de información. La
+primera versión solo usa la base de conocimiento de producto.
 
 ### **12.1 Conocimiento de la veterinaria**
 
@@ -207,18 +245,23 @@ Información previamente autorizada por la veterinaria, relacionada con:
 * Preguntas frecuentes.  
 * Contenido autorizado.
 
-Esta información podrá utilizarse mediante una arquitectura de recuperación de información basada en búsqueda semántica y RAG.
+Esta información podrá utilizarse mediante una arquitectura progresiva de
+recuperación y RAG. Antes de incorporar búsqueda semántica, la documentación se
+mantendrá como una base de conocimiento curada y filtrable por rol.
 
 ### **12.2 Información dinámica**
 
-Información actualizada del sistema relacionada con:
+En una etapa futura y mediante operaciones Laravel explícitamente autorizadas,
 
 * Turnos.  
 * Tratamientos.  
 * Pacientes.  
 * Información asociada al cliente.
 
-El acceso a esta información deberá realizarse de manera controlada y respetando los permisos del usuario autenticado.
+El acceso a esta información deberá realizarse de manera controlada y respetando
+los permisos del usuario autenticado. El modelo no tendrá acceso directo a la
+base de datos. La información clínica no podrá incorporarse sin una feature que
+defina expresamente su alcance y autorización.
 
 ---
 
@@ -267,7 +310,7 @@ En particular, no se define todavía:
 * Sistema de pagos.  
 * Facturación.  
 * Integración con WhatsApp.  
-* Integraciones externas.  
+* Integraciones externas, excepto Google OAuth para registro e inicio de sesión.  
 * Gestión de múltiples sucursales.  
 * Reportes avanzados.  
 * Aplicación móvil.  
@@ -348,12 +391,10 @@ El asistente no reemplazará la evaluación profesional ni realizará diagnósti
 
 #### **Notificaciones**
 
-VetZen utilizará inicialmente:
-
-* **Notificaciones Push**.  
-* **Email**.
-
-Los recordatorios estarán habilitados para los eventos correspondientes y deberán poder configurarse según las necesidades de la veterinaria.
+La primera versión de turnos utilizará notificaciones dentro de VetZen y email
+cuando exista correo saliente configurado. Push queda fuera de esta versión. Los
+recordatorios de turnos aprobados se enviarán inicialmente veinticuatro horas
+antes y deberán poder configurarse según las necesidades de la veterinaria.
 
 ---
 
