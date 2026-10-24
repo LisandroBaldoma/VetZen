@@ -216,6 +216,28 @@ No agregues credenciales sensibles hardcodeadas para producción.
 
 El rol `admin` debe poder gestionar clientes.
 
+### **7.1 Gestión de administradores**
+
+Los roles `admin` y `client` son mutuamente exclusivos. La administración de
+acceso cambia el rol mediante Spatie; no asigna permisos administrativos sueltos.
+
+Todo administrador puede promover a otro cliente registrado al rol `admin`. La
+promoción conserva el registro Client, sus mascotas y todos los recursos
+relacionados, pero el usuario deja de aparecer en el listado de Clientes y pasa
+a la sección Administradores.
+
+Un administrador promovido puede volver a `client` solamente si conserva su
+perfil Client. No se permite cambiar el rol propio ni realizar una operación que
+deje a la plataforma sin administradores. Los administradores internos sin
+perfil Client no pueden degradarse desde esta interfaz.
+
+Clientes deberá mostrar exclusivamente usuarios con rol `client` y sin rol
+`admin`. Administradores deberá mostrar exclusivamente usuarios con rol `admin`.
+
+Cada cambio debe ejecutarse de forma transaccional y registrar el administrador
+responsable, el usuario afectado, el rol anterior, el rol nuevo y el momento del
+cambio.
+
 ---
 
 # **8\. AUTORIZACIÓN DE CLIENTES**
@@ -836,4 +858,3 @@ Lista únicamente cuestiones reales pendientes.
 ### **Scope verification**
 
 Confirma que no implementaste funcionalidades fuera de Feature 04 y de la infraestructura mínima de roles y permisos necesaria para soportarla.
-

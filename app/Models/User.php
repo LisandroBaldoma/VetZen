@@ -30,6 +30,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Client|null $client
+ * @property bool $client_exists
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
@@ -44,6 +45,14 @@ class User extends Authenticatable implements PasskeyUser
     public function client(): HasOne
     {
         return $this->hasOne(Client::class);
+    }
+
+    /**
+     * @return HasMany<UserRoleChange, $this>
+     */
+    public function roleChanges(): HasMany
+    {
+        return $this->hasMany(UserRoleChange::class, 'subject_user_id');
     }
 
     /**

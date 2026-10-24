@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdministratorController as AdminAdministratorController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
 use App\Http\Controllers\Admin\AppointmentScheduleTemplateController as AdminAppointmentScheduleTemplateController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Admin\TreatmentCatalogController as AdminTreatmentCatal
 use App\Http\Controllers\Admin\TreatmentController as AdminTreatmentController;
 use App\Http\Controllers\Admin\TreatmentSessionController as AdminTreatmentSessionController;
 use App\Http\Controllers\Admin\TreatmentStatusController as AdminTreatmentStatusController;
+use App\Http\Controllers\Admin\UserRoleController as AdminUserRoleController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
@@ -28,6 +30,7 @@ use App\Http\Controllers\ServiceRequestController;
 use App\Http\Controllers\SimonMessageController;
 use App\Http\Controllers\TreatmentOverviewController;
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
@@ -148,6 +151,12 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('clients/{client}', [AdminClientController::class, 'update'])
             ->can('update', 'client')
             ->name('clients.update');
+        Route::get('administrators', [AdminAdministratorController::class, 'index'])
+            ->can('viewAnyAdministrators', User::class)
+            ->name('administrators.index');
+        Route::patch('users/{user}/role', [AdminUserRoleController::class, 'update'])
+            ->can('updateRole', 'user')
+            ->name('users.role.update');
         Route::get('pets', [AdminPetController::class, 'index'])->name('pets.index');
         Route::get('pets/create', [AdminPetController::class, 'create'])->name('pets.create');
         Route::post('pets', [AdminPetController::class, 'store'])->name('pets.store');

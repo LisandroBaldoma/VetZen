@@ -312,6 +312,11 @@ Se deberá prestar especial atención a las modificaciones realizadas sobre info
 
 La estrategia concreta de auditoría queda pendiente de definición.
 
+Como decisión acotada a la gestión de privilegios, los cambios entre los roles
+`client` y `admin` se registrarán en una tabla propia. El cambio de rol y su
+registro de auditoría se ejecutarán en una misma transacción. Esta decisión no
+define todavía una estrategia global de auditoría para otros recursos.
+
 ---
 
 # **14\. Inteligencia artificial**
