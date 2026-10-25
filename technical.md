@@ -567,13 +567,22 @@ Las siguientes decisiones deben definirse antes de completar las especificacione
   infraestructura permanece inactiva hasta disponer de correo saliente y una
   decisión explícita de reactivación.
 * La autenticación de dos factores está disponible y se aplica también a Google cuando el usuario la tiene activa.
+* La eliminación de cuentas está deshabilitada en frontend y backend durante la
+  etapa actual. Su reactivación requiere definir previamente retención,
+  desactivación o anonimización para usuarios con información histórica.
 
 ## **Roles y permisos**
 
-* ¿Cuáles serán los roles iniciales?  
-* ¿Qué permisos tendrá cada rol?  
-* ¿Los permisos podrán ser modificados por un administrador?  
-* ¿Existirá un rol con control total sobre la plataforma?
+* La primera fase utiliza exclusivamente los roles mutuamente exclusivos `admin`
+  y `client`.
+* `admin` representa el control administrativo completo disponible en esta fase;
+  `client` accede únicamente a su perfil y a recursos autorizados por ownership.
+* Spatie Laravel Permission proporciona la infraestructura de roles y los
+  permisos mínimos actuales; las Policies continúan protegiendo cada recurso en
+  backend.
+* Los roles profesionales, la matriz granular y un panel para administrar
+  permisos quedan para una feature futura y no bloquean el cierre de la primera
+  fase.
 
 ## **Frontend**
 

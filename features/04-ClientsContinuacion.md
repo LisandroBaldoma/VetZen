@@ -1,5 +1,9 @@
 # **VetZen — Continuación Feature 04: Clientes, roles y autorización**
 
+> Estado: implementada. La primera fase queda cerrada con los roles exclusivos
+> `admin` y `client`; profesionales, permisos granulares y administración de
+> permisos corresponden a una feature futura.
+
 Estamos desarrollando **VetZen**, una aplicación Laravel \+ React \+ Inertia.
 
 Quiero continuar la implementación actual de la **Feature 04 — Clientes**.
@@ -714,6 +718,10 @@ No implementes en esta iteración:
 * panel avanzado de administración de permisos;  
 * funcionalidades no documentadas.
 
+La eliminación de cuentas tampoco está disponible en esta fase. La interfaz no
+la expone y el backend no registra un endpoint de eliminación hasta definir una
+política compatible de retención, desactivación o anonimización.
+
 Tampoco:
 
 * cambies de arquitectura;  
@@ -858,3 +866,17 @@ Lista únicamente cuestiones reales pendientes.
 ### **Scope verification**
 
 Confirma que no implementaste funcionalidades fuera de Feature 04 y de la infraestructura mínima de roles y permisos necesaria para soportarla.
+
+---
+
+# **28\. DECISIONES DE CIERRE DE FASE 1**
+
+* `admin` y `client` son los únicos roles de la fase.
+* El registro público local o Google es el único mecanismo de alta de clientes.
+* Un administrador puede gestionar clientes existentes y administrar roles según
+  las reglas de la sección 7.1, pero no crear clientes desde el panel.
+* La eliminación de cuentas está deshabilitada tanto en frontend como en backend.
+* La cuenta administrativa operativa debe existir antes del cierre del entorno;
+  no se incorporan credenciales predeterminadas de producción.
+* Profesionales, permisos granulares, suspensión, retención y anonimización de
+  cuentas quedan para features futuras expresamente especificadas.

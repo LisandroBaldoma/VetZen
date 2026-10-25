@@ -429,6 +429,19 @@ Las funcionalidades deberán implementarse progresivamente.
 * Clientes.  
 * Mascotas.
 
+### **Contrato de cierre de Fase 1**
+
+* Los únicos roles son `admin` y `client`; los profesionales y permisos
+  granulares quedan para una feature futura.
+* Los clientes se crean mediante registro público local o Google. El alta
+  administrativa de clientes no forma parte de esta fase.
+* La eliminación de cuentas permanece deshabilitada hasta definir retención,
+  desactivación o anonimización.
+* Mascotas incluye crear, consultar y actualizar. La eliminación, el archivado y
+  Soft Deletes permanecen fuera de alcance.
+* El cierre requiere autorización backend, pruebas de ownership horizontal,
+  suite automatizada, análisis estático, lint, tipos, formato y build exitosos.
+
 ## **Fase 2 — Gestión clínica**
 
 * Historia clínica.  

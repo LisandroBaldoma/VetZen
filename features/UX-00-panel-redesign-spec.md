@@ -605,7 +605,7 @@ La navegación de Cuenta es consistente para ambos roles y no mezcla configuraci
 └──────────────────────────────────────────────────────┘
 ```
 
-La UI puede componer identidad `User` y perfil `Client` en una experiencia, pero cada bloque conserva su endpoint, validación y feedback. Si no puede garantizar guardado atómico, no usa un único botón que aparente atomicidad. La eliminación de cuenta permanece oculta hasta definir una política de retención o anonimización compatible con los datos clínicos y las foreign keys restrictivas.
+La UI puede componer identidad `User` y perfil `Client` en una experiencia, pero cada bloque conserva su endpoint, validación y feedback. Si no puede garantizar guardado atómico, no usa un único botón que aparente atomicidad. La eliminación de cuenta no está disponible en frontend ni backend hasta definir una política de retención, desactivación o anonimización compatible con los datos clínicos y las foreign keys restrictivas.
 
 ## 10. Estados de interfaz
 
@@ -860,7 +860,7 @@ Cada tarea debe cerrarse con verificación responsive, tipos, lint y tests relev
 5. Completar una sesión puede abrir el alta de una evolución con paciente y tipo preseleccionados, sin crear una relación persistente con la sesión.
 6. Un tratamiento completado es final. Si la atención continúa, se inicia un nuevo tratamiento.
 7. Las cancelaciones solicitan confirmación, pero no motivo mientras no exista soporte de persistencia.
-8. La eliminación de cuenta permanece oculta hasta definir retención o anonimización.
+8. La eliminación de cuenta no está disponible en frontend ni backend hasta definir retención, desactivación o anonimización.
 9. Agenda, profesionales, gestión de permisos y configuración general permanecen fuera de alcance.
 
 ## 19. Criterios globales de aceptación
@@ -899,7 +899,7 @@ El rediseño estará implementado cuando:
 6. Implementar catálogo clínico y solicitud desde servicio.
 7. Implementar solicitudes administrativas y cliente.
 8. Implementar tratamientos, sesiones y alta opcional de evolución preseleccionada.
-9. Implementar cuenta, autenticación y landing, manteniendo oculta la eliminación de cuenta.
+9. Implementar cuenta, autenticación y landing, manteniendo deshabilitada la eliminación de cuenta.
 10. Validar responsive, accesibilidad, pruebas integrales y calidad final.
 
 Este orden alinea primero los contratos documentales y de acceso, y evita construir enlaces sin destino, dashboards sin datos o controles que contradigan las decisiones definitivas.

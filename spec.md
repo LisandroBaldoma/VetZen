@@ -68,6 +68,15 @@ se conservarán su perfil, mascotas y recursos asociados, pero aparecerá única
 en la sección de administradores mientras conserve ese rol. Los cambios de rol
 deberán identificar al administrador responsable y quedar auditados.
 
+La primera fase utiliza exclusivamente los roles `admin` y `client`. Los roles
+profesionales adicionales, los permisos granulares y su panel de administración
+pertenecen a una feature futura. En esta fase los clientes se incorporan mediante
+el registro público local o con Google; no existe alta administrativa de clientes.
+
+La eliminación de cuentas no está disponible mientras no se defina una política
+de retención, desactivación o anonimización compatible con la información clínica,
+la auditoría y las relaciones históricas.
+
 ---
 
 # **4\. Gestión de clientes**
