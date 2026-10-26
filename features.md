@@ -479,6 +479,15 @@ Las funcionalidades deberán implementarse progresivamente.
 * Pruebas del asistente.  
 * Validación integral del sistema.
 
+### Cierre funcional de primera versión
+
+La primera versión queda cerrada funcionalmente con notificaciones internas y
+por email configurable, auditoría transversal mínima y SIMON-04. Las
+verificaciones automáticas asociadas están completadas. La revisión manual de
+UX, las pruebas de concurrencia reales sobre MySQL y la operación productiva
+son actividades diferidas de preparación de despliegue, documentadas en
+`docs/releases/first-version.md` y `technical.md`.
+
 ---
 
 # **16\. Especificación individual de features**

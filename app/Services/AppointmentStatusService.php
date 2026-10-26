@@ -44,6 +44,7 @@ class AppointmentStatusService
 
             $locked->update(['status' => $status]);
             $history->save();
+            app(AuditLogger::class)->record($user, 'appointment.status_changed', $locked, ['status' => $history->from_status], ['status' => $status]);
 
             if ($status === 'attended') {
                 AppointmentClinicalTask::query()->firstOrCreate(['appointment_id' => $locked->id]);

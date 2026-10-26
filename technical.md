@@ -220,6 +220,12 @@ horaria explícita de la veterinaria, `America/Argentina/Buenos_Aires`. El motor
 objetivo es MySQL. Las pruebas de concurrencia deberán ejecutarse contra MySQL;
 SQLite no valida semánticas de bloqueo equivalentes.
 
+La revisión manual de UX y las pruebas de concurrencia reales en MySQL se
+posponen hasta que un despliegue, una carga prevista o cambios relevantes en
+agenda o tratamientos requieran su ejecución. Mientras tanto, las pruebas
+automatizadas y los bloqueos transaccionales existentes son la verificación
+vigente, sin considerar SQLite como validación de concurrencia.
+
 La reprogramación debe ser atómica: reserva el intervalo destino y libera el
 origen en la misma transacción, o conserva el turno original. Las modificaciones
 de agenda no pueden invalidar turnos pendientes o aprobados existentes.
@@ -310,7 +316,15 @@ La auditoría deberá permitir identificar como mínimo:
 
 Se deberá prestar especial atención a las modificaciones realizadas sobre información clínica.
 
-La estrategia concreta de auditoría queda pendiente de definición.
+La auditoría transversal mínima registra eventos operativos y de seguridad en un
+log append-only, con actor, acción, instante, recurso afectado y valores
+anteriores/nuevos cuando sean necesarios. Los cambios de estado de turnos,
+tratamientos y sesiones, y las asignaciones de tratamientos, son el alcance
+inicial. El registro se ejecuta dentro de la misma transacción que el cambio.
+
+La auditoría clínica continúa usando `clinical_record_audits` como sistema
+específico y no duplica contenido clínico en el log transversal. Los cambios
+de rol continúan usando `user_role_changes` como su registro específico.
 
 Como decisión acotada a la gestión de privilegios, los cambios entre los roles
 `client` y `admin` se registrarán en una tabla propia. El cambio de rol y su

@@ -5,5 +5,5 @@ return [
     'client_booking_lead_minutes' => 120,
     'client_cancellation_lead_minutes' => 1440,
     'reminder_hours' => (int) env('APPOINTMENT_REMINDER_HOURS', 24),
-    'email_notifications' => (bool) env('APPOINTMENT_EMAIL_NOTIFICATIONS', false),
+    'email_notifications' => (bool) env('NOTIFICATION_EMAIL_ENABLED', false),
 ];

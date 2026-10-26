@@ -26,13 +26,10 @@ class AssistantKnowledgeBaseSearch
         'quiero',
     ];
 
-    /**
-     * @return Collection<int, AssistantKnowledgeChunk>
-     */
-    public function search(string $query, string $role, ?string $module = null, int $limit = 5): Collection
+    public function search(string $query, string $role, ?string $module = null, int $limit = 5): AssistantKnowledgeBaseSearchResult
     {
         if (! in_array($role, ['admin', 'client'], true) || $limit < 1) {
-            return collect();
+            return new AssistantKnowledgeBaseSearchResult(collect());
         }
 
         $terms = $this->terms($query);
@@ -40,7 +37,7 @@ class AssistantKnowledgeBaseSearch
         if ($terms === []) {
             $this->trace($role, $module, $terms, collect(), 'no_search_terms');
 
-            return collect();
+            return new AssistantKnowledgeBaseSearchResult(collect());
         }
 
         $chunks = AssistantKnowledgeChunk::query()
@@ -78,7 +75,7 @@ class AssistantKnowledgeBaseSearch
 
         $this->trace($role, $module, $terms, $chunks, $chunks->isEmpty() ? 'no_matches' : 'matched');
 
-        return $chunks;
+        return new AssistantKnowledgeBaseSearchResult($chunks);
     }
 
     private function isProceduralHeading(?string $heading): bool
@@ -107,22 +104,12 @@ class AssistantKnowledgeBaseSearch
             return;
         }
 
-        $contents = $chunks->pluck('content');
-
         Log::info('simon.retrieval.completed', [
             'role' => $role,
             'module' => $module,
             'outcome' => $outcome,
             'terms_count' => count($terms),
-            'chunks_count' => $chunks->count(),
-            'unique_documents_count' => $chunks->pluck('document.document_id')->unique()->count(),
-            'retrieved_characters' => $contents->sum(fn (string $content): int => Str::length($content)),
-            'retrieved_words' => $contents->sum(fn (string $content): int => count(preg_split('/\s+/u', trim($content)) ?: [])),
-            'source_document_ids' => $chunks
-                ->pluck('document.document_id')
-                ->unique()
-                ->values()
-                ->all(),
+            ...new AssistantKnowledgeBaseSearchResult($chunks)->metrics(),
         ]);
     }
 

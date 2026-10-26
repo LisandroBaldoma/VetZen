@@ -1,7 +1,8 @@
 # SIMON-04 - Evaluación, grounding y observabilidad del MVP
 
-> Estado: en implementación. Esta feature mide y corrige el comportamiento del
-> MVP de Simón sin incorporar nuevas capacidades de producto.
+> Estado: implementada y verificada automáticamente para el cierre funcional de
+> la primera versión. La evaluación manual con proveedor externo queda lista para
+> ejecutarse según `docs/simon/evaluation-baseline.md`.
 
 ## Objetivo
 
@@ -36,7 +37,10 @@ aislamiento por rol, terminología, uso de contexto, tokens y latencia de Simón
    pero el rol recuperado no puede ejecutar la acción, y orientar solo hacia una
    alternativa permitida por la misma evidencia.
 7. El filtro por rol ocurre antes del ranking, tanto para evidencia disponible
-   como no disponible.
+    como no disponible.
+   Una evidencia `not_allowed_for_role` solo se recupera cuando está autorizada
+   para el rol consultante y explica su propia restricción; nunca habilita ni
+   expone instrucciones operativas de otro rol.
 8. Las trazas no registran preguntas, respuestas, prompts, chunks, PII, datos
    clínicos, payloads completos ni secretos.
 
@@ -60,16 +64,16 @@ notificaciones ni rediseño de UI.
 
 ## Criterios de aceptación
 
-* [ ] Las preguntas de evaluación incluyen guía disponible de Turnos y Agenda y
+* [x] Las preguntas de evaluación incluyen guía disponible de Turnos y Agenda y
   mantienen fuera de alcance las consultas de datos dinámicos.
-* [ ] C2 y A4 recuperan primero evidencia procedimental relevante sin depender
+* [x] C2 y A4 recuperan primero evidencia procedimental relevante sin depender
   de un módulo enviado por la UI.
-* [ ] C5 recupera `NOT_ALLOWED_FOR_ROLE`, explica que un cliente no puede asignar
+* [x] C5 recupera `NOT_ALLOWED_FOR_ROLE`, explica que un cliente no puede asignar
   tratamientos y lo orienta a consultarlos en modo lectura.
-* [ ] A1 no presenta `en curso` como estado de una solicitud de atención.
-* [ ] A5 recupera evidencia procedimental de Turnos y Agenda sin inventar datos
+* [x] A1 no presenta `en curso` como estado de una solicitud de atención.
+* [x] A5 recupera evidencia procedimental de Turnos y Agenda sin inventar datos
   dinámicos.
-* [ ] Las trazas registran chunks, documentos únicos, caracteres, palabras,
+* [x] Las trazas registran conteos de chunks y documentos únicos, caracteres, palabras,
   latencia y usage del proveedor cuando está disponible.
-* [ ] La suite usa mocks/fakes del contrato o `Http::fake()`; nunca Groq real.
-* [ ] La evaluación manual puede repetirse sin registrar contenido sensible.
+* [x] La suite usa mocks/fakes del contrato o `Http::fake()`; nunca Groq real.
+* [x] La evaluación manual puede repetirse sin registrar contenido sensible.

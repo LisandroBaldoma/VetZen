@@ -1,5 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { LogOut, Settings } from 'lucide-react';
+import { Bell, LogOut, Settings } from 'lucide-react';
+import { index as notificationsIndex } from '@/actions/App/Http/Controllers/NotificationController';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -35,6 +36,17 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="block w-full cursor-pointer"
+                        href={notificationsIndex()}
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <Bell className="mr-2" aria-hidden="true" />
+                        Notificaciones
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"

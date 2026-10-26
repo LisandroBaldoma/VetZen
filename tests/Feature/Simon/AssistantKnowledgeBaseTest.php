@@ -94,8 +94,8 @@ MARKDOWN);
         $adminResults = app(AssistantKnowledgeBaseSearch::class)->search('resolver solicitud', 'admin');
         $clientResults = app(AssistantKnowledgeBaseSearch::class)->search('resolver solicitud', 'client');
 
-        $this->assertSame(['admin.resolver-solicitudes'], $adminResults->pluck('document.document_id')->unique()->values()->all());
-        $this->assertSame(['client.solicitudes'], $clientResults->pluck('document.document_id')->unique()->values()->all());
+        $this->assertSame(['admin.resolver-solicitudes'], $adminResults->chunks->pluck('document.document_id')->unique()->values()->all());
+        $this->assertSame(['client.solicitudes'], $clientResults->chunks->pluck('document.document_id')->unique()->values()->all());
     }
 
     public function test_search_prioritizes_the_current_module_when_text_matches(): void
@@ -107,7 +107,7 @@ MARKDOWN);
 
         $results = app(AssistantKnowledgeBaseSearch::class)->search('solicitud atención', 'client', 'pets');
 
-        $this->assertSame('client.mascotas', $results->first()->document->document_id);
+        $this->assertSame('client.mascotas', $results->chunks->first()->document->document_id);
     }
 
     public function test_indexer_rejects_documents_without_required_metadata(): void
@@ -127,7 +127,7 @@ MARKDOWN);
         $results = app(AssistantKnowledgeBaseSearch::class)->search('completar sesión', 'admin', 'treatments');
 
         $this->assertGreaterThan(0, $indexed);
-        $this->assertSame('admin.gestionar-sesiones', $results->first()->document->document_id);
+        $this->assertSame('admin.gestionar-sesiones', $results->chunks->first()->document->document_id);
         $this->assertSame(
             'not_allowed_for_role',
             AssistantKnowledgeDocument::query()
@@ -144,11 +144,11 @@ MARKDOWN);
         /** @var array<int, array{id: string, role: string, question: string, expected_documents: array<int, string>}> $cases */
         $cases = require base_path('tests/Fixtures/Simon/evaluation.php');
 
-        $this->assertCount(11, $cases);
+        $this->assertCount(10, $cases);
 
         foreach ($cases as $case) {
             $results = app(AssistantKnowledgeBaseSearch::class)->search($case['question'], $case['role']);
-            $documentIds = $results->pluck('document.document_id')->unique()->values()->all();
+            $documentIds = $results->chunks->pluck('document.document_id')->unique()->values()->all();
 
             foreach ($case['expected_documents'] as $documentId) {
                 $this->assertContains($documentId, $documentIds, $case['id']);
@@ -161,13 +161,24 @@ MARKDOWN);
         app(AssistantKnowledgeBaseIndexer::class)->sync(base_path('docs/help'));
         $search = app(AssistantKnowledgeBaseSearch::class);
 
-        $clientResult = $search->search('Quiero que atiendan a mi mascota, ¿cómo solicito atención?', 'client')->first();
-        $adminResult = $search->search('¿Cómo registro o completo una sesión de un tratamiento?', 'admin')->first();
+        $clientResult = $search->search('Quiero que atiendan a mi mascota, ¿cómo solicito atención?', 'client')->chunks->first();
+        $adminResult = $search->search('¿Cómo registro o completo una sesión de un tratamiento?', 'admin')->chunks->first();
 
         $this->assertSame('client.solicitar-atencion', $clientResult?->document->document_id);
         $this->assertSame('Cómo hacerlo', $clientResult?->heading);
         $this->assertSame('admin.gestionar-sesiones', $adminResult?->document->document_id);
         $this->assertSame('Cómo hacerlo', $adminResult?->heading);
+    }
+
+    public function test_retrieval_classifies_role_restrictions_without_returning_admin_instructions(): void
+    {
+        app(AssistantKnowledgeBaseIndexer::class)->sync(base_path('docs/help'));
+
+        $result = app(AssistantKnowledgeBaseSearch::class)->search('¿Cómo asigno un tratamiento a mi mascota?', 'client');
+
+        $this->assertSame('not_allowed_for_role', $result->outcome());
+        $this->assertSame('client.consultar-tratamientos-y-sesiones', $result->chunks->first()->document->document_id);
+        $this->assertStringNotContainsString('Asignar y gestionar tratamientos de un paciente', $result->chunks->implode('content'));
     }
 
     public function test_retrieval_trace_reports_aggregate_context_metrics_without_content(): void

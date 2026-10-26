@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdministratorController as AdminAdministratorCont
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
 use App\Http\Controllers\Admin\AppointmentScheduleTemplateController as AdminAppointmentScheduleTemplateController;
+use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\PetTreatmentController;
 use App\Http\Controllers\Service\ServiceController;
@@ -45,6 +47,9 @@ Route::middleware(['guest', 'throttle:10,1'])->prefix('auth/google')->name('goog
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::patch('notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('simon/messages', [SimonMessageController::class, 'store'])
         ->middleware('throttle:simon')
         ->name('simon.messages.store');
@@ -83,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('admin')->name('admin.')->middleware(RoleMiddleware::using('admin'))->group(function () {
+        Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
         Route::get('services', [AdminServiceController::class, 'index'])->name('services.index');
         Route::get('services/create', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('services', [AdminServiceController::class, 'store'])->name('services.store');
