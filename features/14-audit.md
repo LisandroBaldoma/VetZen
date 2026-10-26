@@ -1,5 +1,8 @@
 # Feature 14 - Auditoría transversal mínima
 
+> Estado: implementada y verificada automáticamente para el cierre funcional de
+> la primera versión.
+
 ## Alcance
 
 Registrar en un log append-only las asignaciones y cambios de estado de

@@ -1,5 +1,9 @@
 # Feature 11 - Notificaciones
 
+> Estado: implementada y verificada automáticamente para el cierre funcional de
+> la primera versión. La entrega de email productivo queda condicionada a la
+> operación productiva documentada en `docs/releases/first-version.md`.
+
 ## Objetivo
 
 Informar acciones relevantes mediante notificaciones internas y email sin exponer

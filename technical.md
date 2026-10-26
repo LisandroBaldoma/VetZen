@@ -220,6 +220,12 @@ horaria explícita de la veterinaria, `America/Argentina/Buenos_Aires`. El motor
 objetivo es MySQL. Las pruebas de concurrencia deberán ejecutarse contra MySQL;
 SQLite no valida semánticas de bloqueo equivalentes.
 
+La revisión manual de UX y las pruebas de concurrencia reales en MySQL se
+posponen hasta que un despliegue, una carga prevista o cambios relevantes en
+agenda o tratamientos requieran su ejecución. Mientras tanto, las pruebas
+automatizadas y los bloqueos transaccionales existentes son la verificación
+vigente, sin considerar SQLite como validación de concurrencia.
+
 La reprogramación debe ser atómica: reserva el intervalo destino y libera el
 origen en la misma transacción, o conserva el turno original. Las modificaciones
 de agenda no pueden invalidar turnos pendientes o aprobados existentes.
