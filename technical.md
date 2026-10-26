@@ -310,7 +310,15 @@ La auditoría deberá permitir identificar como mínimo:
 
 Se deberá prestar especial atención a las modificaciones realizadas sobre información clínica.
 
-La estrategia concreta de auditoría queda pendiente de definición.
+La auditoría transversal mínima registra eventos operativos y de seguridad en un
+log append-only, con actor, acción, instante, recurso afectado y valores
+anteriores/nuevos cuando sean necesarios. Los cambios de estado de turnos,
+tratamientos y sesiones, y las asignaciones de tratamientos, son el alcance
+inicial. El registro se ejecuta dentro de la misma transacción que el cambio.
+
+La auditoría clínica continúa usando `clinical_record_audits` como sistema
+específico y no duplica contenido clínico en el log transversal. Los cambios
+de rol continúan usando `user_role_changes` como su registro específico.
 
 Como decisión acotada a la gestión de privilegios, los cambios entre los roles
 `client` y `admin` se registrarán en una tabla propia. El cambio de rol y su

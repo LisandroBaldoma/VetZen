@@ -86,7 +86,7 @@ class ServiceRequestController extends Controller
 
     public function resolve(ResolveServiceRequestRequest $request, ServiceRequest $serviceRequest, ServiceRequestResolutionService $resolver, TreatmentNotificationService $notifications): RedirectResponse
     {
-        $resolved = $resolver->resolve($serviceRequest, Treatment::query()->findOrFail($request->validated('treatment_id')), $request->safe()->except('treatment_id'));
+        $resolved = $resolver->resolve($serviceRequest, Treatment::query()->findOrFail($request->validated('treatment_id')), $request->safe()->except('treatment_id'), $request->user());
         $notifications->send($resolved->petTreatment, __('asignado'));
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Solicitud resuelta y tratamiento asignado.')]);
 

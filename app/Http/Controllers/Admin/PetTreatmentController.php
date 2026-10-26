@@ -54,7 +54,7 @@ class PetTreatmentController extends Controller
     public function store(StorePetTreatmentRequest $request, Pet $pet, TreatmentAssignmentService $service, TreatmentNotificationService $notifications): RedirectResponse
     {
         $treatment = Treatment::query()->where('is_active', true)->findOrFail($request->integer('treatment_id'));
-        $petTreatment = $service->assign($pet, $treatment, $request->safe()->except('treatment_id'));
+        $petTreatment = $service->assign($pet, $treatment, $request->safe()->except('treatment_id'), $request->user());
         $notifications->send($petTreatment, __('asignado'));
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Tratamiento asignado.')]);
 
@@ -94,7 +94,7 @@ class PetTreatmentController extends Controller
     public function updateStatus(UpdatePetTreatmentStatusRequest $request, Pet $pet, PetTreatment $petTreatment, TreatmentAssignmentService $service, TreatmentNotificationService $notifications): RedirectResponse
     {
         $previousStatus = $petTreatment->status;
-        $petTreatment = $service->changeStatus($petTreatment, $request->string('status')->toString());
+        $petTreatment = $service->changeStatus($petTreatment, $request->string('status')->toString(), $request->user());
         if ($petTreatment->status !== $previousStatus) {
             $notifications->send($petTreatment, __('estado actualizado'));
         }

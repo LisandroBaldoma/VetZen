@@ -6,15 +6,16 @@ use App\Models\Pet;
 use App\Models\PetTreatment;
 use App\Models\Treatment;
 use App\Models\TreatmentSession;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class TreatmentAssignmentService
 {
     /** @param array{planned_sessions: int, default_session_price: string, currency: string, starts_on: string, status: string, notes?: string|null} $attributes */
-    public function assign(Pet $pet, Treatment $treatment, array $attributes): PetTreatment
+    public function assign(Pet $pet, Treatment $treatment, array $attributes, ?User $actor = null): PetTreatment
     {
-        return DB::transaction(function () use ($pet, $treatment, $attributes): PetTreatment {
+        return DB::transaction(function () use ($pet, $treatment, $attributes, $actor): PetTreatment {
             $treatment = Treatment::query()
                 ->with(['service', 'procedures'])
                 ->lockForUpdate()
@@ -48,6 +49,9 @@ class TreatmentAssignmentService
             );
 
             $this->createPendingSessions($petTreatment, $petTreatment->planned_sessions, 1);
+            if ($actor) {
+                app(AuditLogger::class)->record($actor, 'pet_treatment.assigned', $petTreatment, null, ['status' => $petTreatment->status, 'planned_sessions' => $petTreatment->planned_sessions]);
+            }
 
             return $petTreatment->load(['procedureSnapshots', 'sessions']);
         });
@@ -91,9 +95,9 @@ class TreatmentAssignmentService
     }
 
     /** @param array{scheduled_at?: string|null, price: string, currency: string, status: string, notes?: string|null} $attributes */
-    public function updateSession(TreatmentSession $session, array $attributes): TreatmentSession
+    public function updateSession(TreatmentSession $session, array $attributes, ?User $actor = null): TreatmentSession
     {
-        return DB::transaction(function () use ($session, $attributes): TreatmentSession {
+        return DB::transaction(function () use ($session, $attributes, $actor): TreatmentSession {
             $locked = TreatmentSession::query()->lockForUpdate()->findOrFail($session->id);
             $petTreatment = PetTreatment::query()->lockForUpdate()->findOrFail($locked->pet_treatment_id);
 
@@ -105,7 +109,11 @@ class TreatmentAssignmentService
                 throw ValidationException::withMessages(['status' => __('Las sesiones completadas o canceladas no pueden cambiar de estado.')]);
             }
 
+            $previousStatus = $locked->status;
             $locked->update($attributes);
+            if ($actor && $previousStatus !== $locked->status) {
+                app(AuditLogger::class)->record($actor, 'treatment_session.status_changed', $locked, ['status' => $previousStatus], ['status' => $locked->status]);
+            }
 
             $completed = $petTreatment->sessions()->where('status', 'completed')->count();
             $pending = $petTreatment->sessions()->where('status', 'pending')->count();
@@ -124,9 +132,9 @@ class TreatmentAssignmentService
         });
     }
 
-    public function changeStatus(PetTreatment $petTreatment, string $requestedStatus): PetTreatment
+    public function changeStatus(PetTreatment $petTreatment, string $requestedStatus, ?User $actor = null): PetTreatment
     {
-        return DB::transaction(function () use ($petTreatment, $requestedStatus): PetTreatment {
+        return DB::transaction(function () use ($petTreatment, $requestedStatus, $actor): PetTreatment {
             $locked = PetTreatment::query()->lockForUpdate()->findOrFail($petTreatment->id);
 
             if (in_array($locked->status, ['completed', 'cancelled'], true)) {
@@ -142,7 +150,11 @@ class TreatmentAssignmentService
                 $requestedStatus = $completed > 0 ? 'in_progress' : 'pending';
             }
 
+            $previousStatus = $locked->status;
             $locked->update(['status' => $requestedStatus]);
+            if ($actor && $previousStatus !== $locked->status) {
+                app(AuditLogger::class)->record($actor, 'pet_treatment.status_changed', $locked, ['status' => $previousStatus], ['status' => $locked->status]);
+            }
 
             return $locked;
         });

@@ -16,7 +16,7 @@ class TreatmentSessionController extends Controller
     public function update(UpdateTreatmentSessionRequest $request, TreatmentSession $session, TreatmentAssignmentService $assignments, AppointmentClinicalTaskService $tasks, TreatmentNotificationService $notifications): RedirectResponse
     {
         $previousStatus = $session->status;
-        $session = $assignments->updateSession($session, $request->validated());
+        $session = $assignments->updateSession($session, $request->validated(), $request->user());
         $tasks->resolveForSession($session);
         if ($session->status !== $previousStatus) {
             $notifications->send($session->petTreatment, __('estado de sesión actualizado'));

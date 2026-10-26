@@ -5,6 +5,7 @@ import {
     LayoutGrid,
     PawPrint,
     ShieldCheck,
+    ScrollText,
     Stethoscope,
     Syringe,
     Users,
@@ -12,6 +13,7 @@ import {
 import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
 import { index as administratorsIndex } from '@/routes/admin/administrators';
+import { index as auditLogsIndex } from '@/routes/admin/audit-logs';
 import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as adminPetTreatmentsIndex } from '@/routes/admin/pet-treatments';
@@ -31,6 +33,7 @@ export type NavigationSection =
     | 'dashboard'
     | 'clients'
     | 'administrators'
+    | 'audit-logs'
     | 'appointments'
     | 'medical-records'
     | 'pets'
@@ -54,6 +57,10 @@ export function getNavigationSection(
     if (role === 'admin') {
         if (matches(path, /(?:^|\/)admin\/administrators(?:\/|$)/)) {
             return 'administrators';
+        }
+
+        if (matches(path, /(?:^|\/)admin\/audit-logs(?:\/|$)/)) {
+            return 'audit-logs';
         }
 
         if (matches(path, /(?:^|\/)admin\/clients(?:\/|$)/)) {
@@ -125,6 +132,7 @@ export function getSimonModule(
 ): SimonModule | undefined {
     switch (section) {
         case 'administrators':
+        case 'audit-logs':
             return 'clients';
         case 'clients':
         case 'appointments':
@@ -250,6 +258,12 @@ export function getNavigationGroups(
                               href: administratorsIndex(),
                               icon: ShieldCheck,
                               isActive: activeSection === 'administrators',
+                          },
+                          {
+                              title: 'Auditoría',
+                              href: auditLogsIndex(),
+                              icon: ScrollText,
+                              isActive: activeSection === 'audit-logs',
                           },
                       ],
                   },

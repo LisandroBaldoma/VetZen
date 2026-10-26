@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdministratorController as AdminAdministratorCont
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentScheduleDateController as AdminAppointmentScheduleDateController;
 use App\Http\Controllers\Admin\AppointmentScheduleTemplateController as AdminAppointmentScheduleTemplateController;
+use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\ClinicalRecordManagementController as AdminClinicalRecordController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -87,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('admin')->name('admin.')->middleware(RoleMiddleware::using('admin'))->group(function () {
+        Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
         Route::get('services', [AdminServiceController::class, 'index'])->name('services.index');
         Route::get('services/create', [AdminServiceController::class, 'create'])->name('services.create');
         Route::post('services', [AdminServiceController::class, 'store'])->name('services.store');
