@@ -13,8 +13,8 @@ import {
 import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
 import { index as administratorsIndex } from '@/routes/admin/administrators';
-import { index as auditLogsIndex } from '@/routes/admin/audit-logs';
 import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
+import { index as auditLogsIndex } from '@/routes/admin/audit-logs';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as adminPetTreatmentsIndex } from '@/routes/admin/pet-treatments';
 import { index as petsIndex } from '@/routes/admin/pets';
