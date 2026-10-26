@@ -23,6 +23,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\GoogleAuthenticationController;
 use App\Http\Controllers\ClinicalRecord\ClinicalRecordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\PetTreatmentController;
 use App\Http\Controllers\Service\ServiceController;
@@ -45,6 +46,9 @@ Route::middleware(['guest', 'throttle:10,1'])->prefix('auth/google')->name('goog
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::patch('notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('simon/messages', [SimonMessageController::class, 'store'])
         ->middleware('throttle:simon')
         ->name('simon.messages.store');

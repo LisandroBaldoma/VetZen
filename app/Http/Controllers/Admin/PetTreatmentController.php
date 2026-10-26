@@ -10,6 +10,7 @@ use App\Models\Pet;
 use App\Models\PetTreatment;
 use App\Models\Treatment;
 use App\Services\TreatmentAssignmentService;
+use App\Services\TreatmentNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -50,10 +51,11 @@ class PetTreatmentController extends Controller
         ]);
     }
 
-    public function store(StorePetTreatmentRequest $request, Pet $pet, TreatmentAssignmentService $service): RedirectResponse
+    public function store(StorePetTreatmentRequest $request, Pet $pet, TreatmentAssignmentService $service, TreatmentNotificationService $notifications): RedirectResponse
     {
         $treatment = Treatment::query()->where('is_active', true)->findOrFail($request->integer('treatment_id'));
         $petTreatment = $service->assign($pet, $treatment, $request->safe()->except('treatment_id'));
+        $notifications->send($petTreatment, __('asignado'));
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Tratamiento asignado.')]);
 
         return to_route('admin.pets.treatments.show', [$pet, $petTreatment]);
@@ -89,9 +91,13 @@ class PetTreatmentController extends Controller
         return back();
     }
 
-    public function updateStatus(UpdatePetTreatmentStatusRequest $request, Pet $pet, PetTreatment $petTreatment, TreatmentAssignmentService $service): RedirectResponse
+    public function updateStatus(UpdatePetTreatmentStatusRequest $request, Pet $pet, PetTreatment $petTreatment, TreatmentAssignmentService $service, TreatmentNotificationService $notifications): RedirectResponse
     {
-        $service->changeStatus($petTreatment, $request->string('status')->toString());
+        $previousStatus = $petTreatment->status;
+        $petTreatment = $service->changeStatus($petTreatment, $request->string('status')->toString());
+        if ($petTreatment->status !== $previousStatus) {
+            $notifications->send($petTreatment, __('estado actualizado'));
+        }
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 
         return back();
