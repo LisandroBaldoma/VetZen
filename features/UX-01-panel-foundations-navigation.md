@@ -191,7 +191,7 @@ Cuenta no forma parte de los grupos de navegación principal. Se abre desde el u
 
 “Mis datos” es el concepto visible que agrupa identidad y datos personales. Como UX-01 no crea ni mueve endpoints, el layout debe dejar claro que son dos secciones guardadas por separado. No debe presentar un único botón que sugiera persistencia atómica.
 
-La eliminación de cuenta permanece oculta.
+La eliminación de cuenta no está disponible en frontend ni backend.
 
 ## 9. Vocabulario visible
 
@@ -615,7 +615,7 @@ Se recorre cada destino como `admin` y `client` a 320, 375, 390, 768 y 1280 px. 
 - [x] El shell y Cuenta usan el vocabulario en español definido en esta feature.
 - [x] Repository, Documentation y Platform desaparecen de la interfaz.
 - [x] Cuenta diferencia datos de acceso y datos personales sin aparentar guardado atómico.
-- [x] La eliminación de cuenta permanece oculta.
+- [x] La eliminación de cuenta no está disponible en frontend ni backend.
 - [x] Desktop colapsado y móvil conservan todos los destinos y nombres accesibles.
 - [x] Solo una entrada está activa en cada ruta principal o anidada cubierta.
 - [x] Procedimientos y plantillas contextuales no activan simultáneamente Servicios clínicos.

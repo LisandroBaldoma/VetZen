@@ -52,6 +52,7 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 * Gestión de perfiles.  
 * Gestión de profesionales.  
 * Roles y permisos.  
+* Gestión de administradores a partir de clientes registrados.
 * Diferentes niveles de permisos para profesionales.
 
 ## **Reglas principales**
@@ -71,6 +72,12 @@ Permitir que los usuarios accedan a VetZen de forma segura y que el sistema dete
 * Los profesionales podrán tener diferentes niveles de acceso.  
 * Los profesionales autorizados podrán modificar información clínica.  
 * Los clientes solo podrán acceder a información correspondiente a sus propias mascotas.
+* Los roles `admin` y `client` serán mutuamente exclusivos.
+* Todo registro público continuará recibiendo únicamente el rol `client`.
+* Un administrador podrá promover otro cliente a `admin` y revertir a `client` únicamente a un administrador que conserve un perfil Client.
+* Ningún administrador podrá modificar su propio rol ni dejar la plataforma sin administradores.
+* Promover un cliente no eliminará su perfil Client ni sus recursos; el rol vigente determinará si aparece en Clientes o Administradores.
+* Todo cambio de rol registrará actor, usuario afectado, rol anterior, rol nuevo y fecha.
 
 ---
 
@@ -421,6 +428,19 @@ Las funcionalidades deberán implementarse progresivamente.
 * Roles y permisos.  
 * Clientes.  
 * Mascotas.
+
+### **Contrato de cierre de Fase 1**
+
+* Los únicos roles son `admin` y `client`; los profesionales y permisos
+  granulares quedan para una feature futura.
+* Los clientes se crean mediante registro público local o Google. El alta
+  administrativa de clientes no forma parte de esta fase.
+* La eliminación de cuentas permanece deshabilitada hasta definir retención,
+  desactivación o anonimización.
+* Mascotas incluye crear, consultar y actualizar. La eliminación, el archivado y
+  Soft Deletes permanecen fuera de alcance.
+* El cierre requiere autorización backend, pruebas de ownership horizontal,
+  suite automatizada, análisis estático, lint, tipos, formato y build exitosos.
 
 ## **Fase 2 — Gestión clínica**
 

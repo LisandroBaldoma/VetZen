@@ -59,8 +59,23 @@ La plataforma deberá permitir:
 * Verificación de identidad.  
 * Diferenciación entre clientes y profesionales.  
 * Administración de roles y permisos mediante Spatie.
+* Promoción de clientes existentes al rol administrador y reversión controlada al rol cliente.
 
 El acceso a las diferentes funcionalidades deberá estar determinado por los permisos correspondientes a cada usuario.
+
+Los roles `admin` y `client` serán mutuamente exclusivos. Al promover un cliente
+se conservarán su perfil, mascotas y recursos asociados, pero aparecerá únicamente
+en la sección de administradores mientras conserve ese rol. Los cambios de rol
+deberán identificar al administrador responsable y quedar auditados.
+
+La primera fase utiliza exclusivamente los roles `admin` y `client`. Los roles
+profesionales adicionales, los permisos granulares y su panel de administración
+pertenecen a una feature futura. En esta fase los clientes se incorporan mediante
+el registro público local o con Google; no existe alta administrativa de clientes.
+
+La eliminación de cuentas no está disponible mientras no se defina una política
+de retención, desactivación o anonimización compatible con la información clínica,
+la auditoría y las relaciones históricas.
 
 ---
 

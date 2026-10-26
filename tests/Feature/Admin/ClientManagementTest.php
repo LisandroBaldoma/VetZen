@@ -40,6 +40,21 @@ class ClientManagementTest extends TestCase
                 ->where('client.id', $client->id));
     }
 
+    public function test_admin_with_client_profile_is_not_listed_as_client(): void
+    {
+        $actor = User::factory()->admin()->create();
+        $administratorClient = Client::factory()->create();
+        $administratorClient->user->syncRoles(['admin']);
+        $client = Client::factory()->create();
+
+        $this->actingAs($actor)
+            ->get(route('admin.clients.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->has('clients', 1)
+                ->where('clients.0.id', $client->id));
+    }
+
     public function test_admin_can_update_client_information(): void
     {
         $admin = User::factory()->admin()->create();

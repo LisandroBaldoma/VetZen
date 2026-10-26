@@ -4,12 +4,14 @@ import {
     ClipboardPlus,
     LayoutGrid,
     PawPrint,
+    ShieldCheck,
     Stethoscope,
     Syringe,
     Users,
 } from 'lucide-react';
 import type { SimonModule } from '@/components/simon/simon-chat';
 import { dashboard } from '@/routes';
+import { index as administratorsIndex } from '@/routes/admin/administrators';
 import { index as adminAppointmentsIndex } from '@/routes/admin/appointments';
 import { index as clientsIndex } from '@/routes/admin/clients';
 import { index as adminPetTreatmentsIndex } from '@/routes/admin/pet-treatments';
@@ -28,6 +30,7 @@ import type { NavGroup } from '@/types';
 export type NavigationSection =
     | 'dashboard'
     | 'clients'
+    | 'administrators'
     | 'appointments'
     | 'medical-records'
     | 'pets'
@@ -49,6 +52,10 @@ export function getNavigationSection(
     }
 
     if (role === 'admin') {
+        if (matches(path, /(?:^|\/)admin\/administrators(?:\/|$)/)) {
+            return 'administrators';
+        }
+
         if (matches(path, /(?:^|\/)admin\/clients(?:\/|$)/)) {
             return 'clients';
         }
@@ -117,6 +124,8 @@ export function getSimonModule(
     section: NavigationSection | null,
 ): SimonModule | undefined {
     switch (section) {
+        case 'administrators':
+            return 'clients';
         case 'clients':
         case 'appointments':
         case 'medical-records':
@@ -230,6 +239,17 @@ export function getNavigationGroups(
                               href: treatmentsIndex(),
                               icon: Syringe,
                               isActive: activeSection === 'treatment-catalog',
+                          },
+                      ],
+                  },
+                  {
+                      title: 'Administración',
+                      items: [
+                          {
+                              title: 'Administradores',
+                              href: administratorsIndex(),
+                              icon: ShieldCheck,
+                              isActive: activeSection === 'administrators',
                           },
                       ],
                   },

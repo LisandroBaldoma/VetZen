@@ -1,5 +1,9 @@
 # **VetZen — Continuación Feature 04: Clientes, roles y autorización**
 
+> Estado: implementada. La primera fase queda cerrada con los roles exclusivos
+> `admin` y `client`; profesionales, permisos granulares y administración de
+> permisos corresponden a una feature futura.
+
 Estamos desarrollando **VetZen**, una aplicación Laravel \+ React \+ Inertia.
 
 Quiero continuar la implementación actual de la **Feature 04 — Clientes**.
@@ -215,6 +219,28 @@ Preferentemente utiliza:
 No agregues credenciales sensibles hardcodeadas para producción.
 
 El rol `admin` debe poder gestionar clientes.
+
+### **7.1 Gestión de administradores**
+
+Los roles `admin` y `client` son mutuamente exclusivos. La administración de
+acceso cambia el rol mediante Spatie; no asigna permisos administrativos sueltos.
+
+Todo administrador puede promover a otro cliente registrado al rol `admin`. La
+promoción conserva el registro Client, sus mascotas y todos los recursos
+relacionados, pero el usuario deja de aparecer en el listado de Clientes y pasa
+a la sección Administradores.
+
+Un administrador promovido puede volver a `client` solamente si conserva su
+perfil Client. No se permite cambiar el rol propio ni realizar una operación que
+deje a la plataforma sin administradores. Los administradores internos sin
+perfil Client no pueden degradarse desde esta interfaz.
+
+Clientes deberá mostrar exclusivamente usuarios con rol `client` y sin rol
+`admin`. Administradores deberá mostrar exclusivamente usuarios con rol `admin`.
+
+Cada cambio debe ejecutarse de forma transaccional y registrar el administrador
+responsable, el usuario afectado, el rol anterior, el rol nuevo y el momento del
+cambio.
 
 ---
 
@@ -692,6 +718,10 @@ No implementes en esta iteración:
 * panel avanzado de administración de permisos;  
 * funcionalidades no documentadas.
 
+La eliminación de cuentas tampoco está disponible en esta fase. La interfaz no
+la expone y el backend no registra un endpoint de eliminación hasta definir una
+política compatible de retención, desactivación o anonimización.
+
 Tampoco:
 
 * cambies de arquitectura;  
@@ -837,3 +867,16 @@ Lista únicamente cuestiones reales pendientes.
 
 Confirma que no implementaste funcionalidades fuera de Feature 04 y de la infraestructura mínima de roles y permisos necesaria para soportarla.
 
+---
+
+# **28\. DECISIONES DE CIERRE DE FASE 1**
+
+* `admin` y `client` son los únicos roles de la fase.
+* El registro público local o Google es el único mecanismo de alta de clientes.
+* Un administrador puede gestionar clientes existentes y administrar roles según
+  las reglas de la sección 7.1, pero no crear clientes desde el panel.
+* La eliminación de cuentas está deshabilitada tanto en frontend como en backend.
+* La cuenta administrativa operativa debe existir antes del cierre del entorno;
+  no se incorporan credenciales predeterminadas de producción.
+* Profesionales, permisos granulares, suspensión, retención y anonimización de
+  cuentas quedan para features futuras expresamente especificadas.

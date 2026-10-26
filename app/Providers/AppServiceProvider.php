@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\ClinicalRecord;
 use App\Models\Pet;
 use App\Models\Service;
+use App\Models\User;
 use App\Policies\AppointmentPolicy;
 use App\Policies\AppointmentScheduleDatePolicy;
 use App\Policies\AppointmentScheduleTemplatePolicy;
@@ -17,6 +18,7 @@ use App\Policies\ClientPolicy;
 use App\Policies\ClinicalRecordPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ServicePolicy;
+use App\Policies\UserPolicy;
 use App\Services\GroqAssistantResponseGenerator;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -52,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Appointment::class, AppointmentPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
     }
 
     /**

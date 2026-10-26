@@ -144,7 +144,7 @@ MARKDOWN);
         /** @var array<int, array{id: string, role: string, question: string, expected_documents: array<int, string>}> $cases */
         $cases = require base_path('tests/Fixtures/Simon/evaluation.php');
 
-        $this->assertCount(10, $cases);
+        $this->assertCount(11, $cases);
 
         foreach ($cases as $case) {
             $results = app(AssistantKnowledgeBaseSearch::class)->search($case['question'], $case['role']);
