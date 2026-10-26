@@ -36,7 +36,10 @@ aislamiento por rol, terminología, uso de contexto, tokens y latencia de Simón
    pero el rol recuperado no puede ejecutar la acción, y orientar solo hacia una
    alternativa permitida por la misma evidencia.
 7. El filtro por rol ocurre antes del ranking, tanto para evidencia disponible
-   como no disponible.
+    como no disponible.
+   Una evidencia `not_allowed_for_role` solo se recupera cuando está autorizada
+   para el rol consultante y explica su propia restricción; nunca habilita ni
+   expone instrucciones operativas de otro rol.
 8. Las trazas no registran preguntas, respuestas, prompts, chunks, PII, datos
    clínicos, payloads completos ni secretos.
 

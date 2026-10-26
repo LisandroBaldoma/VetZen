@@ -24,7 +24,8 @@ class SimonProductAssistant
     public function answer(User $user, string $question, ?string $module = null): array
     {
         $role = $this->roleFor($user);
-        $chunks = $this->search->search($question, $role, $module, config('simon.retrieval_limit'));
+        $retrieval = $this->search->search($question, $role, $module, config('simon.retrieval_limit'));
+        $chunks = $retrieval->chunks;
 
         if ($chunks->isEmpty()) {
             if (config('simon.trace_logging')) {
@@ -43,6 +44,7 @@ class SimonProductAssistant
             Log::info('simon.provider.requested', [
                 'role' => $role,
                 'sources_count' => count($sources),
+                'retrieval_outcome' => $retrieval->outcome(),
             ]);
         }
 

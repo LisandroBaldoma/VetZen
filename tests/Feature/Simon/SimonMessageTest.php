@@ -204,7 +204,7 @@ class SimonMessageTest extends TestCase
                 return $event === 'simon.retrieval.completed'
                     && $context['role'] === 'client'
                     && $context['chunks_count'] > 0
-                    && array_key_exists('source_document_ids', $context);
+                    && ! array_key_exists('source_document_ids', $context);
             })
             ->once();
     }
